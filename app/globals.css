@@ -198,3 +198,13 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 /* Smooth momentum scrolling inside overflow containers on iOS */
 .scroll-smooth-ios { -webkit-overflow-scrolling: touch; }
+
+/* PWA install banner safe-bottom padding */
+.safe-bottom { padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
+
+/* Slide-up animation for PWA install bottom sheet */
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 300ms ease forwards; }
