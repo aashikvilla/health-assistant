@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 export async function signIn(_prevState: unknown, formData: FormData) {
   const supabase = await createClient()
