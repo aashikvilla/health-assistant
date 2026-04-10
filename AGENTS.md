@@ -41,6 +41,25 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 ## Non-Negotiable Rules
 
+### Mobile-First — Most Important Rule
+
+This is a PWA. **Every component must work on a 375px screen before scaling up.**
+
+```tsx
+// ✅ Mobile-first
+<div className="flex flex-col gap-4 p-4 sm:flex-row sm:p-6 lg:p-8">
+
+// ❌ Desktop-first — DO NOT do this
+<div className="flex flex-row p-8 max-sm:flex-col max-sm:p-4">
+```
+
+**Checklist before every commit:**
+- [ ] Looks correct at 375px width (mobile)
+- [ ] All buttons/links ≥ 44px tall (`h-10` minimum, or `touch-target` class)
+- [ ] Fixed headers/footers use `pt-safe` / `pb-safe` classes
+- [ ] Input fields use `text-base` (16px) — never `text-sm` on inputs
+- [ ] Correct `type` and `inputMode` on inputs (`type="email"`, `inputMode="tel"`, etc.)
+
 ### Theming — Most Important Rule
 - **Never** use raw Tailwind colour classes for semantic colours
 - **Always** use CSS variable tokens: `bg-primary`, `text-text-secondary`, `border-border`, `bg-surface`
@@ -83,6 +102,10 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 ## Before You Finish Any Task
 
 - [ ] `npm run build` passes — zero errors, zero type errors
+- [ ] **Mobile**: tested at 375px width — layout doesn't break, text doesn't overflow
+- [ ] **Touch**: all interactive elements ≥ 44px tall
+- [ ] **Safe areas**: fixed bars use `pt-safe` / `pb-safe`
+- [ ] **Inputs**: `text-base` size, correct `type` and `inputMode` attributes
 - [ ] New components handle all four states (loading / empty / error / success)
 - [ ] No `console.log` in committed code
 - [ ] Grep your changes for `bg-white`, `text-gray-`, `text-emerald-` — replace with semantic tokens

@@ -9,6 +9,23 @@
 A collaborative health application built by a distributed team using multiple AI coding editors (Claude Code, Cursor, Windsurf, Copilot, etc.). Every decision here is deliberate — follow the patterns, don't invent new ones unless you've raised them with the team.
 
 **Stack:** Next.js 16.2.3 · React 19 · TypeScript (strict) · Tailwind CSS v4 · Supabase · Vercel
+**Platform:** PWA — mobile-first, installable, offline-capable
+
+---
+
+## 📱 Mobile-First — Absolute Rule
+
+This is a PWA. Every screen must work perfectly on a 375px phone screen before considering tablet/desktop.
+
+- Write base Tailwind classes for mobile, add `sm:` / `md:` / `lg:` for larger screens
+- **Never** write desktop-first styles with `max-sm:` overrides
+- All interactive elements: minimum **44×44px** touch target
+- Use `pb-safe`, `pt-safe` classes for fixed bars (safe-area-inset for notched phones)
+- Input font size ≥ 16px (`text-base`) — prevents iOS auto-zoom
+- Minimum 8px gap between tappable elements
+- Test at 375px width before any PR
+
+See `docs/coding-patterns.md` → **Section 0** for full patterns with examples.
 
 ---
 

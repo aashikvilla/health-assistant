@@ -1,33 +1,81 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { ServiceWorkerRegistration } from '@/components/layout/ServiceWorkerRegistration'
+import './globals.css'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+// ─── Viewport (PWA + mobile) ──────────────────────────────────────────────────
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: 'cover',       // respect safe-area on notched iPhones
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#059669' },
+    { media: '(prefers-color-scheme: dark)',  color: '#034d32' },
+  ],
+}
+
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "Health Assistant",
-  description: "Your personal health companion",
-};
+  title: {
+    default:  'Health Assistant',
+    template: '%s | Health Assistant',
+  },
+  description: 'Your personal health companion. Track, monitor, and improve your wellbeing.',
+  applicationName: 'Health Assistant',
+  keywords: ['health', 'wellness', 'fitness', 'medical', 'tracker'],
+  manifest: '/manifest.webmanifest',
+
+  // PWA / Apple
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'HealthAI',
+  },
+
+  // Open Graph
+  openGraph: {
+    type: 'website',
+    siteName: 'Health Assistant',
+    title: 'Health Assistant',
+    description: 'Your personal health companion',
+  },
+
+  // Icons
+  icons: {
+    icon:  [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+    apple: [{ url: '/icons/icon-152.png', sizes: '152x152', type: 'image/png' }],
+  },
+}
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-surface text-text-primary">
+        <ServiceWorkerRegistration />
+        {children}
+      </body>
     </html>
-  );
+  )
 }
