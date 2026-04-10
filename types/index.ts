@@ -4,3 +4,4 @@
 
 export type { User, UserProfile } from './user'
 export type { ApiResponse, ApiError, PaginatedResponse } from './api'
+export type { Medication, PrescriptionExplanation } from './prescription'

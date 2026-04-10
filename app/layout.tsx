@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Plus_Jakarta_Sans, Manrope } from 'next/font/google'
 import { ServiceWorkerRegistration } from '@/components/layout/ServiceWorkerRegistration'
 import './globals.css'
 
@@ -15,6 +15,18 @@ const geistMono = Geist_Mono({
   display: 'swap',
 })
 
+const jakartaSans = Plus_Jakarta_Sans({
+  variable: '--font-jakarta',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+const manrope = Manrope({
+  variable: '--font-manrope',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
 // ─── Viewport (PWA + mobile) ──────────────────────────────────────────────────
 
 export const viewport: Viewport = {
@@ -23,8 +35,8 @@ export const viewport: Viewport = {
   minimumScale: 1,
   viewportFit: 'cover',       // respect safe-area on notched iPhones
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#059669' },
-    { media: '(prefers-color-scheme: dark)',  color: '#034d32' },
+    { media: '(prefers-color-scheme: light)', color: '#0058bd' },
+    { media: '(prefers-color-scheme: dark)',  color: '#002d60' },
   ],
 }
 
@@ -70,7 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${jakartaSans.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-surface text-text-primary">
         <ServiceWorkerRegistration />

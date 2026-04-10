@@ -4,10 +4,10 @@ export const APP_NAME    = 'Health Assistant'
 export const APP_TAGLINE = 'Your personal health companion'
 
 export const ROUTES = {
-  home:      '/',
-  auth:      '/auth',
-  dashboard: '/dashboard',
-  // Add feature routes here as they're built
+  home:        '/',
+  auth:        '/auth',
+  dashboard:   '/dashboard',
+  explanation: '/explanation',
 } as const
 
 export const AUTH_PROVIDERS = {
