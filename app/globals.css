@@ -50,13 +50,13 @@
   --color-info-subtle:        #eff6ff;
 
   /* Radius */
-  --radius-xs:  0.25rem;   /* 4px  */
-  --radius-sm:  0.375rem;  /* 6px  */
-  --radius-md:  0.5rem;    /* 8px  */
-  --radius-lg:  0.75rem;   /* 12px */
-  --radius-xl:  1rem;      /* 16px */
-  --radius-2xl: 1.25rem;   /* 20px */
-  --radius-3xl: 1.5rem;    /* 24px */
+  --radius-xs:  0.25rem;
+  --radius-sm:  0.375rem;
+  --radius-md:  0.5rem;
+  --radius-lg:  0.75rem;
+  --radius-xl:  1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
   --radius-full: 9999px;
 
   /* Shadows */
@@ -70,6 +70,18 @@
   --transition-fast:   150ms ease;
   --transition-base:   200ms ease;
   --transition-slow:   300ms ease;
+
+  /* Nuskha Upload Section — "The Clinical Curator" design system */
+  --nuskha-primary:           #0058bd;
+  --nuskha-primary-container: #d4e3ff;
+  --nuskha-teal:              #006a66;
+  --nuskha-teal-container:    #9cf1ec;
+  --nuskha-alert:             #ab2653;
+  --nuskha-surface:           #f7f9ff;
+  --nuskha-surface-low:       #f1f4fa;
+  --nuskha-surface-lowest:    #ffffff;
+  --nuskha-on-surface:        #181c21;
+  --nuskha-outline-variant:   rgba(24, 28, 33, 0.15);
 }
 
 /* Dark mode — extend when needed, vars above stay same names */
@@ -98,14 +110,14 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TAILWIND v4 THEME REGISTRATION
-   Makes CSS vars available as Tailwind utility classes.
-   e.g. bg-primary, text-primary, border-border
    ──────────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
   /* Fonts */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:    var(--font-geist-sans);
+  --font-mono:    var(--font-geist-mono);
+  --font-jakarta: var(--font-jakarta);
+  --font-manrope: var(--font-manrope);
 
   /* Map semantic colors to Tailwind utilities */
   --color-primary:            var(--color-primary);
@@ -160,13 +172,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Focus ring — consistent across all interactive elements */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Scrollbar — subtle */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-full); }
@@ -174,27 +184,9 @@ body {
 
 /* ─────────────────────────────────────────────────────────────────────────────
    MOBILE / PWA UTILITIES
-   Safe-area insets for notched phones (iPhone X+, Android with cutouts).
-   Use these classes on fixed/sticky bars — never hardcode px values.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* Bottom nav / fixed footers — account for home indicator */
 .pb-safe  { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .pt-safe  { padding-top:    env(safe-area-inset-top,    0px); }
 .pl-safe  { padding-left:   env(safe-area-inset-left,   0px); }
 .pr-safe  { padding-right:  env(safe-area-inset-right,  0px); }
-
-/* Minimum touch target — 44px × 44px per Apple HIG / WCAG 2.5.5 */
-.touch-target {
-  min-height: 44px;
-  min-width:  44px;
-}
-
-/* Full-bleed mobile section — extends behind safe areas */
-.mobile-full { margin-left: calc(-1 * env(safe-area-inset-left, 0px)); }
-
-/* Prevent text scaling on orientation change */
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-
-/* Smooth momentum scrolling inside overflow containers on iOS */
-.scroll-smooth-ios { -webkit-overflow-scrolling: touch; }
