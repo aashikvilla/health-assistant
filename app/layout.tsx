@@ -22,8 +22,6 @@ const manrope = Manrope({
   display: 'swap',
 })
 
-// ─── Viewport (PWA + mobile) ──────────────────────────────────────────────────
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -35,29 +33,27 @@ export const viewport: Viewport = {
   ],
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
-
 export const metadata: Metadata = {
   title: {
-    default:  'Health Assistant',
-    template: '%s | Health Assistant',
+    default:  'Nuskha',
+    template: '%s | Nuskha',
   },
-  description: 'Your personal health companion. Track, monitor, and improve your wellbeing.',
-  applicationName: 'Health Assistant',
-  keywords: ['health', 'wellness', 'fitness', 'medical', 'tracker'],
+  description: 'Upload, understand, and manage your family\'s prescriptions with AI',
+  applicationName: 'Nuskha',
+  keywords: ['health', 'prescription', 'medicine', 'family', 'medical records'],
   manifest: '/manifest.webmanifest',
 
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'HealthAI',
+    title: 'Nuskha',
   },
 
   openGraph: {
     type: 'website',
-    siteName: 'Health Assistant',
-    title: 'Health Assistant',
-    description: 'Your personal health companion',
+    siteName: 'Nuskha',
+    title: 'Nuskha — Family Prescription Manager',
+    description: 'Upload, understand, and manage your family\'s prescriptions with AI',
   },
 
   icons: {
@@ -65,8 +61,6 @@ export const metadata: Metadata = {
     apple: [{ url: '/icons/icon-152.png', sizes: '152x152', type: 'image/png' }],
   },
 }
-
-// ─── Layout ───────────────────────────────────────────────────────────────────
 
 export default function RootLayout({
   children,

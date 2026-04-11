@@ -1,21 +1,18 @@
+export type Confidence = 'high' | 'low'
+
 export interface Medication {
-  id: string
   name: string
   dosage: string
-  frequency: string
-  treats: string
-  howToTake: string
-  sideEffects: string
-  avoid: string
+  duration: string
+  confidence: Confidence
 }
 
-export interface PrescriptionExplanation {
-  id: string
-  doctorName: string
+export interface PrescriptionData {
+  doctor: string
+  doctorConfidence: Confidence
   date: string
-  patientName: string
-  patientRelation?: string
+  dateConfidence: Confidence
+  illness: string
+  illnessConfidence: Confidence
   medications: Medication[]
-  doctorNotes: string[]
-  disclaimerDoctorName: string
 }
