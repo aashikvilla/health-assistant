@@ -4,10 +4,6 @@ import { ServiceWorkerRegistration } from '@/components/layout/ServiceWorkerRegi
 import { PWAInstallBanner } from '@/components/layout/PWAInstallBanner'
 import './globals.css'
 
-// ─── Fonts ────────────────────────────────────────────────────────────────────
-// Plus Jakarta Sans — headlines & display (authoritative, open)
-// Manrope — body & labels (highly legible at small sizes, great for data)
-
 const plusJakarta = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta',
   subsets: ['latin'],
@@ -22,16 +18,20 @@ const manrope = Manrope({
   display: 'swap',
 })
 
+// ─── Viewport (PWA + mobile) ──────────────────────────────────────────────────
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   minimumScale: 1,
-  viewportFit: 'cover',
+  viewportFit: 'cover',       // respect safe-area on notched iPhones
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#0058bd' },
-    { media: '(prefers-color-scheme: dark)',  color: '#002d60' },
+    { media: '(prefers-color-scheme: dark)',  color: '#101318' },
   ],
 }
+
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
   title: {
@@ -43,12 +43,14 @@ export const metadata: Metadata = {
   keywords: ['health', 'prescription', 'medicine', 'family', 'medical records'],
   manifest: '/manifest.webmanifest',
 
+  // PWA / Apple
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Nuskha',
   },
 
+  // Open Graph
   openGraph: {
     type: 'website',
     siteName: 'Nuskha',
@@ -56,11 +58,14 @@ export const metadata: Metadata = {
     description: 'Upload, understand, and manage your family\'s prescriptions with AI',
   },
 
+  // Icons
   icons: {
     icon:  [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
     apple: [{ url: '/icons/icon-152.png', sizes: '152x152', type: 'image/png' }],
   },
 }
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
 
 export default function RootLayout({
   children,

@@ -2,10 +2,19 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
 
+const DEV_MOCK_USER = {
+  id: '00000000-0000-0000-0000-000000000001',
+  email: 'dev@localhost',
+  app_metadata: {},
+  user_metadata: { full_name: 'Dev User' },
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
+}
+
 export async function createClient() {
   const cookieStore = await cookies()
 
-  return createServerClient<Database>(
+  const client = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -25,4 +34,24 @@ export async function createClient() {
       },
     }
   )
+
+  if (process.env.DEV_BYPASS_AUTH === 'true' && process.env.NODE_ENV === 'development') {
+    return new Proxy(client, {
+      get(target, prop) {
+        if (prop === 'auth') {
+          return new Proxy(target.auth, {
+            get(authTarget, authProp) {
+              if (authProp === 'getUser') {
+                return async () => ({ data: { user: DEV_MOCK_USER }, error: null })
+              }
+              return (authTarget as Record<string, unknown>)[authProp as string]
+            },
+          })
+        }
+        return (target as Record<string, unknown>)[prop as string]
+      },
+    }) as typeof client
+  }
+
+  return client
 }

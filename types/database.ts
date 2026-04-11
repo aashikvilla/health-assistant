@@ -168,6 +168,7 @@ export type Database = {
           height_cm: number | null
           id: string
           is_active: boolean | null
+          is_self: boolean | null
           known_conditions: string[] | null
           relationship: string
           updated_at: string | null
@@ -186,6 +187,7 @@ export type Database = {
           height_cm?: number | null
           id?: string
           is_active?: boolean | null
+          is_self?: boolean | null
           known_conditions?: string[] | null
           relationship: string
           updated_at?: string | null
@@ -204,6 +206,7 @@ export type Database = {
           height_cm?: number | null
           id?: string
           is_active?: boolean | null
+          is_self?: boolean | null
           known_conditions?: string[] | null
           relationship?: string
           updated_at?: string | null
@@ -437,6 +440,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "family_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          condition_tags: string[]
+          created_at: string | null
+          doctor_name: string | null
+          id: string
+          medication_count: number | null
+          prescription_date: string | null
+          profile_id: string
+          user_id: string
+        }
+        Insert: {
+          condition_tags?: string[]
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          medication_count?: number | null
+          prescription_date?: string | null
+          profile_id: string
+          user_id: string
+        }
+        Update: {
+          condition_tags?: string[]
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          medication_count?: number | null
+          prescription_date?: string | null
+          profile_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "family_profiles"

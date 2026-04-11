@@ -37,10 +37,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             className={[
               'w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted',
-              'transition-all focus:outline-none focus:bg-surface-lowest',
+              'transition-colors focus:outline-none focus:ring-1 focus:bg-surface-container-lowest',
               error
-                ? 'ring-1 ring-tertiary/50 focus:ring-tertiary/60'
-                : 'ring-0 focus:ring-1 focus:ring-black/20',
+                ? 'ring-1 ring-error/30 focus:ring-error/40'
+                : 'focus:ring-border-strong',
               leading  ? 'pl-9'  : '',
               trailing ? 'pr-9'  : '',
               className,

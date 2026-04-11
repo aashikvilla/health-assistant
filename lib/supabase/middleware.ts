@@ -34,8 +34,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect dashboard routes
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  // Protect app routes — unauthenticated users go to /auth
+  const protectedPrefixes = ['/dashboard', '/hub', '/timeline', '/settings', '/records', '/upload']
+  const isProtected = protectedPrefixes.some((prefix) =>
+    request.nextUrl.pathname.startsWith(prefix)
+  )
+  if (!user && isProtected && process.env.DEV_BYPASS_AUTH !== 'true') {
     const url = request.nextUrl.clone()
     url.pathname = '/auth'
     return NextResponse.redirect(url)
@@ -44,7 +48,7 @@ export async function updateSession(request: NextRequest) {
   // Redirect authenticated users away from auth page
   if (user && request.nextUrl.pathname === '/auth') {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/hub'
     return NextResponse.redirect(url)
   }
 

@@ -1,4 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
+import Link from 'next/link'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -6,10 +7,12 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'link'
 type Size    = 'sm' | 'md' | 'lg'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant
-  size?: Size
-  loading?: boolean
+  variant?:  Variant
+  size?:     Size
+  loading?:  boolean
   fullWidth?: boolean
+  /** When set, renders a Next.js Link instead of a button element */
+  href?:     string
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -44,25 +47,37 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       fullWidth = false,
       disabled,
+      href,
       className = '',
       children,
       ...props
     },
     ref
   ) => {
+    const cls = [
+      base,
+      variants[variant],
+      sizes[size],
+      fullWidth ? 'w-full' : '',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    // Render as Next.js Link when href is provided
+    if (href) {
+      return (
+        <Link href={href} className={cls}>
+          {children}
+        </Link>
+      )
+    }
+
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={[
-          base,
-          variants[variant],
-          sizes[size],
-          fullWidth ? 'w-full' : '',
-          className,
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        className={cls}
         {...props}
       >
         {loading && (
