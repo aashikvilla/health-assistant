@@ -47,7 +47,7 @@ export function AddMemberForm() {
           name="relationship"
           required
           defaultValue=""
-          className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-border-strong transition-colors"
+          className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary focus:outline-none focus:ring-1 focus:ring-border-strong focus:bg-surface-container-lowest transition-colors"
         >
           <option value="" disabled>Select relationship</option>
           {RELATIONSHIPS.map((rel) => (
@@ -68,7 +68,7 @@ export function AddMemberForm() {
           name="dob"
           type="date"
           max={new Date().toISOString().split('T')[0]}
-          className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-border-strong transition-colors"
+          className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary focus:outline-none focus:ring-1 focus:ring-border-strong focus:bg-surface-container-lowest transition-colors"
         />
         <p className="text-xs text-text-muted">Used for medication reminders (coming soon)</p>
       </div>

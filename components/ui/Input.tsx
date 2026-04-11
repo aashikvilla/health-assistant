@@ -35,11 +35,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={[
-              'w-full rounded-xl border bg-surface px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted',
-              'transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+              'w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted',
+              'transition-colors focus:outline-none focus:ring-1 focus:bg-surface-container-lowest',
               error
-                ? 'border-error focus:ring-error'
-                : 'border-border hover:border-border-strong',
+                ? 'ring-1 ring-error/30 focus:ring-error/40'
+                : 'focus:ring-border-strong',
               leading  ? 'pl-9'  : '',
               trailing ? 'pr-9'  : '',
               className,

@@ -22,7 +22,8 @@ export function PrescriptionListItem({ prescription }: PrescriptionListItemProps
   return (
     <Link
       href={`/records/${id}`}
-      className="flex items-center gap-3 px-4 py-3.5 bg-surface border border-border rounded-xl hover:bg-surface-subtle transition-colors min-h-[44px]"
+      className="flex items-center gap-3 px-4 py-4 bg-surface-container-lowest rounded-2xl transition-all min-h-[44px]"
+      style={{ boxShadow: '0 2px 12px 0 rgba(24,28,33,0.06)' }}
     >
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-text-primary truncate">
@@ -38,7 +39,7 @@ export function PrescriptionListItem({ prescription }: PrescriptionListItemProps
         {condition_tags.slice(0, 2).map((tag) => (
           <span
             key={tag}
-            className="text-xs px-2 py-0.5 bg-surface-muted text-text-secondary rounded-full border border-border-subtle"
+            className="text-xs px-2.5 py-0.5 bg-teal-subtle text-teal rounded-full font-medium"
           >
             {tag}
           </span>

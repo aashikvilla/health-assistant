@@ -12,7 +12,7 @@ export function EmptyPrescriptions({ profileName, isSelf }: EmptyPrescriptionsPr
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center gap-4">
-      <div className="w-16 h-16 rounded-2xl bg-surface-subtle border-2 border-dashed border-border flex items-center justify-center">
+      <div className="w-16 h-16 rounded-2xl bg-surface-subtle flex items-center justify-center">
         <svg
           className="w-7 h-7 text-text-muted"
           fill="none"

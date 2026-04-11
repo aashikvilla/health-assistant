@@ -31,13 +31,22 @@ export default async function HubPage({ searchParams }: HubPageProps) {
 
   // If no profiles exist at all, redirect to onboarding
   // (self-profile is created by Stage 4/auth team after OTP signup)
-  if (profiles.length === 0) {
+  // Skip in dev bypass mode — RLS blocks reads without a real session
+  if (profiles.length === 0 && process.env.DEV_BYPASS_AUTH !== 'true') {
     redirect('/hub/add-member')
   }
 
   // Determine active profile — URL param → first profile (self)
   const activeProfile =
     profiles.find((p) => p.id === profileIdParam) ?? profiles[0]
+
+  if (!activeProfile) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 gap-4 text-center">
+        <p className="text-sm text-text-muted">No profiles yet.</p>
+      </div>
+    )
+  }
 
   // Fetch prescriptions for the active profile
   const prescriptionsResult = await familyService.getProfilePrescriptions(activeProfile.id)
@@ -49,9 +58,9 @@ export default async function HubPage({ searchParams }: HubPageProps) {
   return (
     <div className="flex flex-col min-h-full">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-surface border-b border-border pt-safe">
+      <header className="sticky top-0 z-30 glass-surface pt-safe">
         <div className="flex items-center justify-between px-4 h-14">
-          <span className="text-lg font-bold text-text-primary tracking-tight">Nuskha</span>
+          <span className="font-display text-xl font-bold text-text-primary tracking-tight">Nuskha</span>
           <button
             className="w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:bg-surface-subtle transition-colors"
             aria-label="Notifications"
@@ -67,10 +76,10 @@ export default async function HubPage({ searchParams }: HubPageProps) {
 
         {/* ── Welcome ────────────────────────────────────────────── */}
         <div>
-          <h1 className="text-xl font-bold text-text-primary">
+          <h1 className="font-display text-2xl font-bold text-text-primary">
             Hi {displayName} 👋
           </h1>
-          <p className="text-sm text-text-muted mt-0.5">
+          <p className="text-sm text-text-secondary mt-1 leading-relaxed">
             Your family&apos;s prescriptions, all in one place
           </p>
         </div>
@@ -91,7 +100,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
         <section aria-labelledby="prescriptions-heading">
           <div className="flex items-center justify-between mb-3">
             <h2 id="prescriptions-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-              {activeProfile.is_self ? 'Your' : `${activeProfile.name.split(' ')[0]}'s`} Prescriptions
+              {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Prescriptions
             </h2>
             {!isEmpty && (
               <Link
@@ -105,7 +114,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
 
           {isEmpty ? (
             <EmptyPrescriptions
-              profileName={activeProfile.name}
+              profileName={activeProfile.full_name}
               isSelf={activeProfile.is_self}
             />
           ) : (
@@ -124,7 +133,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             size="lg"
             href="/upload"
           >
-            + Upload for {activeProfile.is_self ? 'yourself' : activeProfile.name.split(' ')[0]}
+            + Upload for {activeProfile.is_self ? 'yourself' : activeProfile.full_name.split(' ')[0]}
           </Button>
         )}
       </div>

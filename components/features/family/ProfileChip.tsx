@@ -10,7 +10,7 @@ interface ProfileChipProps {
 }
 
 export function ProfileChip({ profile, isActive, href }: ProfileChipProps) {
-  const initials = profile.name
+  const initials = profile.full_name
     .split(' ')
     .map((w) => w[0])
     .slice(0, 2)
@@ -21,22 +21,22 @@ export function ProfileChip({ profile, isActive, href }: ProfileChipProps) {
     <Link
       href={href}
       className="flex flex-col items-center gap-1.5 min-w-[56px]"
-      aria-label={`Switch to ${profile.name}'s profile`}
+      aria-label={`Switch to ${profile.full_name}'s profile`}
     >
       <div
         className={[
           'w-14 h-14 rounded-full flex items-center justify-center text-sm font-bold transition-all',
-          'border-2',
           isActive
-            ? 'bg-primary text-primary-foreground border-primary shadow-md'
-            : 'bg-surface-subtle text-text-secondary border-border hover:border-border-strong',
+            ? 'text-primary-foreground shadow-md'
+            : 'bg-surface-subtle text-text-secondary hover:bg-surface-muted',
         ].join(' ')}
+        style={isActive ? { background: 'linear-gradient(135deg, #0058bd, #1e6fe8)' } : undefined}
       >
         {profile.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={profile.avatar_url}
-            alt={profile.name}
+            alt={profile.full_name}
             className="w-full h-full rounded-full object-cover"
           />
         ) : (
@@ -49,7 +49,7 @@ export function ProfileChip({ profile, isActive, href }: ProfileChipProps) {
           isActive ? 'font-semibold text-text-primary' : 'text-text-muted',
         ].join(' ')}
       >
-        {profile.is_self ? 'You' : profile.name.split(' ')[0]}
+        {profile.is_self ? 'You' : profile.full_name.split(' ')[0]}
       </span>
     </Link>
   )

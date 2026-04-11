@@ -24,7 +24,7 @@ export default async function AddMemberPage() {
   return (
     <div className="flex flex-col min-h-full">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-surface border-b border-border pt-safe">
+      <header className="sticky top-0 z-30 glass-surface pt-safe">
         <div className="flex items-center gap-3 px-4 h-14">
           <Link
             href="/hub"
