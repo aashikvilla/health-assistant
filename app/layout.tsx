@@ -16,15 +16,17 @@ const geistMono = Geist_Mono({
   display: 'swap',
 })
 
-const jakartaSans = Plus_Jakarta_Sans({
+const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-jakarta',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
 const manrope = Manrope({
   variable: '--font-manrope',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
@@ -34,48 +36,38 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   minimumScale: 1,
-  viewportFit: 'cover',       // respect safe-area on notched iPhones
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#0058bd' },
     { media: '(prefers-color-scheme: dark)',  color: '#002d60' },
   ],
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
-
 export const metadata: Metadata = {
   title: {
-    default:  'Health Assistant',
-    template: '%s | Health Assistant',
+    default:  'Nuskha',
+    template: '%s | Nuskha',
   },
-  description: 'Your personal health companion. Track, monitor, and improve your wellbeing.',
-  applicationName: 'Health Assistant',
-  keywords: ['health', 'wellness', 'fitness', 'medical', 'tracker'],
+  description: 'Upload, understand, and manage your family\'s prescriptions with AI',
+  applicationName: 'Nuskha',
+  keywords: ['health', 'prescription', 'medicine', 'family', 'medical records'],
   manifest: '/manifest.webmanifest',
-
-  // PWA / Apple
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'HealthAI',
+    title: 'Nuskha',
   },
-
-  // Open Graph
   openGraph: {
     type: 'website',
-    siteName: 'Health Assistant',
-    title: 'Health Assistant',
-    description: 'Your personal health companion',
+    siteName: 'Nuskha',
+    title: 'Nuskha — Family Prescription Manager',
+    description: 'Upload, understand, and manage your family\'s prescriptions with AI',
   },
-
-  // Icons
   icons: {
     icon:  [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
     apple: [{ url: '/icons/icon-152.png', sizes: '152x152', type: 'image/png' }],
   },
 }
-
-// ─── Layout ───────────────────────────────────────────────────────────────────
 
 export default function RootLayout({
   children,
@@ -83,7 +75,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${jakartaSans.variable} ${manrope.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${plusJakartaSans.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-surface text-text-primary">
         <ServiceWorkerRegistration />
