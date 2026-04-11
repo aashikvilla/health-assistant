@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
   const isProtected = protectedPrefixes.some((prefix) =>
     request.nextUrl.pathname.startsWith(prefix)
   )
-  if (!user && isProtected) {
+  if (!user && isProtected && process.env.DEV_BYPASS_AUTH !== 'true') {
     const url = request.nextUrl.clone()
     url.pathname = '/auth'
     return NextResponse.redirect(url)

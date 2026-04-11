@@ -18,14 +18,15 @@ export const RELATIONSHIP_LABELS: Record<ProfileRelationship, string> = {
 }
 
 export interface FamilyProfile {
-  id:           string
-  owner_id:     string
-  name:         string
-  relationship: ProfileRelationship
-  dob:          string | null   // ISO date string YYYY-MM-DD
-  avatar_url:   string | null
-  is_self:      boolean
-  created_at:   string
+  id:            string
+  user_id:       string
+  full_name:     string
+  relationship:  ProfileRelationship
+  date_of_birth: string | null   // ISO date string YYYY-MM-DD
+  avatar_url:    string | null
+  is_self:       boolean
+  created_at:    string | null
+  updated_at:    string | null
 }
 
 // Lightweight prescription row shown in hub lists
@@ -41,8 +42,8 @@ export interface HubPrescription {
 }
 
 export interface CreateProfileInput {
-  name:         string
-  relationship: ProfileRelationship
-  dob?:         string   // YYYY-MM-DD
-  avatar_url?:  string
+  name:          string   // maps to full_name in DB
+  relationship:  ProfileRelationship
+  dob?:          string   // YYYY-MM-DD — maps to date_of_birth in DB
+  avatar_url?:   string
 }

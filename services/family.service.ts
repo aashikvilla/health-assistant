@@ -17,7 +17,7 @@ export const familyService = {
     const { data, error } = await supabase
       .from('family_profiles')
       .select('*')
-      .eq('owner_id', userId)
+      .eq('user_id', userId)
       .order('is_self', { ascending: false })   // "You" card always first
       .order('created_at', { ascending: true })
 
@@ -35,7 +35,7 @@ export const familyService = {
     const { count } = await supabase
       .from('family_profiles')
       .select('id', { count: 'exact', head: true })
-      .eq('owner_id', userId)
+      .eq('user_id', userId)
 
     if ((count ?? 0) >= 5) {
       return {
@@ -48,11 +48,10 @@ export const familyService = {
     const { data, error } = await supabase
       .from('family_profiles')
       .insert({
-        owner_id:     userId,
-        name:         input.name,
+        user_id:      userId,
+        full_name:    input.name,
         relationship: input.relationship,
-        dob:          input.dob ?? null,
-        avatar_url:   input.avatar_url ?? null,
+        date_of_birth: input.dob ?? null,
         is_self:      false,
       })
       .select()
@@ -74,12 +73,12 @@ export const familyService = {
       .from('family_profiles')
       .upsert(
         {
-          owner_id:     userId,
-          name,
+          user_id:      userId,
+          full_name:    name,
           relationship: 'self',
           is_self:      true,
         },
-        { onConflict: 'owner_id,is_self', ignoreDuplicates: true }
+        { onConflict: 'user_id,is_self', ignoreDuplicates: true }
       )
       .select()
       .single()
