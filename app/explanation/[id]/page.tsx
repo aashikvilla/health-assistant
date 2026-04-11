@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import type { PrescriptionExplanation } from '@/types'
+import { redirect } from 'next/navigation'
 import {
   MedicationCard,
   DoctorNotes,
@@ -11,51 +12,6 @@ export const metadata: Metadata = {
   title: 'Your Prescription',
 }
 
-// TODO: Replace with real data from prescription service
-const MOCK_PRESCRIPTION: PrescriptionExplanation = {
-  id: 'rx-001',
-  doctorName: 'Dr. Sharma',
-  date: '2026-04-08',
-  patientName: 'Papa',
-  patientRelation: 'Father',
-  medications: [
-    {
-      id: 'med-1',
-      name: 'Metformin',
-      dosage: '500mg',
-      frequency: 'Twice daily',
-      treats:
-        'Helps manage blood sugar levels in Type 2 Diabetes by improving how your body responds to insulin.',
-      howToTake:
-        'Take after meals with a full glass of water. Do not crush or chew — swallow the tablet whole.',
-      sideEffects:
-        'Mild nausea or stomach upset in the first few days. These usually go away as your body adjusts.',
-      avoid:
-        'Avoid alcohol while taking this medicine. It can increase the risk of a rare but serious side effect called lactic acidosis.',
-    },
-    {
-      id: 'med-2',
-      name: 'Atorvastatin',
-      dosage: '10mg',
-      frequency: 'Once daily at bedtime',
-      treats:
-        'Lowers cholesterol levels to reduce the risk of heart disease and stroke.',
-      howToTake:
-        'Take at bedtime — cholesterol production is highest at night. Can be taken with or without food.',
-      sideEffects:
-        'Muscle pain or weakness in some people. If you experience persistent muscle soreness, inform your doctor.',
-      avoid:
-        'Avoid grapefruit and grapefruit juice — they can increase the level of this drug in your blood.',
-    },
-  ],
-  doctorNotes: [
-    'Mention any muscle pain or unusual weakness — this is a known side effect of statins and may need a dose adjustment.',
-    'If you experience persistent stomach discomfort with Metformin, your doctor may suggest an extended-release version.',
-    'Ask about home blood sugar monitoring — it helps track how well the medication is working between visits.',
-  ],
-  disclaimerDoctorName: 'Dr. Sharma',
-}
-
 function formatDate(isoDate: string): string {
   const date = new Date(isoDate)
   return date.toLocaleDateString('en-IN', {
@@ -65,6 +21,11 @@ function formatDate(isoDate: string): string {
   })
 }
 
+// TODO: Replace with documentService.getExplanation(id, userId) once service is wired up
+async function fetchPrescription(_id: string): Promise<PrescriptionExplanation | null> {
+  return null
+}
+
 export default async function ExplanationPage({
   params,
 }: {
@@ -72,8 +33,8 @@ export default async function ExplanationPage({
 }) {
   const { id } = await params
 
-  // TODO: Fetch real prescription data using id
-  const prescription = MOCK_PRESCRIPTION
+  const prescription = await fetchPrescription(id)
+  if (!prescription) redirect('/dashboard')
 
   return (
     <main className="min-h-screen bg-surface">
