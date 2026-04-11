@@ -55,8 +55,10 @@ export default function UploadPage() {
     runOCR(formData)
   }
 
-  function handleManualText(text: string) {
-    runOCR(text)
+  function handleManualData(data: PrescriptionData) {
+    setError(null)
+    setPrescription(data)
+    setStep('review')
   }
 
   function handleConfirm(data: PrescriptionData) {
@@ -85,7 +87,7 @@ export default function UploadPage() {
           )}
           <UploadPicker
             onFileSelected={handleFileSelected}
-            onManualText={handleManualText}
+            onManualData={handleManualData}
           />
         </>
       )}

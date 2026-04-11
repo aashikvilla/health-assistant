@@ -1,21 +1,77 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import type { PrescriptionData } from '@/types/prescription'
+
+interface ManualMed {
+  name: string
+  dosage: string
+  duration: string
+}
 
 interface Props {
   onFileSelected: (file: File) => void
-  onManualText: (text: string) => void
+  onManualData: (data: PrescriptionData) => void
 }
 
-export default function UploadPicker({ onFileSelected, onManualText }: Props) {
+export default function UploadPicker({ onFileSelected, onManualData }: Props) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const pdfInputRef = useRef<HTMLInputElement>(null)
   const [showManual, setShowManual] = useState(false)
-  const [manualText, setManualText] = useState('')
+
+  const [doctor, setDoctor] = useState('')
+  const [illness, setIllness] = useState('')
+  const [date, setDate] = useState('')
+  const [medications, setMedications] = useState<ManualMed[]>([{ name: '', dosage: '', duration: '' }])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFileSelected(file)
+  }
+
+  function updateMed(index: number, field: keyof ManualMed, value: string) {
+    setMedications((prev) => prev.map((m, i) => i === index ? { ...m, [field]: value } : m))
+  }
+
+  function addMed() {
+    setMedications((prev) => [...prev, { name: '', dosage: '', duration: '' }])
+  }
+
+  function removeMed(index: number) {
+    setMedications((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function handleSubmit() {
+    onManualData({
+      doctor,
+      doctorConfidence: doctor.trim() ? 'high' : 'low',
+      illness,
+      illnessConfidence: illness.trim() ? 'high' : 'low',
+      date,
+      dateConfidence: date.trim() ? 'high' : 'low',
+      medications: medications
+        .filter((m) => m.name.trim())
+        .map((m) => ({ ...m, confidence: 'high' as const })),
+    })
+  }
+
+  const canSubmit = medications.some((m) => m.name.trim())
+
+  const inputStyle = {
+    background: 'var(--nuskha-surface-low)',
+    color: 'var(--nuskha-on-surface)',
+    fontFamily: 'var(--font-manrope)',
+    border: 'none',
+  }
+
+  function inputFocus(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    e.target.style.background = 'var(--nuskha-surface-lowest)'
+    e.target.style.boxShadow = '0 0 0 1.5px rgba(24,28,33,0.20)'
+  }
+
+  function inputBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    e.target.style.background = 'var(--nuskha-surface-low)'
+    e.target.style.boxShadow = 'none'
   }
 
   return (
@@ -111,31 +167,133 @@ export default function UploadPicker({ onFileSelected, onManualText }: Props) {
             </div>
           </button>
 
-          {/* Manual textarea (expands in place) */}
+          {/* Structured manual entry form */}
           {showManual && (
-            <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--nuskha-surface-lowest)', boxShadow: '0 2px 24px rgba(24,28,33,0.06)' }}>
-              <textarea
-                rows={5}
-                placeholder="Paste or type the prescription text here…"
-                value={manualText}
-                onChange={(e) => setManualText(e.target.value)}
-                className="w-full resize-none rounded-xl px-4 py-3 text-sm outline-none transition-colors"
-                style={{
-                  background: 'var(--nuskha-surface-low)',
-                  color: 'var(--nuskha-on-surface)',
-                  fontFamily: 'var(--font-manrope)',
-                  border: 'none',
-                }}
-                onFocus={(e) => { e.target.style.background = 'var(--nuskha-surface-lowest)'; e.target.style.boxShadow = '0 0 0 1.5px rgba(24,28,33,0.20)' }}
-                onBlur={(e) => { e.target.style.background = 'var(--nuskha-surface-low)'; e.target.style.boxShadow = 'none' }}
-              />
+            <div className="rounded-2xl p-4 space-y-4" style={{ background: 'var(--nuskha-surface-lowest)', boxShadow: '0 2px 24px rgba(24,28,33,0.06)' }}>
+
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--nuskha-teal)', fontFamily: 'var(--font-manrope)' }}>
+                Prescription Details
+              </p>
+
+              {/* Doctor */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.6, fontFamily: 'var(--font-manrope)' }}>
+                  Doctor Name
+                </label>
+                <input
+                  type="text"
+                  value={doctor}
+                  onChange={(e) => setDoctor(e.target.value)}
+                  placeholder="e.g. Dr. Priya Sharma"
+                  className="w-full rounded-xl px-4 py-3 text-base outline-none transition-colors"
+                  style={inputStyle}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+
+              {/* Illness */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.6, fontFamily: 'var(--font-manrope)' }}>
+                  Illness / Diagnosis
+                </label>
+                <input
+                  type="text"
+                  value={illness}
+                  onChange={(e) => setIllness(e.target.value)}
+                  placeholder="e.g. Upper Respiratory Tract Infection"
+                  className="w-full rounded-xl px-4 py-3 text-base outline-none transition-colors"
+                  style={inputStyle}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+
+              {/* Date */}
+              <div className="space-y-1">
+                <label className="text-xs font-medium" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.6, fontFamily: 'var(--font-manrope)' }}>
+                  Date
+                </label>
+                <input
+                  type="text"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  placeholder="e.g. 11 Apr 2026"
+                  className="w-full rounded-xl px-4 py-3 text-base outline-none transition-colors"
+                  style={inputStyle}
+                  onFocus={inputFocus}
+                  onBlur={inputBlur}
+                />
+              </div>
+
+              {/* Medications */}
+              <div className="space-y-2">
+                <p className="text-xs font-medium" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.6, fontFamily: 'var(--font-manrope)' }}>
+                  Medications
+                </p>
+
+                {medications.map((med, i) => (
+                  <div key={i} className="rounded-xl p-3 space-y-2" style={{ background: 'var(--nuskha-surface-low)' }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.5, fontFamily: 'var(--font-manrope)' }}>
+                        Medication {i + 1}
+                      </span>
+                      {medications.length > 1 && (
+                        <button
+                          onClick={() => removeMed(i)}
+                          className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
+                          style={{ color: 'var(--nuskha-alert)' }}
+                          aria-label="Remove medication"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={med.name}
+                      onChange={(e) => updateMed(i, 'name', e.target.value)}
+                      placeholder="Medicine name (required)"
+                      className="w-full rounded-lg px-3 py-2.5 text-base outline-none"
+                      style={{ background: 'var(--nuskha-surface-lowest)', color: 'var(--nuskha-on-surface)', fontFamily: 'var(--font-manrope)', border: 'none' }}
+                    />
+                    <input
+                      type="text"
+                      value={med.dosage}
+                      onChange={(e) => updateMed(i, 'dosage', e.target.value)}
+                      placeholder="Dosage (e.g. 1 tablet twice daily)"
+                      className="w-full rounded-lg px-3 py-2.5 text-base outline-none"
+                      style={{ background: 'var(--nuskha-surface-lowest)', color: 'var(--nuskha-on-surface)', fontFamily: 'var(--font-manrope)', border: 'none' }}
+                    />
+                    <input
+                      type="text"
+                      value={med.duration}
+                      onChange={(e) => updateMed(i, 'duration', e.target.value)}
+                      placeholder="Duration (e.g. 5 days)"
+                      className="w-full rounded-lg px-3 py-2.5 text-base outline-none"
+                      style={{ background: 'var(--nuskha-surface-lowest)', color: 'var(--nuskha-on-surface)', fontFamily: 'var(--font-manrope)', border: 'none' }}
+                    />
+                  </div>
+                ))}
+
+                <button
+                  onClick={addMed}
+                  className="w-full py-2.5 rounded-xl text-sm font-medium transition-opacity"
+                  style={{ color: 'var(--nuskha-teal)', fontFamily: 'var(--font-manrope)', background: 'var(--nuskha-teal-container)' }}
+                >
+                  + Add another medication
+                </button>
+              </div>
+
               <button
-                disabled={!manualText.trim()}
-                onClick={() => onManualText(manualText.trim())}
+                disabled={!canSubmit}
+                onClick={handleSubmit}
                 className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-40"
                 style={{ background: 'var(--nuskha-primary)', color: '#fff', fontFamily: 'var(--font-jakarta)' }}
               >
-                Extract Prescription
+                Save Prescription
               </button>
             </div>
           )}

@@ -21,6 +21,10 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
     setPrescription((p) => ({ ...p, date: val, dateConfidence: 'high' as Confidence }))
   }
 
+  function updateIllness(val: string) {
+    setPrescription((p) => ({ ...p, illness: val, illnessConfidence: 'high' as Confidence }))
+  }
+
   function updateMedication(index: number, field: keyof Medication, val: string) {
     setPrescription((p) => {
       const meds = [...p.medications]
@@ -32,6 +36,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
   const lowConfidenceCount = [
     prescription.doctorConfidence === 'low' ? 1 : 0,
     prescription.dateConfidence === 'low' ? 1 : 0,
+    prescription.illnessConfidence === 'low' ? 1 : 0,
     ...prescription.medications.map((m) => (m.confidence === 'low' ? 1 : 0)),
   ].reduce((a, b) => a + b, 0)
 
@@ -76,6 +81,13 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
             value={prescription.date}
             confidence={prescription.dateConfidence}
             onChange={updateDate}
+          />
+          <div style={{ height: 1, background: 'var(--nuskha-surface-low)' }} />
+          <FieldRow
+            label="Illness / Diagnosis"
+            value={prescription.illness}
+            confidence={prescription.illnessConfidence}
+            onChange={updateIllness}
           />
         </div>
 

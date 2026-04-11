@@ -1,9 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk'
 import type { PrescriptionData } from '@/types/prescription'
 
-const client = new Anthropic()
+type ImageInput = { type: 'image'; base64: string; mimeType: string }
+type TextInput = { type: 'text'; content: string }
 
-const SYSTEM_PROMPT = `You are a medical data extraction assistant. Given raw text from a prescription, extract structured data and return ONLY valid JSON — no markdown, no explanation.
+const PROMPT = `You are a medical data extraction assistant. Extract structured prescription data and return ONLY valid JSON — no markdown, no explanation, no code fences.
 
 Return this exact shape:
 {
@@ -11,6 +11,8 @@ Return this exact shape:
   "doctorConfidence": "high" | "low",
   "date": string,
   "dateConfidence": "high" | "low",
+  "illness": string,
+  "illnessConfidence": "high" | "low",
   "medications": [
     {
       "name": string,
@@ -28,21 +30,70 @@ Rules:
 - List every distinct medication as a separate entry.
 - Never invent data. If something is not in the text, leave it empty with confidence "low".`
 
-export async function extractPrescriptionData(rawText: string): Promise<PrescriptionData> {
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1024,
-    system: SYSTEM_PROMPT,
-    messages: [
+function stripJsonFences(text: string): string {
+  return text
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/, '')
+    .trim()
+}
+
+export async function extractPrescriptionData(
+  input: ImageInput | TextInput
+): Promise<PrescriptionData> {
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set')
+
+  type ContentPart =
+    | { type: 'text'; text: string }
+    | { type: 'image_url'; image_url: { url: string } }
+
+  let content: ContentPart[]
+
+  if (input.type === 'image') {
+    content = [
       {
-        role: 'user',
-        content: `Extract prescription data from this text:\n\n${rawText}`,
+        type: 'image_url',
+        image_url: { url: `data:${input.mimeType};base64,${input.base64}` },
       },
-    ],
+      { type: 'text', text: PROMPT },
+    ]
+  } else {
+    content = [
+      {
+        type: 'text',
+        text: `${PROMPT}\n\nManual prescription entry:\n${input.content}`,
+      },
+    ]
+  }
+
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      'HTTP-Referer': 'https://nuskha.app',
+      'X-Title': 'Nuskha',
+    },
+    body: JSON.stringify({
+      model: 'google/gemma-4-26b-a4b-it',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content }],
+    }),
   })
 
-  const content = message.content[0]
-  if (content.type !== 'text') throw new Error('Unexpected response type from Claude')
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`OpenRouter error ${res.status}: ${err}`)
+  }
 
-  return JSON.parse(content.text) as PrescriptionData
+  const data = await res.json()
+  const raw: string = data.choices?.[0]?.message?.content ?? ''
+
+  if (!raw) throw new Error('Empty response from model')
+
+  try {
+    return JSON.parse(stripJsonFences(raw)) as PrescriptionData
+  } catch {
+    throw new Error(`Model returned invalid JSON: ${raw.slice(0, 200)}`)
+  }
 }

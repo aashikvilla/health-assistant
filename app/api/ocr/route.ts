@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { extractTextFromImage } from '@/lib/ocr'
 import { extractPrescriptionData } from '@/lib/extract'
 import type { PrescriptionData } from '@/types/prescription'
 
@@ -10,6 +9,8 @@ const MOCK_DATA: PrescriptionData = {
   doctorConfidence: 'high',
   date: '08 Apr 2026',
   dateConfidence: 'high',
+  illness: 'Upper Respiratory Tract Infection',
+  illnessConfidence: 'high',
   medications: [
     {
       name: 'Amoxicillin 500mg',
@@ -38,7 +39,6 @@ function sleep(ms: number) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Dev mode — return mock data after simulated delay
     if (DEV_MODE) {
       await sleep(3500)
       return NextResponse.json(MOCK_DATA)
@@ -46,17 +46,16 @@ export async function POST(req: NextRequest) {
 
     const contentType = req.headers.get('content-type') ?? ''
 
-    let rawText: string
-
     if (contentType.includes('application/json')) {
-      // Manual text entry — skip Vision AI
       const { text } = await req.json()
       if (!text || typeof text !== 'string') {
         return NextResponse.json({ error: 'text field is required' }, { status: 400 })
       }
-      rawText = text
-    } else if (contentType.includes('multipart/form-data')) {
-      // File upload — run through Vision AI first
+      const prescription = await extractPrescriptionData({ type: 'text', content: text })
+      return NextResponse.json(prescription)
+    }
+
+    if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData()
       const file = formData.get('file') as File | null
       if (!file) {
@@ -65,17 +64,16 @@ export async function POST(req: NextRequest) {
 
       const arrayBuffer = await file.arrayBuffer()
       const base64 = Buffer.from(arrayBuffer).toString('base64')
-      rawText = await extractTextFromImage(base64, file.type)
 
-      if (!rawText.trim()) {
-        return NextResponse.json({ error: 'Could not detect text in the uploaded file' }, { status: 422 })
-      }
-    } else {
-      return NextResponse.json({ error: 'Unsupported content type' }, { status: 415 })
+      const prescription = await extractPrescriptionData({
+        type: 'image',
+        base64,
+        mimeType: file.type,
+      })
+      return NextResponse.json(prescription)
     }
 
-    const prescription = await extractPrescriptionData(rawText)
-    return NextResponse.json(prescription)
+    return NextResponse.json({ error: 'Unsupported content type' }, { status: 415 })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error'
     return NextResponse.json({ error: message }, { status: 500 })

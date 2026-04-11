@@ -12,5 +12,7 @@ export interface PrescriptionData {
   doctorConfidence: Confidence
   date: string
   dateConfidence: Confidence
+  illness: string
+  illnessConfidence: Confidence
   medications: Medication[]
 }
