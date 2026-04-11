@@ -94,15 +94,14 @@ async function callModel(apiKey: string, model: string, prompt: string): Promise
     },
     body: JSON.stringify({
       model,
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     }),
   })
 
-  if (res.status === 429) throw Object.assign(new Error('rate_limited'), { code: 429 })
   if (!res.ok) {
     const err = await res.text()
-    throw new Error(`OpenRouter error ${res.status}: ${err}`)
+    throw Object.assign(new Error(`OpenRouter error ${res.status}: ${err}`), { code: res.status })
   }
 
   const data = await res.json()
@@ -129,13 +128,20 @@ export async function POST(req: NextRequest) {
     for (const model of FREE_MODELS) {
       try {
         const raw = await callModel(apiKey, model, prompt)
-        const parsed = JSON.parse(stripJsonFences(raw)) as PrescriptionExplanation
-        return NextResponse.json(parsed)
+        const cleaned = stripJsonFences(raw)
+        try {
+          const parsed = JSON.parse(cleaned) as PrescriptionExplanation
+          return NextResponse.json(parsed)
+        } catch {
+          // Truncated or malformed JSON — try next model
+          lastError = 'AI response was incomplete. Retrying with another model.'
+          continue
+        }
       } catch (err) {
         const e = err as Error & { code?: number }
         lastError = e.message
-        if (e.code === 429) continue  // try next model
-        throw err                      // non-rate-limit error — fail fast
+        if (e.code === 429 || e.code === 402) continue  // rate-limited or provider spend cap — try next model
+        throw err
       }
     }
 
