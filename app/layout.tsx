@@ -1,18 +1,24 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Plus_Jakarta_Sans, Manrope } from 'next/font/google'
 import { ServiceWorkerRegistration } from '@/components/layout/ServiceWorkerRegistration'
 import { PWAInstallBanner } from '@/components/layout/PWAInstallBanner'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// ─── Fonts ────────────────────────────────────────────────────────────────────
+// Plus Jakarta Sans — headlines & display (authoritative, open)
+// Manrope — body & labels (highly legible at small sizes, great for data)
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: '--font-plus-jakarta',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const manrope = Manrope({
+  variable: '--font-manrope',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
@@ -22,10 +28,10 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   minimumScale: 1,
-  viewportFit: 'cover',       // respect safe-area on notched iPhones
+  viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#059669' },
-    { media: '(prefers-color-scheme: dark)',  color: '#034d32' },
+    { media: '(prefers-color-scheme: light)', color: '#0058bd' },
+    { media: '(prefers-color-scheme: dark)',  color: '#003685' },
   ],
 }
 
@@ -41,14 +47,12 @@ export const metadata: Metadata = {
   keywords: ['health', 'wellness', 'fitness', 'medical', 'tracker'],
   manifest: '/manifest.webmanifest',
 
-  // PWA / Apple
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'HealthAI',
   },
 
-  // Open Graph
   openGraph: {
     type: 'website',
     siteName: 'Health Assistant',
@@ -56,7 +60,6 @@ export const metadata: Metadata = {
     description: 'Your personal health companion',
   },
 
-  // Icons
   icons: {
     icon:  [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
     apple: [{ url: '/icons/icon-152.png', sizes: '152x152', type: 'image/png' }],
@@ -71,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${plusJakarta.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-surface text-text-primary">
         <ServiceWorkerRegistration />

@@ -14,12 +14,18 @@ export interface CardBodyProps   extends HTMLAttributes<HTMLDivElement> {}
 export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {}
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
+// No-line rule: depth via tonal layering (surface-lowest on surface base).
+// Ghost border (ring at 15% opacity) only where accessibility requires it.
 
 const variants: Record<Variant, string> = {
-  default:  'bg-surface border border-border',
-  subtle:   'bg-surface-subtle border border-border-subtle',
-  outlined: 'bg-surface border-2 border-border-strong',
-  elevated: 'bg-surface shadow-md border border-border',
+  // Interactive card — #ffffff pops against #f7f9ff surface base. No border needed.
+  default:  'bg-surface-lowest',
+  // Grouping area — sits recessed on the page
+  subtle:   'bg-surface-subtle',
+  // Accessibility fallback — ghost border at 15% opacity (design.md rule)
+  outlined: 'bg-surface-lowest ring-1 ring-black/[0.15]',
+  // Floating element — ambient shadow only, no muddy drop shadow
+  elevated: 'bg-surface-lowest shadow-md',
 }
 
 const paddings = {
@@ -42,26 +48,17 @@ function Card({ variant = 'default', padding = 'md', className = '', ...props }:
   )
 }
 
+// No divider lines — use vertical spacing only (design.md: "Forbid divider lines")
 function CardHeader({ className = '', ...props }: CardHeaderProps) {
-  return (
-    <div
-      className={['pb-4 border-b border-border', className].filter(Boolean).join(' ')}
-      {...props}
-    />
-  )
+  return <div className={['pb-4', className].filter(Boolean).join(' ')} {...props} />
 }
 
 function CardBody({ className = '', ...props }: CardBodyProps) {
-  return <div className={['py-4', className].filter(Boolean).join(' ')} {...props} />
+  return <div className={['py-2', className].filter(Boolean).join(' ')} {...props} />
 }
 
 function CardFooter({ className = '', ...props }: CardFooterProps) {
-  return (
-    <div
-      className={['pt-4 border-t border-border', className].filter(Boolean).join(' ')}
-      {...props}
-    />
-  )
+  return <div className={['pt-4', className].filter(Boolean).join(' ')} {...props} />
 }
 
 export { Card, CardHeader, CardBody, CardFooter }

@@ -1,8 +1,7 @@
 # Design System
 
-> **Status: PLACEHOLDER**
-> This file will be populated once design.md is finalised.
-> When ready: sync values here → update CSS variables in `app/globals.css` → done.
+> **Status: LIVE** — synced from `docs/ui/design.md` (April 2026)
+> To update: change hex values in `app/globals.css` `:root` block only. Variable names must stay stable.
 
 ---
 
