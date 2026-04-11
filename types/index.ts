@@ -4,3 +4,4 @@
 
 export type { User, UserProfile } from './user'
 export type { ApiResponse, ApiError, PaginatedResponse } from './api'
+export type { Database, Json, Tables, TablesInsert, TablesUpdate, DbFunctions } from './database'
