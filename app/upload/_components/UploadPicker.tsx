@@ -18,6 +18,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const pdfInputRef = useRef<HTMLInputElement>(null)
   const [showManual, setShowManual] = useState(false)
+  const [fileError, setFileError] = useState<string | null>(null)
 
   const [doctor, setDoctor] = useState('')
   const [illness, setIllness] = useState('')
@@ -26,7 +27,14 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if (file) onFileSelected(file)
+    if (!file) return
+    setFileError(null)
+    if (file.size > 6 * 1024 * 1024) {
+      setFileError('File is too large. Maximum size is 6 MB.')
+      e.target.value = ''
+      return
+    }
+    onFileSelected(file)
   }
 
   function updateMed(index: number, field: keyof ManualMed, value: string) {
@@ -90,6 +98,16 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
             We&apos;ll extract the details automatically using AI.
           </p>
         </div>
+
+        {/* File error */}
+        {fileError && (
+          <div className="mb-4 px-4 py-3 rounded-xl flex gap-3" style={{ background: 'rgba(171,38,83,0.08)' }}>
+            <span style={{ color: 'var(--nuskha-alert)' }}>⚠</span>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--nuskha-alert)', fontFamily: 'var(--font-manrope)' }}>
+              {fileError}
+            </p>
+          </div>
+        )}
 
         {/* Option cards */}
         <div className="space-y-3">
