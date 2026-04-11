@@ -34,7 +34,7 @@ export default async function ExplanationPage({
   const { id } = await params
 
   const prescription = await fetchPrescription(id)
-  if (!prescription) redirect('/dashboard')
+  if (!prescription) redirect('/hub')
 
   return (
     <main className="min-h-screen bg-surface">

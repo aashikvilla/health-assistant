@@ -25,10 +25,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   minimumScale: 1,
   viewportFit: 'cover',       // respect safe-area on notched iPhones
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#0058bd' },
-    { media: '(prefers-color-scheme: dark)',  color: '#101318' },
-  ],
+  themeColor: '#0058bd',
 }
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────

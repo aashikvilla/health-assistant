@@ -2,14 +2,14 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Health Assistant',
-    short_name: 'HealthAI',
-    description: 'Your personal health companion',
+    name: 'Nuskha',
+    short_name: 'Nuskha',
+    description: 'Upload, understand, and manage your family\'s prescriptions with AI',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#ffffff',
-    theme_color: '#059669',
+    background_color: '#f7f9ff',
+    theme_color: '#0058bd',
     categories: ['health', 'medical', 'lifestyle'],
     icons: [
       {
@@ -58,9 +58,14 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: 'Dashboard',
-        url: '/dashboard',
-        description: 'Go to your health dashboard',
+        name: 'Family Hub',
+        url: '/hub',
+        description: 'Open your family hub',
+      },
+      {
+        name: 'Upload Prescription',
+        url: '/upload',
+        description: 'Add a new prescription or lab report',
       },
     ],
   }

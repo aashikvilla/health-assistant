@@ -2,13 +2,15 @@ import { redirect }       from 'next/navigation'
 import { createClient }   from '@/lib/supabase/server'
 import { familyService }  from '@/services/family.service'
 import { AddMemberForm }  from '@/components/features/family/AddMemberForm'
+import { AppHeader }      from '@/components/layout/AppHeader'
+import { FAMILY_LIMITS }  from '@/constants'
 import Link               from 'next/link'
 
 export const metadata = {
   title: 'Add Family Member — Nuskha',
 }
 
-const MAX_PROFILES = 5
+const MAX_PROFILES = FAMILY_LIMITS.maxProfiles
 
 export default async function AddMemberPage() {
   const supabase = await createClient()
@@ -23,21 +25,7 @@ export default async function AddMemberPage() {
 
   return (
     <div className="flex flex-col min-h-full">
-      {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 glass-surface pt-safe">
-        <div className="flex items-center gap-3 px-4 h-14">
-          <Link
-            href="/hub"
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-text-secondary hover:bg-surface-subtle transition-colors -ml-2"
-            aria-label="Back to hub"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <h1 className="text-base font-semibold text-text-primary">Add Family Member</h1>
-        </div>
-      </header>
+      <AppHeader variant="page" title="Add Family Member" backHref="/hub" />
 
       <div className="px-4 py-6 flex flex-col gap-6 max-w-md mx-auto w-full">
 

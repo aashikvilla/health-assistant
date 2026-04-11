@@ -6,15 +6,17 @@ export const APP_TAGLINE = 'Upload, understand, and manage your family\'s prescr
 export const ROUTES = {
   home:      '/',
   auth:      '/auth',
-  dashboard: '/dashboard',
-  // Stage 5 — Family Hub
-  hub:       '/hub',
-  addMember: '/hub/add-member',
+  // Stage 5 — Family Hub (canonical post-auth landing)
+  hub:          '/hub',
+  addMember:    '/hub/add-member',
+  hubUpload:    (profileId: string) => `/hub/upload/${profileId}` as const,
   // Stage 6 — Records (owned by stage-6-records team)
   timeline:  '/timeline',
   records:   '/records',
-  // Stage 2 — Upload (owned by stage-2-upload team)
+  // Stage 2 — Public (unauthenticated) upload
   upload:    '/upload',
+  // Stage 8 — Settings
+  settings:  '/settings',
   // Stage 7 — Share (owned by stage-7-share team)
   share:     '/share',
 } as const

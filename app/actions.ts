@@ -1,33 +1,47 @@
 'use server'
 
-import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { redirect }         from 'next/navigation'
+import { headers }          from 'next/headers'
+import { createClient }     from '@/lib/supabase/server'
+import { familyService }    from '@/services/family.service'
 
 export async function signIn(_prevState: unknown, formData: FormData) {
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
+  const email    = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) return { error: error.message }
 
-  redirect('/dashboard')
+  // Idempotent — creates profile only if none exists yet (e.g., if user was
+  // added as a family member by someone else before signing up themselves)
+  if (data.user) {
+    await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
+  }
+
+  redirect('/hub')
 }
 
 export async function signUp(_prevState: unknown, formData: FormData) {
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signUp({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
+  const email    = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const { data, error } = await supabase.auth.signUp({ email, password })
 
   if (error) return { error: error.message }
 
-  redirect('/dashboard')
+  // Create self-profile immediately (works when email confirmation is disabled)
+  // When confirmation is required the user won't have a session here, but the
+  // auth/callback route will call ensureSelfProfile once they confirm.
+  if (data.user && data.session) {
+    await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
+  }
+
+  redirect('/hub')
 }
 
 export async function signInWithGoogle() {

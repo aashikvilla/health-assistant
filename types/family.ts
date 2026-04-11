@@ -2,42 +2,52 @@
 
 export type ProfileRelationship =
   | 'self'
-  | 'father'
-  | 'mother'
+  | 'parent'
   | 'spouse'
+  | 'child'
   | 'sibling'
   | 'other'
 
 export const RELATIONSHIP_LABELS: Record<ProfileRelationship, string> = {
   self:    'You',
-  father:  'Father',
-  mother:  'Mother',
+  parent:  'Parent (Father/Mother)',
   spouse:  'Spouse',
+  child:   'Child',
+  sibling: 'Sibling',
+  other:   'Other',
+}
+
+// Short display label shown in profile pill / avatar caption
+export const RELATIONSHIP_SHORT: Record<ProfileRelationship, string> = {
+  self:    'You',
+  parent:  'Parent',
+  spouse:  'Spouse',
+  child:   'Child',
   sibling: 'Sibling',
   other:   'Other',
 }
 
 export interface FamilyProfile {
-  id:            string
-  user_id:       string
-  full_name:     string
-  relationship:  ProfileRelationship
-  date_of_birth: string | null   // ISO date string YYYY-MM-DD
-  avatar_url:    string | null
-  is_self:       boolean
-  created_at:    string | null
-  updated_at:    string | null
+  id:              string
+  family_group_id: string
+  full_name:       string
+  email:           string | null   // used for account claiming
+  relationship:    ProfileRelationship   // from the logged-in user's perspective (via membership)
+  date_of_birth:   string | null   // ISO date string YYYY-MM-DD
+  avatar_url?:     string | null
+  is_self:         boolean
+  created_at:      string | null
+  updated_at:      string | null
 }
 
 // Lightweight prescription row shown in hub lists
-// Full schema owned by Stage 2 (upload) and Stage 6 (records) teams
 export interface HubPrescription {
   id:                string
   profile_id:        string
   doctor_name:       string | null
   prescription_date: string | null   // ISO date string
   condition_tags:    string[]
-  medication_count:  number
+  medication_count:  number | null
   created_at:        string
 }
 
@@ -45,5 +55,6 @@ export interface CreateProfileInput {
   name:          string   // maps to full_name in DB
   relationship:  ProfileRelationship
   dob?:          string   // YYYY-MM-DD — maps to date_of_birth in DB
+  email?:        string   // optional — enables later account claiming
   avatar_url?:   string
 }

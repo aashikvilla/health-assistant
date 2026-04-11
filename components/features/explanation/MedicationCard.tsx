@@ -1,22 +1,22 @@
-import type { Medication } from '@/types'
+import type { MedicationExplanation } from '@/types'
 
 interface MedicationCardProps {
-  medication: Medication
+  medication: MedicationExplanation
   className?: string
 }
 
 const ROW_LABELS = [
-  { key: 'treats', label: 'Treats' },
-  { key: 'howToTake', label: 'How to take' },
-  { key: 'sideEffects', label: 'Side effects' },
-  { key: 'avoid', label: 'Avoid' },
-] as const
+  { key: 'treats',       label: 'Treats'        },
+  { key: 'how_to_take',  label: 'How to take'   },
+  { key: 'side_effects', label: 'Side effects'  },
+  { key: 'avoid',        label: 'Avoid'         },
+] as const satisfies ReadonlyArray<{ key: keyof MedicationExplanation; label: string }>
 
 function MedicationCard({ medication, className = '' }: MedicationCardProps) {
   return (
     <div
       className={[
-        'bg-surface-container-lowest rounded-3xl p-5 shadow-ambient',
+        'bg-surface-container-lowest rounded-3xl p-5 shadow-md',
         className,
       ]
         .filter(Boolean)
@@ -40,7 +40,7 @@ function MedicationCard({ medication, className = '' }: MedicationCardProps) {
           const value = medication[key]
           if (!value) return null
 
-          const isSideEffects = key === 'sideEffects'
+          const isSideEffects = key === 'side_effects'
 
           return (
             <div
@@ -49,7 +49,7 @@ function MedicationCard({ medication, className = '' }: MedicationCardProps) {
                 'rounded-2xl p-3',
                 isSideEffects
                   ? 'bg-warning-subtle/40'
-                  : 'bg-surface-container-low',
+                  : 'bg-surface-subtle',
               ].join(' ')}
             >
               <p className="font-body text-xs font-medium uppercase tracking-wider text-text-muted mb-1">

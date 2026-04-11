@@ -3,11 +3,12 @@
 import { Button } from '@/components/ui'
 
 interface EmptyPrescriptionsProps {
+  profileId:   string
   profileName: string
   isSelf:      boolean
 }
 
-export function EmptyPrescriptions({ profileName, isSelf }: EmptyPrescriptionsProps) {
+export function EmptyPrescriptions({ profileId, profileName, isSelf }: EmptyPrescriptionsProps) {
   const label = isSelf ? 'your' : `${profileName.split(' ')[0]}'s`
 
   return (
@@ -34,7 +35,7 @@ export function EmptyPrescriptions({ profileName, isSelf }: EmptyPrescriptionsPr
           Upload {label} first prescription to get started.
         </p>
       </div>
-      <Button size="md" href="/upload">Upload a Prescription</Button>
+      <Button size="md" href={`/hub/upload/${profileId}`}>Upload a Prescription</Button>
     </div>
   )
 }

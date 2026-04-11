@@ -9,7 +9,12 @@ const STEPS = [
   'Generating explanation',
 ]
 
-export default function ProcessingState() {
+interface ProcessingStateProps {
+  /** Override the heading — e.g. "Saving to your account…" for post-review saves */
+  label?: string
+}
+
+export default function ProcessingState({ label }: ProcessingStateProps) {
   const [activeStep, setActiveStep] = useState(0)
 
   useEffect(() => {
@@ -36,10 +41,10 @@ export default function ProcessingState() {
         </div>
 
         <h2 className="text-2xl font-bold text-center mb-2" style={{ color: 'var(--nuskha-on-surface)', fontFamily: 'var(--font-jakarta)' }}>
-          Reading your prescription
+          {label ?? 'Reading your prescription'}
         </h2>
         <p className="text-sm text-center mb-10" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.5, fontFamily: 'var(--font-manrope)' }}>
-          This usually takes 3–5 seconds
+          {label ? 'Almost done…' : 'This usually takes 3–5 seconds'}
         </p>
 
         {/* Steps */}

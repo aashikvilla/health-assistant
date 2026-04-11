@@ -33,8 +33,17 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Profile',  href: '/settings', icon: (a) => <ProfileIcon  active={a} /> },
 ]
 
+// Show BottomNav only on primary (top-level) screens.
+// Sub-routes (add-member, upload, explanation) are focused flows and should
+// feel separate from the global nav — they have their own back buttons.
+const PRIMARY_PATHS = ['/hub', '/timeline', '/settings']
+
 export function BottomNav() {
   const pathname = usePathname()
+
+  // Exact match only — /hub shows nav, /hub/add-member does not
+  const visible = PRIMARY_PATHS.some((p) => pathname === p)
+  if (!visible) return null
 
   return (
     <nav

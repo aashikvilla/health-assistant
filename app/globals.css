@@ -6,6 +6,10 @@
    Per design.md: "The Clinical Curator" light palette.
    ──────────────────────────────────────────────────────────────────────────── */
 
+html {
+  color-scheme: light !important;
+}
+
 :root {
   /* Brand — Clinical Curator palette (design.md) */
   --color-brand-50:  #dce8ff;
@@ -84,16 +88,28 @@
   --transition-fast:   150ms ease;
   --transition-base:   200ms ease;
   --transition-slow:   300ms ease;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LEGACY ALIASES — `--nuskha-*`
+     The Stage 2 (upload) screens were authored with raw CSS variables of the
+     form `var(--nuskha-...)` in inline styles before the Clinical Curator
+     palette was finalised. These aliases keep those screens rendering until
+     stage-2-upload migrates them to semantic Tailwind classes (tracked in
+     docs/current-state.md → "Files NOT fixed").
+     ─────────────────────────────────────────────────────────────────────── */
+  --nuskha-surface:            var(--color-surface);
+  --nuskha-surface-low:        var(--color-surface-subtle);
+  --nuskha-surface-lowest:     var(--color-surface-container-lowest);
+  --nuskha-surface-container:  var(--color-surface-muted);
+  --nuskha-on-surface:         var(--color-text-primary);
+  --nuskha-primary:            var(--color-primary);
+  --nuskha-primary-container:  var(--color-primary-container);
+  --nuskha-teal:               var(--color-teal);
+  --nuskha-teal-container:     var(--color-teal-subtle);
+  --nuskha-alert:              var(--color-tertiary);
+  --nuskha-alert-container:    var(--color-tertiary-subtle);
 }
 
-/*
-  Dark mode — currently disabled. Per design.md, "The Clinical Curator" is
-  light-mode only. When dark mode is designed, uncomment and implement here.
-
-  @media (prefers-color-scheme: dark) {
-    :root { ... }
-  }
-*/
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TAILWIND v4 THEME REGISTRATION
@@ -116,6 +132,9 @@
 
   --color-teal:                       var(--color-teal);
   --color-teal-subtle:                var(--color-teal-subtle);
+
+  --color-tertiary:                   var(--color-tertiary);
+  --color-tertiary-subtle:            var(--color-tertiary-subtle);
 
   --color-surface:                    var(--color-surface);
   --color-surface-subtle:             var(--color-surface-subtle);

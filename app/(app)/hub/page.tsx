@@ -1,26 +1,105 @@
-import { redirect }              from 'next/navigation'
-import { createClient }          from '@/lib/supabase/server'
-import { familyService }         from '@/services/family.service'
-import { ProfileWheel }          from '@/components/features/family/ProfileWheel'
-import { PrescriptionListItem }  from '@/components/features/family/PrescriptionListItem'
-import { EmptyPrescriptions }    from '@/components/features/family/EmptyPrescriptions'
-import { Button }                from '@/components/ui'
-import Link                      from 'next/link'
+import { redirect }                    from 'next/navigation'
+import { createClient }               from '@/lib/supabase/server'
+import { familyService }              from '@/services/family.service'
+import { ProfileWheel }               from '@/components/features/family/ProfileWheel'
+import { PrescriptionListItem }       from '@/components/features/family/PrescriptionListItem'
+import { EmptyPrescriptions }         from '@/components/features/family/EmptyPrescriptions'
+import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
+import { ActiveMedicationsStrip }     from '@/components/features/hub/ActiveMedicationsStrip'
+import { LabAlertCard }               from '@/components/features/hub/LabAlertCard'
+import { AppHeader }                  from '@/components/layout/AppHeader'
+import { Button }                     from '@/components/ui'
+import Link                           from 'next/link'
+import type { Medication }            from '@/types/prescription'
 
 // searchParams is async in Next.js 16
 interface HubPageProps {
   searchParams: Promise<{ profile?: string }>
 }
 
+// ── Hub content types ──────────────────────────────────────────────────────────
+
+interface OutOfRangeValue {
+  name:   string
+  result: string
+  status: string
+}
+
+// ── Data fetching ──────────────────────────────────────────────────────────────
+
+async function fetchActiveMedications(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  profileId: string
+): Promise<Medication[]> {
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const since = thirtyDaysAgo.toISOString().split('T')[0]
+
+  const { data } = await supabase
+    .from('documents')
+    .select('document_analyses ( medications_found )')
+    .eq('profile_id', profileId)
+    .eq('document_type', 'prescription')
+    .gte('document_date', since)
+    .order('document_date', { ascending: false })
+    .limit(3)
+
+  if (!data) return []
+
+  // Flatten medications from all recent prescriptions, deduplicate by name
+  const seen = new Set<string>()
+  const meds: Medication[] = []
+
+  for (const doc of data) {
+    const analyses = (doc as unknown as { document_analyses: { medications_found: Medication[] | null }[] }).document_analyses
+    for (const analysis of analyses ?? []) {
+      for (const med of analysis.medications_found ?? []) {
+        const key = med.name.toLowerCase()
+        if (!seen.has(key)) {
+          seen.add(key)
+          meds.push(med)
+        }
+      }
+    }
+  }
+
+  return meds
+}
+
+async function fetchLabAlerts(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  profileId: string
+): Promise<{ values: OutOfRangeValue[]; reportDate: string | null }> {
+  const { data } = await supabase
+    .from('documents')
+    .select('document_date, document_analyses ( values_out_of_range )')
+    .eq('profile_id', profileId)
+    .eq('document_type', 'lab_report')
+    .not('document_date', 'is', null)
+    .order('document_date', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!data) return { values: [], reportDate: null }
+
+  const doc = data as unknown as {
+    document_date: string | null
+    document_analyses: { values_out_of_range: OutOfRangeValue[] | null }[]
+  }
+
+  const values = doc.document_analyses?.[0]?.values_out_of_range ?? []
+  return { values, reportDate: doc.document_date }
+}
+
+// ── Page ───────────────────────────────────────────────────────────────────────
+
 export default async function HubPage({ searchParams }: HubPageProps) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth')
 
-  // Resolve async searchParams (Next.js 16)
   const { profile: profileIdParam } = await searchParams
 
-  // Parallel fetch — profiles + (conditionally) prescriptions
   const profilesResult = await familyService.getProfiles(user.id)
 
   if (!profilesResult.success || !profilesResult.data) {
@@ -29,14 +108,10 @@ export default async function HubPage({ searchParams }: HubPageProps) {
 
   const profiles = profilesResult.data
 
-  // If no profiles exist at all, redirect to onboarding
-  // (self-profile is created by Stage 4/auth team after OTP signup)
-  // Skip in dev bypass mode — RLS blocks reads without a real session
   if (profiles.length === 0 && process.env.DEV_BYPASS_AUTH !== 'true') {
     redirect('/hub/add-member')
   }
 
-  // Determine active profile — URL param → first profile (self)
   const activeProfile =
     profiles.find((p) => p.id === profileIdParam) ?? profiles[0]
 
@@ -48,29 +123,35 @@ export default async function HubPage({ searchParams }: HubPageProps) {
     )
   }
 
-  // Fetch prescriptions for the active profile
-  const prescriptionsResult = await familyService.getProfilePrescriptions(activeProfile.id)
-  const prescriptions = prescriptionsResult.success ? (prescriptionsResult.data ?? []) : []
+  // Parallel fetch: prescriptions + medications + lab alerts
+  const [prescriptionsResult, activeMeds, labAlerts] = await Promise.all([
+    familyService.getProfilePrescriptions(activeProfile.id),
+    fetchActiveMedications(supabase, activeProfile.id),
+    fetchLabAlerts(supabase, activeProfile.id),
+  ])
 
-  const displayName = user.email?.split('@')[0] ?? 'there'
-  const isEmpty = prescriptions.length === 0
+  const prescriptions = prescriptionsResult.success ? (prescriptionsResult.data ?? []) : []
+  const displayName   = user.email?.split('@')[0] ?? 'there'
+  const isEmpty       = prescriptions.length === 0
 
   return (
     <div className="flex flex-col min-h-full">
-      {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 glass-surface pt-safe">
-        <div className="flex items-center justify-between px-4 h-14">
-          <span className="font-display text-xl font-bold text-text-primary tracking-tight">Nuskha</span>
+      <AppHeader
+        variant="brand"
+        rightSlot={
           <button
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:bg-surface-subtle transition-colors"
+            type="button"
+            className="touch-target flex items-center justify-center rounded-xl text-text-muted hover:bg-surface-subtle transition-colors"
             aria-label="Notifications"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
           </button>
-        </div>
-      </header>
+        }
+      />
+
+      <PendingUploadBanner />
 
       <div className="px-4 py-5 flex flex-col gap-6">
 
@@ -80,7 +161,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             Hi {displayName} 👋
           </h1>
           <p className="text-sm text-text-secondary mt-1 leading-relaxed">
-            Your family&apos;s prescriptions, all in one place
+            Your family&apos;s health records, all in one place
           </p>
         </div>
 
@@ -95,6 +176,21 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             baseHref="/hub"
           />
         </section>
+
+        {/* ── Active Medications ─────────────────────────────────── */}
+        <ActiveMedicationsStrip
+          medications={activeMeds}
+          profileName={activeProfile.full_name}
+          isSelf={activeProfile.is_self}
+        />
+
+        {/* ── Lab Alerts ─────────────────────────────────────────── */}
+        <LabAlertCard
+          values={labAlerts.values}
+          reportDate={labAlerts.reportDate}
+          profileName={activeProfile.full_name}
+          isSelf={activeProfile.is_self}
+        />
 
         {/* ── Prescriptions ──────────────────────────────────────── */}
         <section aria-labelledby="prescriptions-heading">
@@ -114,6 +210,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
 
           {isEmpty ? (
             <EmptyPrescriptions
+              profileId={activeProfile.id}
               profileName={activeProfile.full_name}
               isSelf={activeProfile.is_self}
             />
@@ -131,11 +228,12 @@ export default async function HubPage({ searchParams }: HubPageProps) {
           <Button
             fullWidth
             size="lg"
-            href="/upload"
+            href={`/hub/upload/${activeProfile.id}`}
           >
             + Upload for {activeProfile.is_self ? 'yourself' : activeProfile.full_name.split(' ')[0]}
           </Button>
         )}
+
       </div>
     </div>
   )

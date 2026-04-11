@@ -18,6 +18,7 @@ export async function createProfile(
   const name         = (formData.get('name') as string | null)?.trim()
   const relationship = formData.get('relationship') as ProfileRelationship | null
   const dob          = (formData.get('dob') as string | null) || undefined
+  const email        = (formData.get('email') as string | null)?.trim().toLowerCase() || undefined
 
   if (!name)         return { error: 'Name is required.' }
   if (!relationship) return { error: 'Relationship is required.' }
@@ -26,7 +27,7 @@ export async function createProfile(
     redirect('/hub')
   }
 
-  const result = await familyService.createProfile(user.id, { name, relationship, dob })
+  const result = await familyService.createProfile(user.id, { name, relationship, dob, email })
 
   if (!result.success) return { error: result.error }
 

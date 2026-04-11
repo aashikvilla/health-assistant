@@ -9,20 +9,74 @@ import type {
   CreateProfileInput,
 } from '@/types/family'
 
+// ─── Internal helpers ─────────────────────────────────────────────────────────
+
+type MembershipRow = {
+  relationship: string
+  is_self:      boolean
+}
+
+type ProfileRow = {
+  id:              string
+  family_group_id: string
+  full_name:       string
+  email:           string | null
+  date_of_birth:   string | null
+  avatar_url?:     string | null
+  created_at:      string | null
+  updated_at:      string | null
+  // nested memberships for the current user (0 or 1 rows)
+  profile_memberships: MembershipRow[]
+}
+
+function rowToProfile(row: ProfileRow): FamilyProfile {
+  const mem = row.profile_memberships?.[0]
+  return {
+    id:              row.id,
+    family_group_id: row.family_group_id,
+    full_name:       row.full_name,
+    email:           row.email ?? null,
+    relationship:    (mem?.relationship ?? 'other') as FamilyProfile['relationship'],
+    date_of_birth:   row.date_of_birth ?? null,
+    avatar_url:      row.avatar_url ?? null,
+    is_self:         mem?.is_self ?? false,
+    created_at:      row.created_at ?? null,
+    updated_at:      row.updated_at ?? null,
+  }
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
+
 export const familyService = {
-  // ─── Profiles ─────────────────────────────────────────────────────────────
+
+  // ─── Profiles ───────────────────────────────────────────────────────────────
 
   async getProfiles(userId: string): Promise<ApiResponse<FamilyProfile[]>> {
     const supabase = await createClient()
+
+    // RLS on family_profiles returns all profiles in the user's family groups.
+    // Nested select on profile_memberships (also RLS-gated to user_id = auth.uid())
+    // gives us the per-user relationship label.
     const { data, error } = await supabase
       .from('family_profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .order('is_self', { ascending: false })   // "You" card always first
-      .order('created_at', { ascending: true })
+      .select(`
+        id, family_group_id, full_name, email,
+        date_of_birth, avatar_url, created_at, updated_at,
+        profile_memberships ( relationship, is_self )
+      `)
 
     if (error) return { data: null, error: error.message, success: false }
-    return { data: data ?? [], error: null, success: true }
+
+    const profiles = (data as unknown as ProfileRow[])
+      .map(rowToProfile)
+      // self profile first, then by creation date
+      .sort((a, b) => {
+        if (a.is_self && !b.is_self) return -1
+        if (!a.is_self && b.is_self) return 1
+        return new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime()
+      })
+
+    return { data: profiles, error: null, success: true }
   },
 
   async createProfile(
@@ -31,10 +85,21 @@ export const familyService = {
   ): Promise<ApiResponse<FamilyProfile>> {
     const supabase = await createClient()
 
-    // Enforce 5-profile limit
+    // Get the user's family group from their existing self membership
+    const { data: selfMem, error: memErr } = await supabase
+      .from('profile_memberships')
+      .select('family_group_id')
+      .eq('user_id', userId)
+      .eq('is_self', true)
+      .maybeSingle()
+
+    if (memErr) return { data: null, error: memErr.message, success: false }
+    if (!selfMem) return { data: null, error: 'No family group found. Please complete your profile setup.', success: false }
+
+    // Enforce 5-profile limit per user
     const { count } = await supabase
-      .from('family_profiles')
-      .select('id', { count: 'exact', head: true })
+      .from('profile_memberships')
+      .select('profile_id', { count: 'exact', head: true })
       .eq('user_id', userId)
 
     if ((count ?? 0) >= 5) {
@@ -45,46 +110,202 @@ export const familyService = {
       }
     }
 
-    const { data, error } = await supabase
+    const familyGroupId = selfMem.family_group_id
+
+    // Create the profile
+    const { data: profile, error: profileErr } = await supabase
       .from('family_profiles')
       .insert({
-        user_id:      userId,
-        full_name:    input.name,
-        relationship: input.relationship,
-        date_of_birth: input.dob ?? null,
-        is_self:      false,
+        family_group_id: familyGroupId,
+        full_name:       input.name,
+        date_of_birth:   input.dob ?? null,
+        email:           input.email ?? null,
       })
-      .select()
+      .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
       .single()
 
-    if (error) return { data: null, error: error.message, success: false }
-    return { data, error: null, success: true }
+    if (profileErr || !profile) {
+      return { data: null, error: profileErr?.message ?? 'Failed to create profile', success: false }
+    }
+
+    // Create the membership for this user
+    const { error: memberErr } = await supabase
+      .from('profile_memberships')
+      .insert({
+        user_id:         userId,
+        profile_id:      profile.id,
+        family_group_id: familyGroupId,
+        relationship:    input.relationship,
+        is_self:         false,
+      })
+
+    if (memberErr) {
+      // Roll back profile to avoid orphan
+      await supabase.from('family_profiles').delete().eq('id', profile.id)
+      return { data: null, error: memberErr.message, success: false }
+    }
+
+    const result: FamilyProfile = {
+      ...profile,
+      relationship: input.relationship,
+      is_self:      false,
+    }
+
+    return { data: result, error: null, success: true }
   },
 
-  // Ensures a "self" profile exists for a new user. Called after OTP signup.
+  /**
+   * Ensure a self-profile exists for a user.
+   * Called after every sign-up and OAuth login. Idempotent.
+   *
+   * Three cases handled:
+   *  1. Already has a self membership  → no-op, return existing profile
+   *  2. A profile with matching email exists (added by a family member)
+   *     → claim it, auto-join all profiles in the same family group
+   *  3. Brand new user → create family_group + profile + membership
+   */
   async ensureSelfProfile(
     userId: string,
-    name: string
+    email:  string
   ): Promise<ApiResponse<FamilyProfile>> {
     const supabase = await createClient()
 
-    // Upsert — safe to call multiple times
-    const { data, error } = await supabase
+    // ── Case 1: self membership already exists ──────────────────────────────
+    const { data: existingMem } = await supabase
+      .from('profile_memberships')
+      .select('profile_id, family_group_id')
+      .eq('user_id', userId)
+      .eq('is_self', true)
+      .maybeSingle()
+
+    if (existingMem) {
+      const { data: profile } = await supabase
+        .from('family_profiles')
+        .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
+        .eq('id', existingMem.profile_id)
+        .single()
+
+      if (profile) {
+        return {
+          data: { ...(profile as unknown as FamilyProfile), relationship: 'self', is_self: true },
+          error: null,
+          success: true,
+        }
+      }
+    }
+
+    // ── Case 2: claimable profile with matching email ───────────────────────
+    const { data: claimable } = await supabase
       .from('family_profiles')
-      .upsert(
-        {
-          user_id:      userId,
-          full_name:    name,
-          relationship: 'self',
-          is_self:      true,
-        },
-        { onConflict: 'user_id,is_self', ignoreDuplicates: true }
-      )
-      .select()
+      .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
+      .eq('email', email)
+      .maybeSingle()
+
+    if (claimable) {
+      // Guard: check if this profile is already claimed (has an is_self membership)
+      const { data: alreadyClaimed } = await supabase
+        .from('profile_memberships')
+        .select('user_id')
+        .eq('profile_id', claimable.id)
+        .eq('is_self', true)
+        .maybeSingle()
+
+      if (!alreadyClaimed) {
+        const familyGroupId = (claimable as unknown as { family_group_id: string }).family_group_id
+
+        // Create self membership for this account
+        await supabase.from('profile_memberships').insert({
+          user_id:         userId,
+          profile_id:      claimable.id,
+          family_group_id: familyGroupId,
+          relationship:    'self',
+          is_self:         true,
+        })
+
+        // Auto-join all other profiles in the same family group
+        const { data: groupProfiles } = await supabase
+          .from('family_profiles')
+          .select('id')
+          .eq('family_group_id', familyGroupId)
+          .neq('id', claimable.id)
+
+        if (groupProfiles && groupProfiles.length > 0) {
+          const memberships = groupProfiles.map((p) => ({
+            user_id:         userId,
+            profile_id:      p.id,
+            family_group_id: familyGroupId,
+            relationship:    'other' as const,
+            is_self:         false,
+          }))
+          // Best-effort — don't block on errors
+          await supabase.from('profile_memberships').insert(memberships).throwOnError().catch(() => null)
+        }
+
+        return {
+          data: {
+            ...(claimable as unknown as FamilyProfile),
+            relationship: 'self',
+            is_self: true,
+          },
+          error: null,
+          success: true,
+        }
+      }
+    }
+
+    // ── Case 3: brand new user — create group + profile + membership ────────
+    const { data: group, error: groupErr } = await supabase
+      .from('family_groups')
+      .insert({})
+      .select('id')
       .single()
 
-    if (error) return { data: null, error: error.message, success: false }
-    return { data, error: null, success: true }
+    if (groupErr || !group) {
+      return { data: null, error: groupErr?.message ?? 'Failed to create family group', success: false }
+    }
+
+    const name = email.split('@')[0]
+
+    const { data: profile, error: profileErr } = await supabase
+      .from('family_profiles')
+      .insert({
+        family_group_id: group.id,
+        full_name:       name,
+        email,
+      })
+      .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
+      .single()
+
+    if (profileErr || !profile) {
+      await supabase.from('family_groups').delete().eq('id', group.id)
+      return { data: null, error: profileErr?.message ?? 'Failed to create profile', success: false }
+    }
+
+    const { error: memberErr } = await supabase
+      .from('profile_memberships')
+      .insert({
+        user_id:         userId,
+        profile_id:      profile.id,
+        family_group_id: group.id,
+        relationship:    'self',
+        is_self:         true,
+      })
+
+    if (memberErr) {
+      await supabase.from('family_profiles').delete().eq('id', profile.id)
+      await supabase.from('family_groups').delete().eq('id', group.id)
+      return { data: null, error: memberErr.message, success: false }
+    }
+
+    return {
+      data: {
+        ...(profile as unknown as FamilyProfile),
+        relationship: 'self',
+        is_self: true,
+      },
+      error: null,
+      success: true,
+    }
   },
 
   // ─── Prescriptions ────────────────────────────────────────────────────────
@@ -105,6 +326,6 @@ export const familyService = {
       .limit(limit)
 
     if (error) return { data: null, error: error.message, success: false }
-    return { data: data ?? [], error: null, success: true }
+    return { data: (data ?? []) as unknown as HubPrescription[], error: null, success: true }
   },
 }

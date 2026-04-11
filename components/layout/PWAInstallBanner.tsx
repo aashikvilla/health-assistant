@@ -81,8 +81,8 @@ export function PWAInstallBanner() {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Install Health Assistant"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-3xl shadow-xl px-6 pt-5 pb-8 safe-bottom animate-slide-up"
+        aria-label="Install Nuskha"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-3xl shadow-xl px-6 pt-5 pb-8 pb-safe"
       >
         {/* Handle */}
         <div className="mx-auto w-10 h-1 rounded-full bg-border mb-5" />
@@ -95,7 +95,7 @@ export function PWAInstallBanner() {
             className="w-14 h-14 rounded-2xl flex-shrink-0"
           />
           <div>
-            <p className="font-semibold text-text-primary text-base">Install Health Assistant</p>
+            <p className="font-semibold text-text-primary text-base">Install Nuskha</p>
             <p className="text-sm text-text-secondary mt-0.5">
               Add to your home screen for the best experience — works offline too.
             </p>

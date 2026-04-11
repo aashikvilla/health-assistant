@@ -34,8 +34,10 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect app routes — unauthenticated users go to /auth
-  const protectedPrefixes = ['/dashboard', '/hub', '/timeline', '/settings', '/records', '/upload']
+  // Protect app routes — unauthenticated users go to /auth.
+  // /upload is NOT listed here — the public /upload page is intentionally unauthenticated.
+  // Authenticated upload lives at /hub/upload/[profileId] (covered by the /hub prefix).
+  const protectedPrefixes = ['/hub', '/timeline', '/settings', '/records', '/explanation']
   const isProtected = protectedPrefixes.some((prefix) =>
     request.nextUrl.pathname.startsWith(prefix)
   )
