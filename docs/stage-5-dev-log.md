@@ -1,6 +1,6 @@
 # Nuskha — Stage 5 Development Log
 
-*Last updated: April 10, 2026 · Author: Gaurav (stage-5-family-hub)*
+*Last updated: April 11, 2026 · Author: Gaurav (stage-5-family-hub)*
 
 ---
 
@@ -10,6 +10,25 @@
 **Production:** https://health-assistant-snowy.vercel.app
 **Buildathon deadline:** April 15, 2026 · 10:00 PM IST
 **Stack:** Next.js 16.2.3 · React 19 · TypeScript · Tailwind CSS v4 · Supabase · Vercel
+
+---
+
+## Session Summary (April 11, 2026)
+
+### What was accomplished
+
+1. Pulled `types/database.ts` from `origin/develop` — auto-generated Supabase types for all 12 tables
+2. Fixed `.env.local` location — copied to `health-assistant/` (Next.js root) where it's actually read
+3. Diagnosed Google OAuth failure: `Database+error+saving+new+user` — missing `handle_new_user` trigger; escalated to aashikvilla
+4. Added `DEV_BYPASS_AUTH` flag — allows local UI testing without a live Supabase session
+5. Fixed `avatar_url` column error — removed from `family.service.ts` insert (column doesn't exist in DB)
+6. Fixed RLS policy error — dev bypass in `actions.ts` skips the blocked INSERT
+7. Fixed redirect loop — hub page no longer bounces to `/hub/add-member` in bypass mode
+8. Auth trigger fixed by aashikvilla — live sign-in now works
+9. Aligned `types/family.ts` with actual DB schema (`owner_id` → `user_id`, `name` → `full_name`, `dob` → `date_of_birth`)
+10. Updated `types/database.ts` with Stage 5 DB additions (`is_self` on `family_profiles`, new `prescriptions` table)
+11. Applied `design.md` Clinical Curator design system across all Stage 5 screens
+12. Pushed 2 commits to `stage-5-family-hub`
 
 ---
 
@@ -74,7 +93,7 @@ All branches created from `develop` and pushed to remote:
 | `stage-2-upload` | Teammate | Not started |
 | `stage-3-insight` | Teammate | Not started |
 | `stage-4-auth-gate` | Teammate | Not started |
-| `stage-5-family-hub` | **Gaurav** | **Done ✓ — pushed** |
+| `stage-5-family-hub` | **Gaurav** | **Done ✓ — design updated + pushed (Apr 11)** |
 | `stage-6-records` | Teammate | Not started |
 | `stage-7-share` | Teammate | Not started |
 
@@ -161,34 +180,27 @@ constants/
 
 ---
 
-## Part 4 — Database Schema (Run in Supabase SQL Editor)
+## Part 4 — Database Schema
 
-> **Must be run before local testing.** Go to your Supabase project → SQL Editor → paste and run.
+> **Status (April 11):** All migrations have been run on the live Supabase project by aashikvilla. The full 12-table schema is in `docs/supabase_migration.sql` on `origin/develop`. TypeScript types are in `types/database.ts`.
+
+### Stage 5 additions (run on top of the base migration)
 
 ```sql
--- ── Family Profiles ────────────────────────────────────────────────────────
-create table family_profiles (
-  id           uuid default gen_random_uuid() primary key,
-  owner_id     uuid references auth.users(id) on delete cascade not null,
-  name         text not null,
-  relationship text not null,  -- 'self' | 'father' | 'mother' | 'spouse' | 'sibling' | 'other'
-  dob          date,
-  avatar_url   text,
-  is_self      boolean default false,
-  created_at   timestamptz default now(),
-  unique (owner_id, is_self)   -- prevents duplicate self-profiles
-);
+-- Script 1 — Add is_self column to existing family_profiles
+alter table family_profiles
+  add column if not exists is_self boolean default false;
 
-alter table family_profiles enable row level security;
+create unique index if not exists family_profiles_one_self_per_owner
+  on family_profiles (user_id)
+  where is_self = true;
 
-create policy "owner_access" on family_profiles
-  for all using (auth.uid() = owner_id);
-
--- ── Prescriptions (stub — full schema owned by Stage 2 team) ───────────────
+-- Script 2 — Create prescriptions table
+-- (documents table is missing medication_count so Stage 5 owns this)
 create table prescriptions (
   id                uuid default gen_random_uuid() primary key,
   profile_id        uuid references family_profiles(id) on delete cascade not null,
-  owner_id          uuid references auth.users(id) not null,
+  user_id           uuid references auth.users(id) not null,
   doctor_name       text,
   prescription_date date,
   condition_tags    text[] default '{}',
@@ -199,8 +211,10 @@ create table prescriptions (
 alter table prescriptions enable row level security;
 
 create policy "owner_access" on prescriptions
-  for all using (auth.uid() = owner_id);
+  for all using (auth.uid() = user_id);
 ```
+
+> **Note:** `user_id` is used throughout (not `owner_id`) to be consistent with the rest of the schema.
 
 ---
 
@@ -208,52 +222,94 @@ create policy "owner_access" on prescriptions
 
 ### Step 1 — Create `.env.local`
 
-Create this file at:
-`C:\Users\Gaurav Gupta\Documents\Projects\Rethink Buildathon\health-assistant\.env.local`
+Create at **`health-assistant/.env.local`** (must be inside the Next.js project root, not the parent folder):
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_URL=https://lvtfgpujbyionrinapmr.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<get from aashikvilla or Supabase dashboard>
+
+# DEV ONLY — bypass auth for UI testing without a real session. Never set to true in production.
+DEV_BYPASS_AUTH=false
 ```
 
-Get the values from: **Supabase dashboard → your project → Settings → API**
-
-### Step 2 — Run the SQL migration
-
-Run the SQL in Part 4 above in **Supabase → SQL Editor**.
-
-### Step 3 — Start the dev server
+### Step 2 — Start the dev server
 
 ```bash
 cd "C:/Users/Gaurav Gupta/Documents/Projects/Rethink Buildathon/health-assistant"
 npm run dev
 ```
 
-### Step 4 — Test the screens
+### Step 3 — Test with a real account (recommended)
+
+Sign in at `http://localhost:3000/auth` with Google. The Supabase auth trigger creates your `users_profile` and self `family_profile` automatically on first sign-in.
 
 | URL | Screen | What to check |
 |-----|--------|---------------|
 | `http://localhost:3000/hub` | Redirects to `/auth` | Auth protection working |
-| `http://localhost:3000/auth` | Sign up / sign in | Create an account |
-| `http://localhost:3000/hub` | S08 — Empty Hub | Profile wheel, "Add family member" CTA |
+| `http://localhost:3000/auth` | Sign in with Google | Auth trigger creates profiles |
+| `http://localhost:3000/hub` | S08/S10 — Hub | Profile wheel, prescriptions list |
 | `http://localhost:3000/hub/add-member` | S09 — Add Profile | Fill form, save → returns to /hub |
-| `http://localhost:3000/hub` | S10 — Populated Hub | Profile chips, prescription list |
 | `http://localhost:3000/hub?profile=<id>` | S10 — Profile switch | Different profile's prescriptions |
 
-### Bypassing Stage 4 for testing (Stage 4 not built yet)
+> **Note:** For `localhost` OAuth to work, `http://localhost:3000` must be in Supabase → Authentication → URL Configuration → Redirect URLs. Ask aashikvilla if it isn't.
 
-Stage 4 (OTP auth) isn't built. The existing `/auth` page uses email + Google OAuth. After signing in, manually seed a self-profile so the hub works:
+### Dev bypass mode (UI-only testing, no real auth)
 
-```sql
--- Replace <your-user-id> with your actual Supabase user ID
--- Find it in: Supabase → Authentication → Users
-insert into family_profiles (owner_id, name, relationship, is_self)
-values ('<your-user-id>', 'Gaurav', 'self', true);
-```
+Set `DEV_BYPASS_AUTH=true` in `.env.local` and restart the server. This injects a mock user so all three screens are accessible without signing in. DB reads return empty (RLS blocks unauthenticated queries), so you'll see empty states — useful for layout/design checks only.
+
+Screens accessible in bypass mode:
+- `http://localhost:3000/hub` — shows empty hub (no profiles)
+- `http://localhost:3000/hub/add-member` — shows form (submit skips DB, redirects to /hub)
 
 ---
 
-## Part 6 — What's Left (Other Stages)
+## Part 6 — Design System (Clinical Curator)
+
+> Applied April 11, 2026. Reference doc: `C:\Users\Gaurav Gupta\Documents\Projects\Rethink Buildathon\design.md`
+
+### Core principles
+
+- **No-Line Rule** — no 1px borders for sectioning. Use background color shifts (tonal layering) instead.
+- **Tonal Layering** — depth through stacked surface tiers, not shadows.
+- **Glassmorphism** — sticky headers and bottom nav use `backdrop-blur` + semi-transparent surface.
+- **Ambient Shadows** — diffused, tinted with `on-surface` (never standard drop shadows).
+
+### Color tokens (updated in `app/globals.css`)
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `primary` | `#0058bd` | CTAs, active states, links |
+| `teal` | `#006a66` | Human health tracks, condition tags, success |
+| `error` | `#ab2653` | Alerts, urgent health markers |
+| `surface` | `#f7f9ff` | Base background |
+| `surface-subtle` | `#f1f4fa` | Section grouping (surface-container-low) |
+| `surface-muted` | `#e8edf5` | Chips, inactive elements |
+| `surface-container-lowest` | `#ffffff` | Interactive cards — top visual layer |
+| `text-primary` | `#181c21` | Body text (never pure black) |
+
+### Typography
+
+| Font | Variable | Usage |
+|------|----------|-------|
+| Plus Jakarta Sans | `font-display` | Headlines, app name, section titles |
+| Manrope | `font-sans` (default) | Body, labels, metadata |
+
+### Component changes (Stage 5)
+
+| Component | Change |
+|-----------|--------|
+| `BottomNav` | Glassmorphism — removed `border-t` |
+| `hub/page.tsx` header | Glassmorphism — removed `border-b` |
+| `add-member/page.tsx` header | Glassmorphism |
+| `ProfileChip` | Blue gradient on active, tonal bg inactive — no borders |
+| `AddProfileChip` | Tonal bg — no dashed border |
+| `PrescriptionListItem` | `surface-container-lowest` card + ambient shadow, teal tags — no border |
+| `EmptyPrescriptions` | Tonal bg — no dashed border |
+| `Input` (ui) | `surface-subtle` bg + ghost `ring-1` on focus — no border |
+
+---
+
+## Part 7 — What's Left (Other Stages)
 
 Stage 5 is done. These are the remaining stages for the team:
 
@@ -287,7 +343,7 @@ Stage 5 is done. These are the remaining stages for the team:
 
 ---
 
-## Part 7 — Integration Notes for Other Teams
+## Part 8 — Integration Notes for Other Teams
 
 ### What Stage 5 exports that other teams need
 
@@ -310,4 +366,4 @@ Stage 6 should activate the Timeline tab. Stage 3/7 can add tabs if needed. File
 
 ---
 
-*Resume tomorrow: pick up from local testing → verify hub screens → coordinate with team on Stage 4 (auth) to unblock end-to-end flow.*
+*Stage 5 complete. Auth is live. Design system applied. Next: coordinate with team on remaining stages (1–4, 6–7) and test end-to-end on the deployed URL once Stage 4 OTP auth is built.*
