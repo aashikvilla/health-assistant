@@ -1,6 +1,5 @@
 -- ============================================================
 -- MEDASSIST AI — Complete Database Migration
--- Run this in Supabase SQL Editor
 -- ============================================================
 
 -- Enable necessary extensions
@@ -52,9 +51,10 @@ ALTER TABLE family_profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage own family profiles" ON family_profiles
   FOR ALL USING (auth.uid() = user_id);
 
-CREATE INDEX idx_family_profiles_user ON family_profiles(user_id);
+-- Index covers the common "get active profiles for user" query
+CREATE INDEX idx_family_profiles_user_active ON family_profiles(user_id, is_active);
 
--- Trigger: Max 8 profiles per user
+-- Trigger: Max 8 active profiles per user
 CREATE OR REPLACE FUNCTION check_family_profile_limit()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -120,7 +120,8 @@ CREATE TABLE document_analyses (
   llm_model_used text,
   llm_tokens_used integer,
   analysis_version integer DEFAULT 1,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
 ALTER TABLE document_analyses ENABLE ROW LEVEL SECURITY;
@@ -248,16 +249,24 @@ CREATE TABLE shared_links (
 
 ALTER TABLE shared_links ENABLE ROW LEVEL SECURITY;
 
--- Owner can manage their links
+-- Owners manage their own links
 CREATE POLICY "Users can manage own shared links" ON shared_links
   FOR ALL USING (auth.uid() = user_id);
 
--- Public can read valid shared links (for the shared view page)
-CREATE POLICY "Public can view valid shared links" ON shared_links
-  FOR SELECT USING (
-    NOT is_revoked
-    AND expires_at > now()
-  );
+-- Public token lookup via RPC only — no direct table SELECT for anonymous users.
+-- Use get_shared_link(token) function below instead of exposing table rows.
+
+-- RPC: safe public lookup by token — returns nothing if expired/revoked
+CREATE OR REPLACE FUNCTION get_shared_link(token text)
+RETURNS SETOF shared_links
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT * FROM shared_links
+  WHERE share_token = token
+    AND NOT is_revoked
+    AND expires_at > now();
+$$;
 
 -- ──────────────────────────────────────────────────────────────
 -- 10. NOTIFICATIONS
@@ -295,12 +304,15 @@ CREATE TABLE push_subscriptions (
   auth_key text NOT NULL,
   device_info text,
   is_active boolean DEFAULT true,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(user_id, endpoint)
 );
 
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage own push subscriptions" ON push_subscriptions
   FOR ALL USING (auth.uid() = user_id);
+
+CREATE INDEX idx_push_subscriptions_user ON push_subscriptions(user_id) WHERE is_active = true;
 
 -- ──────────────────────────────────────────────────────────────
 -- 12. PREVENTIVE REMINDERS
@@ -339,25 +351,36 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply updated_at trigger to relevant tables
-CREATE TRIGGER set_updated_at BEFORE UPDATE ON users_profile FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER set_updated_at BEFORE UPDATE ON family_profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER set_updated_at BEFORE UPDATE ON documents FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER set_updated_at BEFORE UPDATE ON medications FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON users_profile     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON family_profiles   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON documents         FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON document_analyses FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON medications       FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- ──────────────────────────────────────────────────────────────
 -- STORAGE BUCKET
 -- ──────────────────────────────────────────────────────────────
--- Run this separately or via Supabase dashboard:
--- INSERT INTO storage.buckets (id, name, public) VALUES ('medical-documents', 'medical-documents', false);
--- 
--- Storage RLS policies:
--- CREATE POLICY "Users can upload own documents" ON storage.objects
---   FOR INSERT WITH CHECK (bucket_id = 'medical-documents' AND auth.uid()::text = (storage.foldername(name))[1]);
--- CREATE POLICY "Users can view own documents" ON storage.objects
---   FOR SELECT USING (bucket_id = 'medical-documents' AND auth.uid()::text = (storage.foldername(name))[1]);
--- CREATE POLICY "Users can delete own documents" ON storage.objects
---   FOR DELETE USING (bucket_id = 'medical-documents' AND auth.uid()::text = (storage.foldername(name))[1]);
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('medical-documents', 'medical-documents', false)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "Users can upload own documents" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id = 'medical-documents'
+    AND auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+CREATE POLICY "Users can view own documents" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'medical-documents'
+    AND auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+CREATE POLICY "Users can delete own documents" ON storage.objects
+  FOR DELETE USING (
+    bucket_id = 'medical-documents'
+    AND auth.uid()::text = (storage.foldername(name))[1]
+  );
 
 -- ──────────────────────────────────────────────────────────────
 -- AUTO-CREATE USER PROFILE ON SIGNUP
@@ -367,11 +390,10 @@ RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO users_profile (user_id, full_name)
   VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email));
-  
-  -- Also create a "self" family profile
+
   INSERT INTO family_profiles (user_id, full_name, relationship)
   VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email), 'self');
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -383,4 +405,10 @@ CREATE TRIGGER on_auth_user_created
 -- ============================================================
 -- MIGRATION COMPLETE
 -- 12 tables, RLS on all, indexes, triggers, storage ready
+-- Changes from original:
+--   - shared_links: removed leaky public SELECT policy, added get_shared_link() RPC
+--   - push_subscriptions: added UNIQUE(user_id, endpoint) + index
+--   - family_profiles: index changed to (user_id, is_active)
+--   - document_analyses: added updated_at + trigger
+--   - storage bucket: uncommented and included in migration
 -- ============================================================

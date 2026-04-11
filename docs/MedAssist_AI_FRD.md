@@ -327,7 +327,8 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | updated_at | timestamptz | DEFAULT now() | |
 
 **RLS:** `family_profiles.user_id = auth.uid()`
-**CHECK:** Max 8 profiles per user_id (enforced via trigger)
+**CHECK:** Max 8 active profiles per user_id (enforced via `BEFORE INSERT` trigger)
+**INDEX:** `(user_id, is_active)` — covers the common "get active profiles for user" query
 
 ---
 
@@ -384,6 +385,7 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | llm_tokens_used | integer | | Token count for cost tracking |
 | analysis_version | integer | DEFAULT 1 | For re-analysis tracking |
 | created_at | timestamptz | DEFAULT now() | |
+| updated_at | timestamptz | DEFAULT now() | Tracks when re-analysis last ran |
 
 **RLS:** `document_analyses.user_id = auth.uid()`
 
@@ -497,7 +499,7 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | id | uuid | PK, DEFAULT gen_random_uuid() | |
 | user_id | uuid | FK → auth.users, NOT NULL | Creator |
 | profile_id | uuid | FK → family_profiles, NOT NULL | Which profile is shared |
-| share_token | text | UNIQUE, NOT NULL | UUID-based token in the URL |
+| share_token | text | UNIQUE, NOT NULL | 32 random bytes hex-encoded via pgcrypto |
 | pin_hash | text | | Optional PIN protection (bcrypt) |
 | shared_document_ids | uuid[] | DEFAULT '{}' | Specific docs, empty = all |
 | include_medications | boolean | DEFAULT true | |
@@ -510,7 +512,7 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | created_at | timestamptz | DEFAULT now() | |
 
 **RLS (Owner):** `shared_links.user_id = auth.uid()` (for management)
-**RLS (Public Read):** `WHERE share_token = :token AND expires_at > now() AND NOT is_revoked`
+**Public Read:** No direct table SELECT for unauthenticated users. Use the `get_shared_link(token text)` SECURITY DEFINER RPC — returns the row only if the token matches a valid, non-revoked, non-expired link. Direct table policies would expose all valid links to any anon query.
 
 ---
 
@@ -553,6 +555,10 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | is_active | boolean | DEFAULT true | |
 | created_at | timestamptz | DEFAULT now() | |
 
+**RLS:** `push_subscriptions.user_id = auth.uid()`
+**UNIQUE:** `(user_id, endpoint)` — prevents duplicate device registrations
+**INDEX:** `(user_id) WHERE is_active = true`
+
 ---
 
 ### 3.12 `preventive_reminders`
@@ -575,6 +581,21 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | created_at | timestamptz | DEFAULT now() | |
 
 **INDEX:** `(profile_id, due_date) WHERE is_completed = false`
+
+---
+
+## 3.13 Schema Decisions & Rationale
+
+Decisions made during initial migration (April 2026):
+
+| Decision | Rationale |
+|---|---|
+| `shared_links` public access via RPC only (`get_shared_link`) | A direct SELECT policy with `NOT is_revoked AND expires_at > now()` exposes **all** valid links to any unauthenticated query — a full data leak. RPC enforces token lookup server-side. |
+| `push_subscriptions` UNIQUE(user_id, endpoint) | Without this, re-registering a device (e.g. after browser reset) silently creates duplicates, causing double-delivery of push notifications. |
+| `family_profiles` index on `(user_id, is_active)` | The app almost always queries active profiles for a user. A composite index avoids a filter scan over all profiles including soft-deleted ones. |
+| `document_analyses` has `updated_at` | Analyses can be re-run (`analysis_version` increments). Without `updated_at` there is no way to know when a re-analysis last occurred. |
+| Storage bucket included in migration | The original script had storage bucket creation commented out. Including it in the migration ensures it runs atomically with the schema. |
+| `share_token` generated with `gen_random_bytes(32)` (256-bit) | A UUID has 122 bits of randomness. 32 random bytes = 256 bits = significantly harder to brute-force for a health data share link. |
 
 ---
 
