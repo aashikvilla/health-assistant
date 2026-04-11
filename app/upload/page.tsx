@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { PrescriptionData } from '@/types/prescription'
 import UploadPicker from './_components/UploadPicker'
 import ProcessingState from './_components/ProcessingState'
@@ -9,6 +10,7 @@ import ReviewScreen from './_components/ReviewScreen'
 type Step = 'pick' | 'processing' | 'review'
 
 export default function UploadPage() {
+  const router = useRouter()
   const [step, setStep] = useState<Step>('pick')
   const [prescription, setPrescription] = useState<PrescriptionData | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -63,9 +65,7 @@ export default function UploadPage() {
 
   function handleConfirm(data: PrescriptionData) {
     localStorage.setItem('nuskha_pending_prescription', JSON.stringify(data))
-    // Auth section reads this key after login and writes to Supabase
-    // For now, show a simple success state
-    alert('Prescription saved! Sign in to store it permanently.')
+    router.push('/explanation/preview')
   }
 
   function handleRetry() {

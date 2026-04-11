@@ -101,7 +101,7 @@ export default async function ExplanationPage({
       </div>
 
       {/* ── Medication cards on tonal layer ── */}
-      <section className="bg-surface-container-low rounded-t-3xl px-5 py-6 space-y-5">
+      <section className="bg-surface-container-low rounded-t-3xl px-5 pt-6 pb-28 space-y-5">
         {prescription.medications.map((med) => (
           <MedicationCard key={med.id} medication={med} />
         ))}
