@@ -74,6 +74,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${plusJakarta.variable} ${manrope.variable} h-full antialiased`}
+      style={{ colorScheme: 'light' }}
     >
       <body className="min-h-full flex flex-col bg-surface text-text-primary">
         <ServiceWorkerRegistration />

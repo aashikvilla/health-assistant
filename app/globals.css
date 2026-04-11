@@ -3,7 +3,7 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    DESIGN TOKENS
    Single source of truth. Update here → updates everywhere.
-   When design.md is finalised, sync these values from it.
+   Per design.md: "The Clinical Curator" light palette.
    ──────────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -29,6 +29,10 @@
   /* Teal — human health tracks */
   --color-teal:                   #006a66;
   --color-teal-subtle:            #dff4f2;
+
+  /* Pink-Red — alerts, urgent markers (Pet segment) */
+  --color-tertiary:               #ab2653;
+  --color-tertiary-subtle:        #ffd9e2;
 
   /* Surface hierarchy — stacked sheets of paper */
   --color-surface:                    #f7f9ff;   /* base */
@@ -82,34 +86,14 @@
   --transition-slow:   300ms ease;
 }
 
-/* Dark mode — extend when needed */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary:            #a8c8ff;
-    --color-primary-hover:      #d1e4ff;
-    --color-primary-subtle:     #004494;
-    --color-primary-container:  #003170;
-    --color-primary-foreground: #003170;
+/*
+  Dark mode — currently disabled. Per design.md, "The Clinical Curator" is
+  light-mode only. When dark mode is designed, uncomment and implement here.
 
-    --color-teal:               #70d5cf;
-    --color-teal-subtle:        #00504d;
-
-    --color-surface:                    #101318;
-    --color-surface-subtle:             #1e2228;
-    --color-surface-muted:              #282e36;
-    --color-surface-container-lowest:   #0b0f14;
-    --color-surface-inverse:            #e2e6ef;
-
-    --color-border:             #2d3440;
-    --color-border-subtle:      #1e2228;
-    --color-border-strong:      #3d4450;
-
-    --color-text-primary:       #e2e6ef;
-    --color-text-secondary:     #b8bec8;
-    --color-text-muted:         #72787f;
-    --color-text-inverse:       #101318;
+  @media (prefers-color-scheme: dark) {
+    :root { ... }
   }
-}
+*/
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TAILWIND v4 THEME REGISTRATION
@@ -229,10 +213,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   background: rgba(247, 249, 255, 0.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-}
-
-@media (prefers-color-scheme: dark) {
-  .glass-surface {
-    background: rgba(16, 19, 24, 0.82);
-  }
 }
