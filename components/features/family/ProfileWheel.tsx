@@ -9,7 +9,7 @@ const MAX_PROFILES = 5
 interface ProfileWheelProps {
   profiles:        FamilyProfile[]
   activeProfileId: string
-  baseHref:        string   // e.g. '/hub' — ?profile=id appended per chip
+  baseHref:        string   // e.g. '/dashboard' — ?profile=id appended per chip
 }
 
 export function ProfileWheel({ profiles, activeProfileId, baseHref }: ProfileWheelProps) {

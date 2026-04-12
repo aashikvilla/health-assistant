@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react'
 import { Button, Input }  from '@/components/ui'
-import { createProfile }  from '@/app/(app)/hub/actions'
+import { createProfile }  from '@/app/(app)/dashboard/actions'
 import { RELATIONSHIP_LABELS } from '@/types/family'
 import type { ProfileRelationship } from '@/types/family'
 
@@ -95,7 +95,7 @@ export function AddMemberForm() {
         <Button type="submit" fullWidth size="lg" loading={isPending}>
           Save Profile
         </Button>
-        <Button variant="ghost" fullWidth size="md" href="/hub">
+        <Button variant="ghost" fullWidth size="md" href="/dashboard">
           Skip for now
         </Button>
       </div>

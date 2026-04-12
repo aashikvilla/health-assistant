@@ -36,8 +36,8 @@ export async function updateSession(request: NextRequest) {
 
   // Protect app routes — unauthenticated users go to /auth.
   // /upload is NOT listed here — the public /upload page is intentionally unauthenticated.
-  // Authenticated upload lives at /hub/upload/[profileId] (covered by the /hub prefix).
-  const protectedPrefixes = ['/hub', '/timeline', '/settings', '/records', '/explanation']
+  // Authenticated upload lives at /dashboard/upload/[profileId] (covered by the /dashboard prefix).
+  const protectedPrefixes = ['/dashboard', '/timeline', '/settings', '/records', '/explanation']
   const isProtected = protectedPrefixes.some((prefix) =>
     request.nextUrl.pathname.startsWith(prefix)
   )
@@ -50,7 +50,7 @@ export async function updateSession(request: NextRequest) {
   // Redirect authenticated users away from auth page
   if (user && request.nextUrl.pathname === '/auth') {
     const url = request.nextUrl.clone()
-    url.pathname = '/hub'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

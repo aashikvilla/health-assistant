@@ -7,9 +7,9 @@ export const ROUTES = {
   home:      '/',
   auth:      '/auth',
   // Stage 5 — Family Hub (canonical post-auth landing)
-  hub:          '/hub',
-  addMember:    '/hub/add-member',
-  hubUpload:    (profileId: string) => `/hub/upload/${profileId}` as const,
+  hub:          '/dashboard',
+  addMember:    '/dashboard/add-member',
+  hubUpload:    (profileId: string) => `/dashboard/upload/${profileId}` as const,
   // Stage 6 — Records (owned by stage-6-records team)
   timeline:  '/timeline',
   records:   '/records',

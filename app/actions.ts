@@ -21,7 +21,7 @@ export async function signIn(_prevState: unknown, formData: FormData) {
     await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
   }
 
-  redirect('/hub')
+  redirect('/dashboard')
 }
 
 export async function signUp(_prevState: unknown, formData: FormData) {
@@ -41,7 +41,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
   }
 
-  redirect('/hub')
+  redirect('/dashboard')
 }
 
 export async function signInWithGoogle() {

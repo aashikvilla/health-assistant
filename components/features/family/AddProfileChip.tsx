@@ -21,7 +21,7 @@ export function AddProfileChip({ label = 'Add', disabled = false }: AddProfileCh
 
   return (
     <Link
-      href="/hub/add-member"
+      href="/dashboard/add-member"
       className="flex flex-col items-center gap-1.5 min-w-[56px]"
       aria-label="Add a family member"
     >

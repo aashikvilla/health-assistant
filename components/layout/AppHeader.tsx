@@ -20,7 +20,7 @@ interface AppHeaderProps {
   variant?: 'brand' | 'page'
   /** Page title — required when `variant === 'page'`. */
   title?: string
-  /** Where the back arrow links to. Defaults to `/hub`. */
+  /** Where the back arrow links to. Defaults to `/dashboard`. */
   backHref?: string
   /** Optional right-aligned action(s) — e.g. a bell, share button, menu. */
   rightSlot?: React.ReactNode
@@ -29,7 +29,7 @@ interface AppHeaderProps {
 export function AppHeader({
   variant = 'brand',
   title,
-  backHref = '/hub',
+  backHref = '/dashboard',
   rightSlot,
 }: AppHeaderProps) {
   return (
@@ -37,7 +37,7 @@ export function AppHeader({
       <div className="flex items-center justify-between gap-3 px-4 h-14">
         {variant === 'brand' ? (
           <Link
-            href="/hub"
+            href="/dashboard"
             className="font-display text-xl font-bold text-text-primary tracking-tight"
           >
             {APP_NAME}

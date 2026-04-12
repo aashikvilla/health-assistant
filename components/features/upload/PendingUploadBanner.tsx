@@ -16,7 +16,7 @@
 import { useEffect, useState, useTransition } from 'react'
 import type { PrescriptionData }  from '@/types/prescription'
 import type { LabReportData }     from '@/types/lab-report'
-import { savePendingUpload }      from '@/app/(app)/hub/upload/[profileId]/actions'
+import { savePendingUpload }      from '@/app/(app)/dashboard/upload/[profileId]/actions'
 
 const PENDING_KEY  = 'nuskha_pending_upload'
 const MAX_AGE_MS   = 24 * 60 * 60 * 1000   // 24 hours

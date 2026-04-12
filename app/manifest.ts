@@ -59,7 +59,7 @@ export default function manifest(): MetadataRoute.Manifest {
     shortcuts: [
       {
         name: 'Family Hub',
-        url: '/hub',
+        url: '/dashboard',
         description: 'Open your family hub',
       },
       {

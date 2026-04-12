@@ -25,7 +25,7 @@ export default async function AddMemberPage() {
 
   return (
     <div className="flex flex-col min-h-full">
-      <AppHeader variant="page" title="Add Family Member" backHref="/hub" />
+      <AppHeader variant="page" title="Add Family Member" backHref="/dashboard" />
 
       <div className="px-4 py-6 flex flex-col gap-6 max-w-md mx-auto w-full">
 
@@ -54,7 +54,7 @@ export default async function AddMemberPage() {
                 </span>
               </button>
               <Link
-                href="/hub"
+                href="/dashboard"
                 className="w-full py-3 rounded-xl border border-border text-sm font-medium text-text-primary text-center hover:bg-surface-subtle transition-colors"
               >
                 Back to Hub

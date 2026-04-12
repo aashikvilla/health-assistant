@@ -28,7 +28,7 @@ const ProfileIcon = ({ active }: { active: boolean }) => (
 )
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Home',     href: '/hub',      icon: (a) => <HomeIcon     active={a} /> },
+  { label: 'Home',     href: '/dashboard',      icon: (a) => <HomeIcon     active={a} /> },
   { label: 'Timeline', href: '/timeline', icon: (a) => <TimelineIcon active={a} /> },
   { label: 'Profile',  href: '/settings', icon: (a) => <ProfileIcon  active={a} /> },
 ]
@@ -36,12 +36,12 @@ const NAV_ITEMS: NavItem[] = [
 // Show BottomNav only on primary (top-level) screens.
 // Sub-routes (add-member, upload, explanation) are focused flows and should
 // feel separate from the global nav — they have their own back buttons.
-const PRIMARY_PATHS = ['/hub', '/timeline', '/settings']
+const PRIMARY_PATHS = ['/dashboard', '/timeline', '/settings']
 
 export function BottomNav() {
   const pathname = usePathname()
 
-  // Exact match only — /hub shows nav, /hub/add-member does not
+  // Exact match only — /hub shows nav, /dashboard/add-member does not
   const visible = PRIMARY_PATHS.some((p) => pathname === p)
   if (!visible) return null
 

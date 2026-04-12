@@ -109,5 +109,5 @@ export async function savePendingUpload(
  * action (redirect() cannot be called from client components).
  */
 export async function redirectToHub(profileId: string) {
-  redirect(`/hub?profile=${profileId}`)
+  redirect(`/dashboard?profile=${profileId}`)
 }

@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Authenticated Upload Page — /hub/upload/[profileId]
+ * Authenticated Upload Page — /dashboard/upload/[profileId]
  *
  * Same OCR state machine as the public /upload page, but:
  * - User is always authenticated (enforced by (app)/layout.tsx)
@@ -9,10 +9,10 @@
  *   data to the DB via server action
  * - Linked to a specific family profile
  *
- * URL: /hub/upload/:profileId
+ * URL: /dashboard/upload/:profileId
  *
  * UX flow:
- *   pick → processing → review → saving → redirected to /hub?profile=...
+ *   pick → processing → review → saving → redirected to /dashboard?profile=...
  */
 
 import { useState, useTransition, use } from 'react'
@@ -151,7 +151,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         setStep('review')
         return
       }
-      router.push(`/hub?profile=${profileId}`)
+      router.push(`/dashboard?profile=${profileId}`)
     })
   }
 
@@ -169,7 +169,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         setStep('review')
         return
       }
-      router.push(`/hub?profile=${profileId}`)
+      router.push(`/dashboard?profile=${profileId}`)
     })
   }
 
@@ -177,7 +177,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
 
   return (
     <>
-      <AppHeader variant="page" title="Upload Prescription" backHref={`/hub?profile=${profileId}`} />
+      <AppHeader variant="page" title="Upload Prescription" backHref={`/dashboard?profile=${profileId}`} />
 
       {saveError && (
         <div className="mx-4 mt-4 px-4 py-3 rounded-xl bg-error-subtle border border-error/20 text-sm text-error">

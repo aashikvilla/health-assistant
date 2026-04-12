@@ -9,11 +9,11 @@
  * On confirm:
  *  1. Prescription/lab data is saved to localStorage as nuskha_pending_upload
  *  2. User is shown a "Save to your account" screen (no alert())
- *  3. Clicking "Create free account" → /auth?mode=signup&return=/hub
+ *  3. Clicking "Create free account" → /auth?mode=signup&return=/dashboard
  *     After auth, PendingUploadBanner in /hub detects the pending data and
  *     offers to save it to the DB.
  *
- * If the user is already logged in, they should be using /hub/upload/[profileId]
+ * If the user is already logged in, they should be using /dashboard/upload/[profileId]
  * instead — the hub upload button routes there automatically.
  */
 
@@ -122,11 +122,11 @@ export default function PublicUploadPage() {
   }
 
   function goToSignup() {
-    router.push('/auth?mode=signup&return=/hub')
+    router.push('/auth?mode=signup&return=/dashboard')
   }
 
   function goToSignin() {
-    router.push('/auth?return=/hub')
+    router.push('/auth?return=/dashboard')
   }
 
   // ── Saved state — the conversion screen ────────────────────────────────────

@@ -35,7 +35,7 @@ export function EmptyPrescriptions({ profileId, profileName, isSelf }: EmptyPres
           Upload {label} first prescription to get started.
         </p>
       </div>
-      <Button size="md" href={`/hub/upload/${profileId}`}>Upload a Prescription</Button>
+      <Button size="md" href={`/dashboard/upload/${profileId}`}>Upload a Prescription</Button>
     </div>
   )
 }
