@@ -44,11 +44,11 @@ export async function createClient() {
               if (authProp === 'getUser') {
                 return async () => ({ data: { user: DEV_MOCK_USER }, error: null })
               }
-              return (authTarget as Record<string, unknown>)[authProp as string]
+              return (authTarget as unknown as Record<string, unknown>)[authProp as string]
             },
           })
         }
-        return (target as Record<string, unknown>)[prop as string]
+        return (target as unknown as Record<string, unknown>)[prop as string]
       },
     }) as typeof client
   }
