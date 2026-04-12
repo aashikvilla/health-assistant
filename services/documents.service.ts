@@ -92,7 +92,7 @@ export const documentsService = {
         tags:          type === 'prescription'
           ? [(data as PrescriptionData).illness].filter(Boolean) as string[]
           : [],
-        processing_status: 'done',
+        processing_status: 'complete',
         ocr_engine:    'openrouter',
       })
       .select('id, profile_id, created_at')
