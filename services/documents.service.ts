@@ -10,16 +10,17 @@
  * manual text entry or when the upload fails gracefully.
  */
 
-import { createClient }       from '@/lib/supabase/server'
-import type { ApiResponse }   from '@/types'
-import type { Json }          from '@/types'
-import type { PrescriptionData }  from '@/types/prescription'
-import type { LabReportData }     from '@/types/lab-report'
+import { createClient } from '@/lib/supabase/server'
+import type { ApiResponse } from '@/types'
+import type { Json } from '@/types'
+import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
+import type { LabReportData } from '@/types/lab-report'
+import type { MedicationExplanation } from '@/types/analysis'
 
 export type DocumentType = 'prescription' | 'lab_report'
 
 export interface SavedDocument {
-  id:         string
+  id: string
   profile_id: string
   created_at: string | null
 }
@@ -70,11 +71,12 @@ export const documentsService = {
    *                  '{userId}/{ts}.pdf'), or 'ocr-extracted' for text-only.
    */
   async createFromExtraction(
-    userId:    string,
+    userId: string,
     profileId: string,
-    type:      DocumentType,
-    data:      PrescriptionData | LabReportData,
-    fileUrl:   string = 'ocr-extracted'
+    type: DocumentType,
+    data: PrescriptionData | LabReportData,
+    fileUrl: string = 'ocr-extracted',
+    explanation?: PrescriptionExplanation
   ): Promise<ApiResponse<SavedDocument>> {
     const supabase = await createClient()
 
@@ -82,18 +84,18 @@ export const documentsService = {
     const { data: doc, error: docError } = await supabase
       .from('documents')
       .insert({
-        user_id:       userId,
-        profile_id:    profileId,
+        user_id: userId,
+        profile_id: profileId,
         document_type: type,
-        file_type:     'text/plain',
-        file_url:      fileUrl,
-        doctor_name:   buildDoctorName(data, type),
+        file_type: 'text/plain',
+        file_url: fileUrl,
+        doctor_name: buildDoctorName(data, type),
         document_date: buildDocDate(data, type),
-        tags:          type === 'prescription'
+        tags: type === 'prescription'
           ? [(data as PrescriptionData).illness].filter(Boolean) as string[]
           : [],
         processing_status: 'complete',
-        ocr_engine:    'openrouter',
+        ocr_engine: 'openrouter',
       })
       .select('id, profile_id, created_at')
       .single()
@@ -105,37 +107,43 @@ export const documentsService = {
     // 2. Write the analysis row
     const summary = buildSummary(type, data)
 
+    // When an AI explanation is available (public upload flow), use its richer
+    // medication data (treats, how_to_take, side_effects, avoid) and doctor notes.
+    const prescriptionMeds: MedicationExplanation[] | null = explanation?.medications
+      ? explanation.medications.map(({ id: _id, ...rest }) => rest)
+      : null
+
     // Supabase JSON columns require the Json type — cast structured objects explicitly
     const analysisPayload =
       type === 'prescription'
         ? {
-            medications_found: (data as PrescriptionData).medications as unknown as Json,
-            recommendations:   [] as Json,
-            key_findings:      null,
-            risk_flags:        null,
-            terms_explained:   null,
-          }
+          medications_found: (prescriptionMeds ?? (data as PrescriptionData).medications) as unknown as Json,
+          recommendations: (explanation?.doctorNotes ?? []) as Json,
+          key_findings: null,
+          risk_flags: null,
+          terms_explained: null,
+        }
         : {
-            medications_found: [] as Json,
-            recommendations:   [] as Json,
-            key_findings:      { tests: (data as LabReportData).tests } as unknown as Json,
-            risk_flags:        (data as LabReportData).tests
-              .filter((t) => t.status === 'critical')
-              .map((t) => `${t.testName} is critical`) as Json,
-            values_out_of_range: (data as LabReportData).tests
-              .filter((t) => t.status !== 'normal' && t.status !== '')
-              .map((t) => ({ name: t.testName, result: t.result, status: t.status })) as unknown as Json,
-            terms_explained: null,
-          }
+          medications_found: [] as Json,
+          recommendations: [] as Json,
+          key_findings: { tests: (data as LabReportData).tests } as unknown as Json,
+          risk_flags: (data as LabReportData).tests
+            .filter((t) => t.status === 'critical')
+            .map((t) => `${t.testName} is critical`) as Json,
+          values_out_of_range: (data as LabReportData).tests
+            .filter((t) => t.status !== 'normal' && t.status !== '')
+            .map((t) => ({ name: t.testName, result: t.result, status: t.status })) as unknown as Json,
+          terms_explained: null,
+        }
 
     const { error: analysisError } = await supabase
       .from('document_analyses')
       .insert({
-        document_id:            doc.id,
-        user_id:                userId,
+        document_id: doc.id,
+        user_id: userId,
         document_type_detected: type,
         summary,
-        llm_model_used:         process.env.OPENROUTER_API_KEY ? 'openrouter' : 'mock',
+        llm_model_used: process.env.OPENROUTER_API_KEY ? 'openrouter' : 'mock',
         ...analysisPayload,
       })
 
@@ -143,11 +151,39 @@ export const documentsService = {
       // Analysis write failed — roll back the document row to avoid orphan
       await supabase.from('documents').delete().eq('id', doc.id)
       return {
-        data:    null,
-        error:   `Document saved but analysis failed: ${analysisError.message}`,
+        data: null,
+        error: `Document saved but analysis failed: ${analysisError.message}`,
         success: false,
       }
     }
+
+    // 3. Write to prescriptions table (prescriptions only, best-effort — non-fatal)
+    if (type === 'prescription') {
+      const rx = data as PrescriptionData
+      await supabase.from('prescriptions').insert({
+        profile_id: profileId,
+        user_id: userId,
+        doctor_name: buildDoctorName(data, type),
+        prescription_date: buildDocDate(data, type),
+        condition_tags: [rx.illness].filter(Boolean) as string[],
+        medication_count: rx.medications.length,
+      })
+    }
+
+    // 4. Write a timeline event (best-effort — non-fatal)
+    const eventDate = buildDocDate(data, type) ?? new Date().toISOString().split('T')[0]
+    const doctorLabel = buildDoctorName(data, type)
+    await supabase.from('timeline_events').insert({
+      user_id: userId,
+      profile_id: profileId,
+      event_type: type === 'prescription' ? 'prescription_uploaded' : 'lab_report_uploaded',
+      event_date: eventDate,
+      title: type === 'prescription'
+        ? `Prescription from ${doctorLabel ?? 'Unknown Doctor'}`
+        : `Lab report${doctorLabel ? ` from ${doctorLabel}` : ''}`,
+      description: summary,
+      source_document_id: doc.id,
+    })
 
     return { data: doc, error: null, success: true }
   },

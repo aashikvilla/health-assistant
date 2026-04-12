@@ -2,7 +2,6 @@ import { redirect }       from 'next/navigation'
 import { createClient }   from '@/lib/supabase/server'
 import { familyService }  from '@/services/family.service'
 import { AddMemberForm }  from '@/components/features/family/AddMemberForm'
-import { AppHeader }      from '@/components/layout/AppHeader'
 import { FAMILY_LIMITS }  from '@/constants'
 import Link               from 'next/link'
 
@@ -24,10 +23,11 @@ export default async function AddMemberPage() {
   const atLimit = profileCount >= MAX_PROFILES
 
   return (
-    <div className="flex flex-col min-h-full">
-      <AppHeader variant="page" title="Add Family Member" backHref="/dashboard" />
-
-      <div className="px-4 py-6 flex flex-col gap-6 max-w-md mx-auto w-full">
+    <div className="flex flex-col max-w-md mx-auto py-6 space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-text-primary">Add Family Member</h1>
+        <p className="text-sm text-text-secondary mt-1">You manage their prescriptions — they don't need to sign up.</p>
+      </div>
 
         {atLimit ? (
           /* ── Profile limit reached ─────────────────────────── */
@@ -65,10 +65,7 @@ export default async function AddMemberPage() {
           /* ── Add member form ───────────────────────────────── */
           <>
             <div>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                You manage their prescriptions — they don&apos;t need to sign up.
-              </p>
-              <p className="text-xs text-text-muted mt-1">
+              <p className="text-xs text-text-muted">
                 {profileCount} of {MAX_PROFILES} profiles used
               </p>
             </div>
@@ -89,7 +86,6 @@ export default async function AddMemberPage() {
             <AddMemberForm />
           </>
         )}
-      </div>
     </div>
   )
 }

@@ -8,40 +8,48 @@ import { familyService }    from '@/services/family.service'
 export async function signIn(_prevState: unknown, formData: FormData) {
   const supabase = await createClient()
 
-  const email    = formData.get('email') as string
+  const email    = formData.get('email')    as string
   const password = formData.get('password') as string
+  const returnTo = formData.get('returnTo') as string | null
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) return { error: error.message }
 
-  // Idempotent — creates profile only if none exists yet (e.g., if user was
-  // added as a family member by someone else before signing up themselves)
   if (data.user) {
     await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
   }
 
-  redirect('/dashboard')
+  redirect(returnTo ?? '/dashboard')
 }
 
 export async function signUp(_prevState: unknown, formData: FormData) {
   const supabase = await createClient()
+  const origin   = (await headers()).get('origin') ?? ''
 
-  const email    = formData.get('email') as string
+  const email    = formData.get('email')    as string
   const password = formData.get('password') as string
+  const returnTo = formData.get('returnTo') as string | null
 
-  const { data, error } = await supabase.auth.signUp({ email, password })
+  // Point email confirmation link back to our callback so ensureSelfProfile runs
+  const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(returnTo ?? '/dashboard')}`
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: callbackUrl },
+  })
 
   if (error) return { error: error.message }
 
-  // Create self-profile immediately (works when email confirmation is disabled)
-  // When confirmation is required the user won't have a session here, but the
-  // auth/callback route will call ensureSelfProfile once they confirm.
   if (data.user && data.session) {
+    // Email confirmation disabled — session available immediately
     await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
+    redirect(returnTo ?? '/dashboard')
   }
 
-  redirect('/dashboard')
+  // Email confirmation required — tell the user to check their inbox
+  return { info: 'Check your email! We sent you a confirmation link to finish signing up.' }
 }
 
 export async function signInWithGoogle() {

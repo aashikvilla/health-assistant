@@ -1,22 +1,19 @@
 /**
- * (app) Route Group Layout — authenticated shell
+ * (app) Route Group Layout — authenticated pages
  *
- * Every route under app/(app)/ inherits this layout.
- * It is the single place that:
- *   1. Enforces authentication (redirects unauthenticated visitors to /auth)
- *   2. Mounts the BottomNav mobile navigation bar (hidden on non-primary routes)
- *   3. Provides the page wrapper with correct bottom padding for the nav bar
+ * Provides for all pages under /app:
+ * - Authentication guard (redirects to /auth if not logged in)
+ * - Consistent header with logo + logout button
+ * - Responsive side padding
+ * - Mobile bottom navigation
  *
- * Individual pages inside this group do NOT re-check auth.
- * They CAN render their own <PageHeader> or <AppHeader> as needed.
- *
- * DEV_BYPASS_AUTH=true still works — lib/supabase/server.ts injects a mock
- * user at the Supabase client level, so getUser() returns the mock even here.
+ * All pages inherit automatically. No overrides needed.
  */
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BottomNav } from '@/components/layout'
+import { familyService } from '@/services/family.service'
+import { PageLayout, PageHeader, BottomNav, LogoutButton } from '@/components/layout'
 
 export default async function AppLayout({
   children,
@@ -28,15 +25,24 @@ export default async function AppLayout({
 
   if (!user) redirect('/auth')
 
-  return (
-    <div className="flex flex-col min-h-screen bg-surface text-text-primary">
-      {/* Page content — pb-20 leaves room above the bottom nav on mobile */}
-      <main className="flex-1 pb-20 sm:pb-0 w-full">
-        {children}
-      </main>
+  // Ensure self-profile + family group exist for this user.
+  // Idempotent — one fast DB lookup and early-return if already set up.
+  // This is the safety net for every sign-in path (email, OAuth, confirmation link).
+  await familyService.ensureSelfProfile(user.id, user.email ?? '')
 
-      {/* Bottom navigation — mobile-only, hidden on tablet+ via BottomNav logic */}
+  return (
+    <PageLayout
+      header={
+        <PageHeader
+          variant="brand"
+          rightSlot={<LogoutButton />}
+        />
+      }
+      footer={null}
+      className="pb-20 sm:pb-0"
+    >
+      {children}
       <BottomNav />
-    </div>
+    </PageLayout>
   )
 }

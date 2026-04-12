@@ -23,8 +23,7 @@ const base =
 const variants: Record<Variant, string> = {
   // High-gloss gradient per design.md — primary → primary-bright (top-to-bottom)
   primary:   'bg-gradient-to-b from-primary-bright to-primary text-primary-foreground hover:opacity-90 active:opacity-95',
-  // No border — surface-muted background does the visual work
-  secondary: 'bg-surface-muted text-text-primary hover:bg-surface-subtle',
+  secondary: 'bg-surface-muted text-text-primary border border-border shadow-sm hover:bg-surface-subtle active:shadow-none',
   // Transparent — background shift on hover only
   ghost:     'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
   danger:    'bg-gradient-to-b from-[#c42d60] to-tertiary text-tertiary-foreground hover:opacity-90',

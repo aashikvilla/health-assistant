@@ -3,23 +3,18 @@
 /**
  * Public Upload Page — /upload
  *
- * Unauthenticated "try before signup" flow. Users can upload a prescription
- * and see the AI extraction result without creating an account.
+ * Unauthenticated "try before signup" flow. Users upload a prescription and
+ * see the AI extraction + plain-language explanation without an account.
  *
- * On confirm:
- *  1. Prescription/lab data is saved to localStorage as nuskha_pending_upload
- *  2. User is shown a "Save to your account" screen (no alert())
- *  3. Clicking "Create free account" → /auth?mode=signup&return=/dashboard
- *     After auth, PendingUploadBanner in /hub detects the pending data and
- *     offers to save it to the DB.
- *
- * If the user is already logged in, they should be using /dashboard/upload/[profileId]
- * instead — the hub upload button routes there automatically.
+ * On clicking "Save to my account":
+ *  1. Prescription data + AI explanation saved to localStorage as nuskha_pending_upload
+ *  2. User is redirected to /auth?mode=signup&return=/dashboard
+ *  3. After auth, PendingUploadBanner in the dashboard saves everything to the DB.
  */
 
 import { useState }       from 'react'
 import { useRouter }      from 'next/navigation'
-import type { PrescriptionData, PrescriptionExplanation }  from '@/types/prescription'
+import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
 import type { LabReportData }     from '@/types/lab-report'
 import UploadPicker          from '@/components/features/upload/UploadPicker'
 import ProcessingState       from '@/components/features/upload/ProcessingState'
@@ -29,29 +24,31 @@ import {
   MedicationCard,
   DoctorNotes,
   DisclaimerBanner,
-  ExplanationActions,
 } from '@/components/features/explanation'
+import { Button } from '@/components/ui'
 
-type Step = 'pick' | 'processing' | 'review' | 'explaining' | 'saved'
+type Step         = 'pick' | 'processing' | 'review' | 'explaining'
 type DocumentType = 'prescription' | 'lab_report'
 
-const PENDING_KEY = 'nuskha_pending_upload'
+const PENDING_KEY     = 'nuskha_pending_upload'
 const NOT_MEDICAL_MSG = "This doesn't look like a prescription or lab report. Please upload a medical document."
 
 export interface PendingUpload {
-  type:      DocumentType
-  data:      PrescriptionData | LabReportData
-  timestamp: number
+  type:         DocumentType
+  data:         PrescriptionData | LabReportData
+  explanation?: PrescriptionExplanation
+  timestamp:    number
 }
 
 export default function PublicUploadPage() {
   const router = useRouter()
-  const [step, setStep]                 = useState<Step>('pick')
+
+  const [step,         setStep]         = useState<Step>('pick')
   const [documentType, setDocumentType] = useState<DocumentType>('prescription')
   const [prescription, setPrescription] = useState<PrescriptionData | null>(null)
-  const [labReport, setLabReport]       = useState<LabReportData | null>(null)
-  const [error, setError]               = useState<string | null>(null)
-  const [explanation, setExplanation]   = useState<PrescriptionExplanation | null>(null)
+  const [labReport,    setLabReport]    = useState<LabReportData | null>(null)
+  const [error,        setError]        = useState<string | null>(null)
+  const [explanation,  setExplanation]  = useState<PrescriptionExplanation | null>(null)
   const [explainError, setExplainError] = useState<string | null>(null)
   const [showNotMedicalModal, setShowNotMedicalModal] = useState(false)
 
@@ -62,24 +59,13 @@ export default function PublicUploadPage() {
     setStep('processing')
 
     try {
-      let res: Response
-      if (typeof body === 'string') {
-        res = await fetch('/api/ocr', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ text: body }),
-        })
-      } else {
-        res = await fetch('/api/ocr', { method: 'POST', body })
-      }
+      const res = typeof body === 'string'
+        ? await fetch('/api/ocr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: body }) })
+        : await fetch('/api/ocr', { method: 'POST', body })
 
       if (!res.ok) {
         const { error: msg } = await res.json()
-        if (msg === NOT_MEDICAL_MSG) {
-          setStep('pick')
-          setShowNotMedicalModal(true)
-          return
-        }
+        if (msg === NOT_MEDICAL_MSG) { setStep('pick'); setShowNotMedicalModal(true); return }
         throw new Error(msg ?? 'Something went wrong')
       }
 
@@ -95,9 +81,9 @@ export default function PublicUploadPage() {
   }
 
   function handleFileSelected(file: File) {
-    const formData = new FormData()
-    formData.append('file', file)
-    runOCR(formData)
+    const fd = new FormData()
+    fd.append('file', file)
+    runOCR(fd)
   }
 
   function handleManualData(data: PrescriptionData) {
@@ -115,13 +101,7 @@ export default function PublicUploadPage() {
     setStep('pick')
   }
 
-  // ── Confirm — save to localStorage, show "create account" CTA ─────────────
-
-  function confirmAndSave(type: DocumentType, data: PrescriptionData | LabReportData) {
-    const pending: PendingUpload = { type, data, timestamp: Date.now() }
-    localStorage.setItem(PENDING_KEY, JSON.stringify(pending))
-    setStep('saved')
-  }
+  // ── Confirm prescription → fetch explanation ────────────────────────────────
 
   async function handleConfirmPrescription(data: PrescriptionData) {
     setPrescription(data)
@@ -131,9 +111,9 @@ export default function PublicUploadPage() {
 
     try {
       const res = await fetch('/api/explain', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body:    JSON.stringify(data),
       })
 
       if (!res.ok) {
@@ -141,122 +121,46 @@ export default function PublicUploadPage() {
         throw new Error(msg ?? 'Failed to generate explanation')
       }
 
-      const result = await res.json() as PrescriptionExplanation
-      setExplanation(result)
+      setExplanation(await res.json() as PrescriptionExplanation)
     } catch (err) {
       setExplainError(err instanceof Error ? err.message : 'Something went wrong')
     }
   }
 
-  function handleSaveFromExplanation() {
-    if (!prescription) return
-    confirmAndSave('prescription', prescription)
-  }
+  // ── Lab report confirm — save to localStorage & go to auth ─────────────────
 
   function handleConfirmLabReport(data: LabReportData) {
-    confirmAndSave('lab_report', data)
-  }
-
-  function goToSignup() {
+    const pending: PendingUpload = { type: 'lab_report', data, timestamp: Date.now() }
+    localStorage.setItem(PENDING_KEY, JSON.stringify(pending))
     router.push('/auth?mode=signup&return=/dashboard')
   }
 
-  function goToSignin() {
-    router.push('/auth?return=/dashboard')
+  // ── Save from explanation — include explanation in pending ─────────────────
+
+  function handleSaveFromExplanation() {
+    if (!prescription) return
+    const pending: PendingUpload = {
+      type:        'prescription',
+      data:        prescription,
+      explanation: explanation ?? undefined,
+      timestamp:   Date.now(),
+    }
+    localStorage.setItem(PENDING_KEY, JSON.stringify(pending))
+    router.push('/auth?mode=signup&return=/dashboard')
   }
 
-  // ── Saved state — the conversion screen ────────────────────────────────────
-
-  if (step === 'saved') {
-    const medCount = documentType === 'prescription'
-      ? (prescription as PrescriptionData)?.medications?.length ?? 0
-      : (labReport as LabReportData)?.tests?.length ?? 0
-    const noun = documentType === 'prescription'
-      ? `${medCount} medication${medCount !== 1 ? 's' : ''}`
-      : `${medCount} test result${medCount !== 1 ? 's' : ''}`
-
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10 bg-surface">
-        <div className="w-full max-w-md flex flex-col items-center text-center gap-6">
-
-          {/* Success icon */}
-          <div className="w-20 h-20 rounded-2xl bg-teal-subtle flex items-center justify-center">
-            <svg className="w-10 h-10 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-text-primary">
-              {documentType === 'prescription' ? 'Prescription read!' : 'Lab report read!'}
-            </h2>
-            <p className="text-sm text-text-secondary leading-relaxed">
-              We extracted <strong>{noun}</strong>. Create a free account to save this, track your
-              family&apos;s records, and get plain-language explanations for every medicine.
-            </p>
-          </div>
-
-          {/* Value props */}
-          <div className="w-full bg-surface-subtle rounded-2xl px-5 py-4 text-left space-y-3">
-            {[
-              ['Save this prescription permanently', 'Access it anytime, on any device'],
-              ['Add your family', 'One account for everyone in the house'],
-              ['Understand every medicine', 'Plain-language explanations, no jargon'],
-            ].map(([title, sub]) => (
-              <div key={title} className="flex items-start gap-3">
-                <span className="w-5 h-5 rounded-full bg-teal-subtle flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3 h-3 text-teal" viewBox="0 0 12 12" fill="currentColor">
-                    <path d="M10 3L5 8.5 2 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </svg>
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-text-primary">{title}</p>
-                  <p className="text-xs text-text-muted">{sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* CTAs */}
-          <div className="w-full space-y-3">
-            <button
-              onClick={goToSignup}
-              className="w-full py-4 rounded-2xl font-semibold text-sm bg-primary text-text-inverse transition-all active:scale-[0.98]"
-              style={{ boxShadow: '0 4px 20px rgba(0,88,189,0.25)' }}
-            >
-              Create free account — Save it now
-            </button>
-            <button
-              onClick={goToSignin}
-              className="w-full py-3 rounded-2xl font-medium text-sm text-text-secondary bg-surface-muted"
-            >
-              Already have an account? Sign in
-            </button>
-            <button
-              onClick={handleRetry}
-              className="w-full py-2 text-sm text-text-muted"
-            >
-              Start over
-            </button>
-          </div>
-
-          <p className="text-xs text-text-muted px-4 leading-relaxed">
-            Free forever for personal use. No credit card required.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  // ── Main upload flow ────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <>
       {step === 'pick' && (
         <>
           {error && (
-            <div className="mx-4 mt-4 px-4 py-3 rounded-xl bg-error-subtle border border-error/20 text-sm text-error">
-              {error}
+            <div className="mx-4 mt-4 px-4 py-3 rounded-2xl bg-error-subtle border border-error/20 flex items-start gap-3">
+              <svg className="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <p className="text-base text-error">{error}</p>
             </div>
           )}
           <UploadPicker onFileSelected={handleFileSelected} onManualData={handleManualData} />
@@ -266,133 +170,189 @@ export default function PublicUploadPage() {
       {step === 'processing' && <ProcessingState />}
 
       {step === 'review' && documentType === 'lab_report' && labReport && (
-        <LabReportReviewScreen
-          data={labReport}
-          onConfirm={handleConfirmLabReport}
-          onRetry={handleRetry}
-        />
+        <LabReportReviewScreen data={labReport} onConfirm={handleConfirmLabReport} onRetry={handleRetry} />
       )}
 
       {step === 'review' && documentType === 'prescription' && prescription && (
-        <ReviewScreen
-          data={prescription}
-          onConfirm={handleConfirmPrescription}
-          onRetry={handleRetry}
-        />
+        <ReviewScreen data={prescription} onConfirm={handleConfirmPrescription} onRetry={handleRetry} />
       )}
 
-      {/* S05 — AI Explanation */}
+      {/* ── AI Explanation loading ── */}
       {step === 'explaining' && !explanation && !explainError && (
-        <div className="min-h-screen bg-surface flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <div
-              className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin mx-auto"
-              style={{ borderColor: 'var(--nuskha-primary)', borderTopColor: 'transparent' }}
-            />
-            <p className="text-sm font-body" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.5 }}>
-              Generating explanation...
-            </p>
+        <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 py-10">
+          <div className="relative mb-8">
+            <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-15 scale-110" />
+            <div className="relative w-20 h-20 rounded-full bg-primary flex items-center justify-center"
+              style={{ boxShadow: '0 8px 32px rgba(0,88,189,0.3)' }}>
+              <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
           </div>
+          <h2 className="text-2xl font-bold text-text-primary text-center">
+            Preparing your explanation…
+          </h2>
+          <p className="text-lg text-text-muted mt-2 text-center leading-relaxed max-w-xs">
+            Our AI is writing a plain-language summary of each medicine
+          </p>
         </div>
       )}
 
+      {/* ── AI Explanation error ── */}
       {step === 'explaining' && explainError && (
-        <div className="min-h-screen bg-surface flex items-center justify-center px-5">
-          <div className="text-center space-y-4 max-w-xs">
-            <p className="text-sm text-error font-body">{explainError}</p>
-            <div className="space-y-2">
-              <button
+        <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 py-10">
+          <div className="w-full max-w-sm flex flex-col items-center text-center gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-error-subtle flex items-center justify-center">
+              <svg className="w-8 h-8 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-text-primary">Explanation failed</p>
+              <p className="text-base text-text-muted mt-1 leading-relaxed">{explainError}</p>
+            </div>
+            <div className="w-full flex flex-col gap-3">
+              <Button
                 onClick={() => prescription && handleConfirmPrescription(prescription)}
-                className="text-primary text-sm font-medium font-body underline"
+                variant="primary"
+                size="lg"
+                fullWidth
+                className="min-h-[56px] rounded-2xl"
               >
-                Try again
-              </button>
-              <button
+                Try Again
+              </Button>
+              <Button
                 onClick={() => setStep('review')}
-                className="block mx-auto text-text-secondary text-sm font-body"
+                variant="ghost"
+                size="lg"
+                fullWidth
               >
-                Go back to review
-              </button>
+                Go back and check the details
+              </Button>
             </div>
           </div>
         </div>
       )}
 
+      {/* ── AI Explanation screen (Step 3) ── */}
       {step === 'explaining' && explanation && (
-        <main className="min-h-screen bg-surface">
-          <nav className="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-lg pt-safe">
-            <div className="flex items-center justify-between px-4 h-14">
+        <div className="min-h-screen bg-surface flex flex-col">
+
+          {/* Sticky header */}
+          <nav className="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm border-b border-border-subtle pt-safe">
+            <div className="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto w-full">
               <button
                 onClick={() => setStep('review')}
-                className="flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary hover:bg-surface-subtle transition-colors min-w-[44px] min-h-[44px]"
+                className="flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary min-w-[44px] min-h-[44px]"
                 aria-label="Go back"
               >
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 18l-6-6 6-6" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 18l-6-6 6-6" />
                 </svg>
               </button>
-              <h1 className="font-display text-base font-semibold text-text-primary">Your Prescription</h1>
+              <div className="text-center">
+                <p className="text-base font-bold text-text-primary">Your Prescription</p>
+                <p className="text-xs text-text-muted">{explanation.doctorName} · {explanation.date}</p>
+              </div>
               <div className="w-10" />
             </div>
           </nav>
 
-          <div className="px-5 pt-3 pb-2">
-            <p className="font-body text-sm text-text-muted">
-              {explanation.doctorName} &middot; {explanation.date} &middot; For {explanation.patientName}
-            </p>
+          {/* Step indicator */}
+          <div className="px-5 pt-4 pb-2 max-w-2xl mx-auto w-full">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-primary bg-primary-subtle px-3 py-1 rounded-full">
+                Step 3 of 3
+              </span>
+              <div className="flex gap-1.5">
+                <div className="w-8 h-1.5 rounded-full bg-primary" />
+                <div className="w-8 h-1.5 rounded-full bg-primary" />
+                <div className="w-8 h-1.5 rounded-full bg-primary" />
+              </div>
+            </div>
           </div>
 
-          <div className="px-5 pb-4">
+          {/* Disclaimer */}
+          <div className="px-5 pt-2 pb-1 max-w-2xl mx-auto w-full">
             <DisclaimerBanner doctorName={explanation.disclaimerDoctorName} />
           </div>
 
-          <section className="bg-surface-container-low rounded-t-3xl px-5 pt-6 pb-28 space-y-5">
+          {/* Medication cards */}
+          <div className="flex-1 px-5 pt-4 pb-56 space-y-4 max-w-2xl mx-auto w-full">
             {explanation.medications.map((med) => (
               <MedicationCard key={med.id} medication={med} />
             ))}
             <DoctorNotes notes={explanation.doctorNotes} />
-          </section>
-
-          <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface-container-lowest/80 backdrop-blur-lg px-5 py-4 pb-safe">
-            <ExplanationActions
-              prescriptionId="preview"
-              onSave={handleSaveFromExplanation}
-            />
           </div>
-        </main>
+
+          {/* ── Sticky Save CTA ─────────────────────────────────── */}
+          <div className="fixed bottom-0 inset-x-0 z-30 pb-safe">
+            <div className="bg-surface-container-lowest border-t border-border-subtle px-5 pt-4 pb-5 max-w-lg mx-auto">
+
+              {/* Value prop */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex gap-1">
+                  {['📋', '👨‍👩‍👧‍👦', '🔒'].map((e) => (
+                    <span key={e} className="text-base">{e}</span>
+                  ))}
+                </div>
+                <p className="text-sm text-text-secondary leading-tight">
+                  Save this · Add your family · Stay private
+                </p>
+              </div>
+
+              <Button
+                onClick={handleSaveFromExplanation}
+                variant="primary"
+                size="lg"
+                fullWidth
+                className="min-h-[60px] text-xl rounded-2xl"
+              >
+                Save to My Account — Free
+              </Button>
+              <p className="text-sm text-text-muted text-center mt-2">
+                Create a free account in 30 seconds · No credit card needed
+              </p>
+            </div>
+          </div>
+
+        </div>
       )}
 
-      {/* Not a medical document modal */}
+      {/* ── Not a medical document modal ── */}
       {showNotMedicalModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-6"
-          style={{ background: 'rgba(24,28,33,0.5)', backdropFilter: 'blur(4px)' }}
+          style={{ background: 'rgba(24,28,33,0.55)', backdropFilter: 'blur(4px)' }}
           onClick={() => setShowNotMedicalModal(false)}
         >
           <div
-            className="w-full max-w-sm rounded-3xl px-6 py-8 flex flex-col items-center text-center gap-4 bg-surface-container-lowest"
+            className="w-full max-w-sm rounded-3xl px-6 py-8 flex flex-col items-center text-center gap-5 bg-surface-container-lowest"
             style={{ boxShadow: '0 8px 48px rgba(24,28,33,0.18)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-error-subtle">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-error">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            <div className="w-16 h-16 rounded-2xl bg-error-subtle flex items-center justify-center">
+              <svg className="w-8 h-8 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
               </svg>
             </div>
             <div className="space-y-2">
-              <h2 className="text-lg font-bold text-text-primary">Unrecognised Document</h2>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                This doesn&apos;t appear to be a prescription or blood report. Please upload a medical document.
+              <h2 className="text-xl font-bold text-text-primary">Not Recognised</h2>
+              <p className="text-base text-text-secondary leading-relaxed">
+                This doesn&apos;t look like a prescription or blood report.
+                Please upload a medical document.
               </p>
             </div>
-            <button
+            <Button
               onClick={() => setShowNotMedicalModal(false)}
-              className="w-full py-3.5 rounded-2xl font-semibold text-sm bg-primary text-text-inverse"
+              variant="primary"
+              size="lg"
+              fullWidth
+              className="min-h-[56px] rounded-2xl"
             >
               Try Again
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -17,11 +17,12 @@ function formatDate(iso: string | null): string {
 }
 
 export function PrescriptionListItem({ prescription }: PrescriptionListItemProps) {
-  const { id, doctor_name, prescription_date, condition_tags, medication_count } = prescription
-
+  const { id, doctor_name, prescription_date, condition_tags, medication_count, document_id } = prescription
+  // Prefer document_id (rich analysis view); fall back to prescription_id for older records
+  const recordHref = `/records/${document_id ?? id}`
   return (
     <Link
-      href={`/records/${id}`}
+      href={recordHref}
       className="flex items-center gap-3 px-4 py-4 bg-surface-container-lowest rounded-2xl transition-all min-h-[44px]"
       style={{ boxShadow: '0 2px 12px 0 rgba(24,28,33,0.06)' }}
     >

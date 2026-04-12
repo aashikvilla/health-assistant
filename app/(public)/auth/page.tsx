@@ -4,16 +4,25 @@ import { useActionState, Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { signIn, signUp, signInWithGoogle } from '@/app/actions'
 
-type AuthState = { error: string } | null
+type AuthState = { error: string } | { info: string } | null
+
+function stateError(s: AuthState): string | null {
+  return s && 'error' in s ? s.error : null
+}
+function stateInfo(s: AuthState): string | null {
+  return s && 'info' in s ? s.info : null
+}
 
 function AuthForm() {
   const searchParams = useSearchParams()
   const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup')
-  const [signInState, signInAction, signInPending]  = useActionState<AuthState, FormData>(signIn, null)
-  const [signUpState, signUpAction, signUpPending]  = useActionState<AuthState, FormData>(signUp, null)
+  const [signInState, signInAction, signInPending] = useActionState<AuthState, FormData>(signIn, null)
+  const [signUpState, signUpAction, signUpPending] = useActionState<AuthState, FormData>(signUp, null)
 
-  const pending = signInPending || signUpPending
-  const error   = isSignUp ? signUpState?.error : signInState?.error
+  const returnTo = searchParams.get('return') ?? '/dashboard'
+  const pending  = signInPending || signUpPending
+  const error    = isSignUp ? stateError(signUpState) : stateError(signInState)
+  const info     = stateInfo(signUpState)
 
   return (
     <div className="w-full max-w-md bg-surface-lowest rounded-2xl shadow-md p-8 space-y-6">
@@ -80,6 +89,7 @@ function AuthForm() {
       {/* Email / Password */}
       {isSignUp ? (
         <form action={signUpAction} className="space-y-4">
+          <input type="hidden" name="returnTo" value={returnTo} />
           <div className="space-y-1.5">
             <label htmlFor="signup-email" className="text-sm font-medium text-text-primary">Email</label>
             <input
@@ -103,19 +113,25 @@ function AuthForm() {
               className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-lowest focus:ring-1 focus:ring-black/20"
             />
           </div>
+          {info && (
+            <p className="text-sm text-teal font-medium bg-teal-subtle px-3 py-2 rounded-xl">{info}</p>
+          )}
           {error && (
             <p className="text-sm text-error bg-error-subtle px-3 py-2 rounded-xl">{error}</p>
           )}
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full h-11 bg-gradient-to-b from-primary-bright to-primary text-primary-foreground font-semibold rounded-3xl hover:opacity-90 disabled:opacity-60 transition-opacity"
-          >
-            {signUpPending ? 'Creating account…' : 'Create Account'}
-          </button>
+          {!info && (
+            <button
+              type="submit"
+              disabled={pending}
+              className="w-full h-11 bg-gradient-to-b from-primary-bright to-primary text-primary-foreground font-semibold rounded-3xl hover:opacity-90 disabled:opacity-60 transition-opacity"
+            >
+              {signUpPending ? 'Creating account…' : 'Create Account'}
+            </button>
+          )}
         </form>
       ) : (
         <form action={signInAction} className="space-y-4">
+          <input type="hidden" name="returnTo" value={returnTo} />
           <div className="space-y-1.5">
             <label htmlFor="signin-email" className="text-sm font-medium text-text-primary">Email</label>
             <input

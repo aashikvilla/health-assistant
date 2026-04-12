@@ -1,8 +1,8 @@
 // Stage 5 — Family Hub service
 // Plain async functions. No React. No side effects.
 
-import { createClient }            from '@/lib/supabase/server'
-import type { ApiResponse }        from '@/types'
+import { createClient } from '@/lib/supabase/server'
+import type { ApiResponse } from '@/types'
 import type {
   FamilyProfile,
   HubPrescription,
@@ -13,18 +13,18 @@ import type {
 
 type MembershipRow = {
   relationship: string
-  is_self:      boolean
+  is_self: boolean
 }
 
 type ProfileRow = {
-  id:              string
+  id: string
   family_group_id: string
-  full_name:       string
-  email:           string | null
-  date_of_birth:   string | null
-  avatar_url?:     string | null
-  created_at:      string | null
-  updated_at:      string | null
+  full_name: string
+  email: string | null
+  date_of_birth: string | null
+  avatar_url?: string | null
+  created_at: string | null
+  updated_at: string | null
   // nested memberships for the current user (0 or 1 rows)
   profile_memberships: MembershipRow[]
 }
@@ -32,16 +32,16 @@ type ProfileRow = {
 function rowToProfile(row: ProfileRow): FamilyProfile {
   const mem = row.profile_memberships?.[0]
   return {
-    id:              row.id,
+    id: row.id,
     family_group_id: row.family_group_id,
-    full_name:       row.full_name,
-    email:           row.email ?? null,
-    relationship:    (mem?.relationship ?? 'other') as FamilyProfile['relationship'],
-    date_of_birth:   row.date_of_birth ?? null,
-    avatar_url:      row.avatar_url ?? null,
-    is_self:         mem?.is_self ?? false,
-    created_at:      row.created_at ?? null,
-    updated_at:      row.updated_at ?? null,
+    full_name: row.full_name,
+    email: row.email ?? null,
+    relationship: (mem?.relationship ?? 'other') as FamilyProfile['relationship'],
+    date_of_birth: row.date_of_birth ?? null,
+    avatar_url: row.avatar_url ?? null,
+    is_self: mem?.is_self ?? false,
+    created_at: row.created_at ?? null,
+    updated_at: row.updated_at ?? null,
   }
 }
 
@@ -104,8 +104,8 @@ export const familyService = {
 
     if ((count ?? 0) >= 5) {
       return {
-        data:    null,
-        error:   'Profile limit reached. Upgrade to Pro for unlimited profiles.',
+        data: null,
+        error: 'Profile limit reached. Upgrade to Pro for unlimited profiles.',
         success: false,
       }
     }
@@ -117,9 +117,9 @@ export const familyService = {
       .from('family_profiles')
       .insert({
         family_group_id: familyGroupId,
-        full_name:       input.name,
-        date_of_birth:   input.dob ?? null,
-        email:           input.email ?? null,
+        full_name: input.name,
+        date_of_birth: input.dob ?? null,
+        email: input.email ?? null,
       })
       .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
       .single()
@@ -132,11 +132,11 @@ export const familyService = {
     const { error: memberErr } = await supabase
       .from('profile_memberships')
       .insert({
-        user_id:         userId,
-        profile_id:      profile.id,
+        user_id: userId,
+        profile_id: profile.id,
         family_group_id: familyGroupId,
-        relationship:    input.relationship,
-        is_self:         false,
+        relationship: input.relationship,
+        is_self: false,
       })
 
     if (memberErr) {
@@ -148,7 +148,7 @@ export const familyService = {
     const result: FamilyProfile = {
       ...profile,
       relationship: input.relationship,
-      is_self:      false,
+      is_self: false,
     }
 
     return { data: result, error: null, success: true }
@@ -166,7 +166,7 @@ export const familyService = {
    */
   async ensureSelfProfile(
     userId: string,
-    email:  string
+    email: string
   ): Promise<ApiResponse<FamilyProfile>> {
     const supabase = await createClient()
 
@@ -215,11 +215,11 @@ export const familyService = {
 
         // Create self membership for this account
         await supabase.from('profile_memberships').insert({
-          user_id:         userId,
-          profile_id:      claimable.id,
+          user_id: userId,
+          profile_id: claimable.id,
           family_group_id: familyGroupId,
-          relationship:    'self',
-          is_self:         true,
+          relationship: 'self',
+          is_self: true,
         })
 
         // Auto-join all other profiles in the same family group
@@ -231,11 +231,11 @@ export const familyService = {
 
         if (groupProfiles && groupProfiles.length > 0) {
           const memberships = groupProfiles.map((p) => ({
-            user_id:         userId,
-            profile_id:      p.id,
+            user_id: userId,
+            profile_id: p.id,
             family_group_id: familyGroupId,
-            relationship:    'other' as const,
-            is_self:         false,
+            relationship: 'other' as const,
+            is_self: false,
           }))
           // Best-effort — don't block on errors
           try { await supabase.from('profile_memberships').insert(memberships) } catch { /* ignore */ }
@@ -270,7 +270,7 @@ export const familyService = {
       .from('family_profiles')
       .insert({
         family_group_id: group.id,
-        full_name:       name,
+        full_name: name,
         email,
       })
       .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
@@ -284,11 +284,11 @@ export const familyService = {
     const { error: memberErr } = await supabase
       .from('profile_memberships')
       .insert({
-        user_id:         userId,
-        profile_id:      profile.id,
+        user_id: userId,
+        profile_id: profile.id,
         family_group_id: group.id,
-        relationship:    'self',
-        is_self:         true,
+        relationship: 'self',
+        is_self: true,
       })
 
     if (memberErr) {
@@ -316,16 +316,40 @@ export const familyService = {
     limit = 10
   ): Promise<ApiResponse<HubPrescription[]>> {
     const supabase = await createClient()
-    const { data, error } = await supabase
-      .from('prescriptions')
-      .select(
-        'id, profile_id, doctor_name, prescription_date, condition_tags, medication_count, created_at'
-      )
-      .eq('profile_id', profileId)
-      .order('prescription_date', { ascending: false })
-      .limit(limit)
+    // Fetch prescriptions + matching documents in parallel.
+    // There is no FK between the two tables, so we match in JS using
+    // (doctor_name + document_date) as a composite key.
+    const [rxResult, docResult] = await Promise.all([
+      supabase
+        .from('prescriptions')
+        .select('id, profile_id, doctor_name, prescription_date, condition_tags, medication_count, created_at')
+        .eq('profile_id', profileId)
+        .order('prescription_date', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('documents')
+        .select('id, doctor_name, document_date')
+        .eq('profile_id', profileId)
+        .eq('document_type', 'prescription'),
+    ])
 
-    if (error) return { data: null, error: error.message, success: false }
-    return { data: (data ?? []) as unknown as HubPrescription[], error: null, success: true }
+    if (rxResult.error) return { data: null, error: rxResult.error.message, success: false }
+
+    // Build lookup: "${doctor_name}::${document_date}" → documents.id
+    const docLookup = new Map<string, string>()
+    for (const d of docResult.data ?? []) {
+      const key = `${d.doctor_name ?? ''}::${d.document_date ?? ''}`
+      docLookup.set(key, d.id)
+    }
+
+    const prescriptions: HubPrescription[] = (rxResult.data ?? []).map((rx) => {
+      const key = `${rx.doctor_name ?? ''}::${rx.prescription_date ?? ''}`
+      return {
+        ...(rx as HubPrescription),
+        document_id: docLookup.get(key) ?? null,
+      }
+    })
+
+    return { data: prescriptions, error: null, success: true }
   },
 }

@@ -1,19 +1,14 @@
 /**
- * (public) Route Group Layout — unauthenticated pages
+ * (public) Route Group Layout — public / marketing pages
  *
- * Every route under app/(public)/ inherits this layout.
- * Features:
- * - No auth requirement
- * - Consistent header with optional login link
+ * Provides for all pages under /public:
+ * - Sticky branded header with centred nav links + Sign In CTA
  * - Responsive side padding
- * - Footer
- *
- * Routes in this group:
- * - /               (home/marketing)
- * - /auth           (login)
- * - /upload         (unauthenticated document upload)
+ * - Full footer with links
+ * - No authentication required
  */
 
+import Link                                from 'next/link'
 import { PageLayout, PageHeader, PageFooter } from '@/components/layout'
 
 export default function PublicLayout({
@@ -26,13 +21,37 @@ export default function PublicLayout({
       header={
         <PageHeader
           variant="brand"
+          middleSlot={
+            <nav className="hidden sm:flex items-center gap-8" aria-label="Site navigation">
+              <a
+                href="/#features"
+                className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Features
+              </a>
+              <a
+                href="/#how-it-works"
+                className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              >
+                How it works
+              </a>
+            </nav>
+          }
           rightSlot={
-            <a
-              href="/auth"
-              className="text-sm font-medium text-primary hover:text-primary-hover transition-colors px-3 py-1.5 rounded-lg hover:bg-primary-subtle"
-            >
-              Sign In
-            </a>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/auth"
+                className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/upload"
+                className="hidden sm:inline-flex items-center h-9 px-5 bg-primary text-white rounded-full font-semibold text-sm hover:opacity-90 transition-opacity"
+              >
+                Try Free
+              </Link>
+            </div>
           }
         />
       }

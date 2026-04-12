@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { AppHeader }    from '@/components/layout/AppHeader'
 import { signOut }      from '@/app/actions'
 
 export const metadata: Metadata = { title: 'Settings — Nuskha' }
@@ -19,10 +18,7 @@ export default async function SettingsPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <>
-      <AppHeader variant="brand" />
-
-      <div className="px-4 py-6 max-w-md mx-auto space-y-6">
+    <div className="max-w-md mx-auto py-6 space-y-6">
 
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Settings</h1>
@@ -59,7 +55,6 @@ export default async function SettingsPage() {
           </span>
         </div>
 
-      </div>
-    </>
+    </div>
   )
 }

@@ -30,7 +30,6 @@ import {
   DisclaimerBanner,
   ExplanationActions,
 } from '@/components/features/explanation'
-import { AppHeader }     from '@/components/layout/AppHeader'
 import { savePrescription, saveLabReport } from './actions'
 
 const BUCKET = 'medical-documents'
@@ -212,7 +211,16 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
 
   return (
     <>
-      <AppHeader variant="page" title={step === 'explaining' && explanation ? 'Your Prescription' : 'Upload Prescription'} backHref={`/dashboard?profile=${profileId}`} />
+      {step === 'pick' && (
+        <div className="text-2xl font-bold text-text-primary px-4 pt-6 pb-3">
+          Upload Prescription
+        </div>
+      )}
+      {step !== 'pick' && (
+        <div className="text-2xl font-bold text-text-primary px-4 pt-6 pb-3">
+          {step === 'explaining' && explanation ? 'Your Prescription' : 'Upload Prescription'}
+        </div>
+      )}
 
       {saveError && (
         <div className="mx-4 mt-4 px-4 py-3 rounded-xl bg-error-subtle border border-error/20 text-sm text-error">
