@@ -238,7 +238,7 @@ export const familyService = {
             is_self:         false,
           }))
           // Best-effort — don't block on errors
-          await supabase.from('profile_memberships').insert(memberships).throwOnError().catch(() => null)
+          try { await supabase.from('profile_memberships').insert(memberships) } catch { /* ignore */ }
         }
 
         return {

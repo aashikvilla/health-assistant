@@ -5,5 +5,5 @@
 export type { User, UserProfile } from './user'
 export type { ApiResponse, ApiError, PaginatedResponse } from './api'
 export type { Medication, PrescriptionExplanation } from './prescription'
-export type { Database, Json, Tables, TablesInsert, TablesUpdate, DbFunctions } from './database'
+export type { Database, Json, Tables, TablesInsert, TablesUpdate } from './database'
 export type { MedicationExplanation, DocumentAnalysisData } from './analysis'
