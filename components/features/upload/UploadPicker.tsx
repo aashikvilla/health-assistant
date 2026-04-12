@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import type { PrescriptionData } from '@/types/prescription'
 
 interface ManualMed {
@@ -15,8 +15,6 @@ interface Props {
 }
 
 export default function UploadPicker({ onFileSelected, onManualData }: Props) {
-  const imageInputRef = useRef<HTMLInputElement>(null)
-  const pdfInputRef = useRef<HTMLInputElement>(null)
   const [showManual, setShowManual] = useState(false)
   const [fileError, setFileError] = useState<string | null>(null)
 
@@ -113,11 +111,16 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
         <div className="space-y-3">
 
           {/* Take / Upload Photo */}
-          <button
-            onClick={() => imageInputRef.current?.click()}
-            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all active:scale-[0.98]"
+          <label
+            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all active:scale-[0.98] cursor-pointer"
             style={{ background: 'var(--nuskha-surface-lowest)', boxShadow: '0 2px 24px rgba(24,28,33,0.06)' }}
           >
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
             <span className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'var(--nuskha-primary-container)' }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--nuskha-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
@@ -135,14 +138,19 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'var(--nuskha-primary)', color: '#fff', fontFamily: 'var(--font-manrope)' }}>
               Best
             </span>
-          </button>
+          </label>
 
           {/* Upload PDF */}
-          <button
-            onClick={() => pdfInputRef.current?.click()}
-            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all active:scale-[0.98]"
+          <label
+            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all active:scale-[0.98] cursor-pointer"
             style={{ background: 'var(--nuskha-surface-lowest)', boxShadow: '0 2px 24px rgba(24,28,33,0.06)' }}
           >
+            <input
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={handleFileChange}
+            />
             <span className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'var(--nuskha-teal-container)' }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--nuskha-teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -159,7 +167,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                 For digital hospital prescriptions
               </p>
             </div>
-          </button>
+          </label>
 
           {/* Type Manually */}
           <button
@@ -325,21 +333,6 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
           </p>
         </div>
 
-        {/* Hidden file inputs */}
-        <input
-          ref={imageInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-        <input
-          ref={pdfInputRef}
-          type="file"
-          accept="application/pdf"
-          className="hidden"
-          onChange={handleFileChange}
-        />
       </div>
     </div>
   )

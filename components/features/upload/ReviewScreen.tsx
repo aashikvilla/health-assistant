@@ -140,7 +140,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
               boxShadow: '0 4px 20px rgba(0,88,189,0.3)',
             }}
           >
-            Looks good — Save Prescription
+            Looks good — Continue
           </button>
           <button
             onClick={onRetry}
