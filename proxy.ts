@@ -10,6 +10,6 @@ export async function proxy(request: NextRequest) {
 // `lib/supabase/middleware.ts` `protectedPrefixes`.
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api/ocr).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api/ocr|api/explain).*)',
   ],
 }

@@ -119,9 +119,10 @@ html {
 
 @theme inline {
   /* Fonts */
-  --font-sans:    var(--font-plus-jakarta);
-  --font-body:    var(--font-manrope);
-  --font-mono:    var(--font-manrope);
+  --font-sans:     var(--font-plus-jakarta);
+  --font-display:  var(--font-plus-jakarta);
+  --font-body:     var(--font-manrope);
+  --font-mono:     var(--font-manrope);
 
   /* Colors */
   --color-primary:                    var(--color-primary);
@@ -233,3 +234,4 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
+.animate-slide-up { animation: slide-up 300ms ease forwards; }
