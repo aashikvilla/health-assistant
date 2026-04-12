@@ -52,7 +52,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg text-text-secondary leading-relaxed max-w-lg">
-              Upload your prescriptions and lab reports. Our AI extracts key information and explains everything in plain language — no medical jargon needed.
+              Upload your prescriptions and lab reports. Our AI extracts key information and explains everything in plain language, no medical jargon needed.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
@@ -145,7 +145,7 @@ export default function HomePage() {
             {
               icon: '💡',
               title: 'Plain-Language Explanations',
-              desc: 'Get clear explanations for every medication — how to take it, what it treats, potential side effects, and what to avoid.',
+              desc: 'Get clear explanations for every medication, how to take it, what it treats, potential side effects, and what to avoid.',
             },
             {
               icon: '👨‍👩‍👧‍👦',
