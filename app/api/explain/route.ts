@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { PrescriptionData, PrescriptionExplanation, Medication } from '@/types/prescription'
+import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
+import type { MedicationExplanation } from '@/types/analysis'
 
 const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true'
 
@@ -18,16 +19,16 @@ function sleep(ms: number) {
 }
 
 function buildMockExplanation(data: PrescriptionData): PrescriptionExplanation {
-  const medications: Medication[] = data.medications.map((m, i) => ({
+  const medications: (MedicationExplanation & { id: string })[] = data.medications.map((m, i) => ({
     id: `med-${i}`,
     name: m.name,
     dosage: m.dosage,
     frequency: m.dosage,
     treats: `Prescribed for ${data.illness || 'your condition'}.`,
-    howToTake: m.duration
+    how_to_take: m.duration
       ? `Take as directed for ${m.duration}. Follow your doctor's instructions carefully.`
       : 'Take as directed by your doctor.',
-    sideEffects: 'May cause mild nausea or dizziness. Contact your doctor if symptoms are severe or persist.',
+    side_effects: 'May cause mild nausea or dizziness. Contact your doctor if symptoms are severe or persist.',
     avoid: 'Avoid alcohol while taking this medication. Inform your doctor of any other medicines you are taking.',
   }))
 
@@ -74,8 +75,8 @@ Return ONLY valid JSON — no markdown, no code fences:
       "dosage": string,
       "frequency": string,
       "treats": string (1 sentence — what condition this addresses),
-      "howToTake": string (1-2 sentences — timing, food, water),
-      "sideEffects": string (1-2 sentences — common effects only, plain language),
+      "how_to_take": string (1-2 sentences — timing, food, water),
+      "side_effects": string (1-2 sentences — common effects only, plain language),
       "avoid": string (1-2 sentences — food/drink/activity interactions)
     }
   ],

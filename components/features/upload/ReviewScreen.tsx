@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { PrescriptionData, ScannedMedication, Confidence } from '@/types/prescription'
+import type { PrescriptionData, Medication, Confidence } from '@/types/prescription'
 import FieldRow from './FieldRow'
 
 interface Props {
@@ -25,7 +25,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
     setPrescription((p) => ({ ...p, illness: val, illnessConfidence: 'high' as Confidence }))
   }
 
-  function updateMedication(index: number, field: keyof ScannedMedication, val: string) {
+  function updateMedication(index: number, field: keyof Medication, val: string) {
     setPrescription((p) => {
       const meds = [...p.medications]
       meds[index] = { ...meds[index], [field]: val, confidence: 'high' as Confidence }
