@@ -89,12 +89,13 @@ export function DocumentDetail({ record, profileName }: DocumentDetailProps) {
             {docTypeLabel}
           </h1>
 
-          {documentId ? (
+          {hasMedications ? (
             <ShareButton
-              documentId={documentId}
-              profileId={profileId}
               doctorName={doctorName}
               patientName={profileName}
+              date={documentDate}
+              medications={medications}
+              doctorNotes={recommendations}
             />
           ) : (
             <div className="w-10" aria-hidden="true" />

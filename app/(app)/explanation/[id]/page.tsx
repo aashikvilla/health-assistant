@@ -102,10 +102,11 @@ export default async function ExplanationPage({
           </h1>
 
           <ShareButton
-            documentId={result.data.documentId}
-            profileId={result.data.profileId}
-            doctorName={result.data.doctorName}
-            patientName={result.data.patientName}
+            doctorName={prescription.doctorName}
+            patientName={prescription.patientName}
+            date={prescription.date ? formatDate(prescription.date) : null}
+            medications={medications}
+            doctorNotes={doctorNotes}
           />
         </div>
       </nav>
