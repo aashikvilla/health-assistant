@@ -28,7 +28,12 @@ export default async function AppLayout({
   // Ensure self-profile + family group exist for this user.
   // Idempotent — one fast DB lookup and early-return if already set up.
   // This is the safety net for every sign-in path (email, OAuth, confirmation link).
-  await familyService.ensureSelfProfile(user.id, user.email ?? '')
+  const setupResult = await familyService.ensureSelfProfile(user.id, user.email ?? '')
+  if (!setupResult.success) {
+    // Surface the error rather than silently proceeding — a missing family group
+    // breaks all profile and document operations downstream.
+    throw new Error(`Profile setup failed: ${setupResult.error}`)
+  }
 
   return (
     <PageLayout
