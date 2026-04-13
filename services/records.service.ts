@@ -14,6 +14,7 @@ import type { Tables } from '@/types/database'
 
 export interface DocumentExplanationData {
     documentId: string
+    profileId: string
     doctorName: string | null
     documentDate: string | null
     patientName: string
@@ -240,6 +241,7 @@ export const recordsService = {
             return {
                 data: {
                     documentId: d.id,
+                    profileId: d.profile_id,
                     doctorName: d.doctor_name,
                     documentDate: d.document_date,
                     patientName,
@@ -276,6 +278,7 @@ export const recordsService = {
         return {
             data: {
                 documentId: d.id,
+                profileId: d.profile_id,
                 doctorName: d.doctor_name,
                 documentDate: d.document_date,
                 patientName,

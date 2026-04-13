@@ -235,3 +235,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   -webkit-backdrop-filter: blur(16px);
 }
 .animate-slide-up { animation: slide-up 300ms ease forwards; }
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}

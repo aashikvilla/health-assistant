@@ -11,6 +11,7 @@ import {
   DisclaimerBanner,
   ExplanationActions,
 } from '@/components/features/explanation'
+import { ShareButton } from '@/components/features/share'
 
 export const metadata: Metadata = {
   title: 'Your Prescription',
@@ -100,7 +101,12 @@ export default async function ExplanationPage({
             Your Prescription
           </h1>
 
-          <div className="w-10" aria-hidden="true" />
+          <ShareButton
+            documentId={result.data.documentId}
+            profileId={result.data.profileId}
+            doctorName={result.data.doctorName}
+            patientName={result.data.patientName}
+          />
         </div>
       </nav>
 
