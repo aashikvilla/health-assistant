@@ -15,7 +15,7 @@
 import { useState }       from 'react'
 import { useRouter }      from 'next/navigation'
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
-import type { LabReportData }     from '@/types/lab-report'
+import type { LabReportData, LabReportExplanation }     from '@/types/lab-report'
 import UploadPicker          from '@/components/features/upload/UploadPicker'
 import ProcessingState       from '@/components/features/upload/ProcessingState'
 import ReviewScreen          from '@/components/features/upload/ReviewScreen'
@@ -24,6 +24,7 @@ import {
   MedicationCard,
   DoctorNotes,
   DisclaimerBanner,
+  AbnormalMarkerCard,
 } from '@/components/features/explanation'
 import { Button } from '@/components/ui'
 
@@ -34,10 +35,11 @@ const PENDING_KEY     = 'nuskha_pending_upload'
 const NOT_MEDICAL_MSG = "This doesn't look like a prescription or lab report. Please upload a medical document."
 
 export interface PendingUpload {
-  type:         DocumentType
-  data:         PrescriptionData | LabReportData
-  explanation?: PrescriptionExplanation
-  timestamp:    number
+  type:            DocumentType
+  data:            PrescriptionData | LabReportData
+  explanation?:    PrescriptionExplanation | null
+  labExplanation?: LabReportExplanation | null
+  timestamp:       number
 }
 
 export default function PublicUploadPage() {
@@ -50,6 +52,8 @@ export default function PublicUploadPage() {
   const [error,        setError]        = useState<string | null>(null)
   const [explanation,  setExplanation]  = useState<PrescriptionExplanation | null>(null)
   const [explainError, setExplainError] = useState<string | null>(null)
+  const [labExplanation, setLabExplanation] = useState<LabReportExplanation | null>(null)
+  const [labExplainError, setLabExplainError] = useState<string | null>(null)
   const [showNotMedicalModal, setShowNotMedicalModal] = useState(false)
 
   // ── OCR ────────────────────────────────────────────────────────────────────
@@ -71,9 +75,36 @@ export default function PublicUploadPage() {
 
       const { documentType: docType, data } = await res.json()
       setDocumentType(docType)
-      if (docType === 'lab_report') setLabReport(data as LabReportData)
-      else setPrescription(data as PrescriptionData)
-      setStep('review')
+
+      if (docType === 'lab_report') {
+        // Lab reports skip review → stay on processing while AI analyses
+        const labData = data as LabReportData
+        setLabReport(labData)
+        setLabExplainError(null)
+        setLabExplanation(null)
+        // Stay on 'processing' — documentType is now 'lab_report' so
+        // ProcessingState will show "Reading your report..." with lab steps
+
+        try {
+          const analyseRes = await fetch('/api/analyse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(labData),
+          })
+          if (!analyseRes.ok) {
+            const { error: msg } = await analyseRes.json()
+            throw new Error(msg ?? 'Failed to analyse lab report')
+          }
+          setLabExplanation(await analyseRes.json() as LabReportExplanation)
+          setStep('explaining') // Jump to insight screen with results ready
+        } catch (err) {
+          setLabExplainError(err instanceof Error ? err.message : 'Something went wrong')
+          setStep('explaining') // Show error state
+        }
+      } else {
+        setPrescription(data as PrescriptionData)
+        setStep('review')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setStep('pick')
@@ -98,6 +129,8 @@ export default function PublicUploadPage() {
     setLabReport(null)
     setExplanation(null)
     setExplainError(null)
+    setLabExplanation(null)
+    setLabExplainError(null)
     setStep('pick')
   }
 
@@ -127,10 +160,42 @@ export default function PublicUploadPage() {
     }
   }
 
-  // ── Lab report confirm — save to localStorage & go to auth ─────────────────
+  // ── Lab report confirm → fetch AI analysis ──────────────────────────────────
 
-  function handleConfirmLabReport(data: LabReportData) {
-    const pending: PendingUpload = { type: 'lab_report', data, timestamp: Date.now() }
+  async function handleConfirmLabReport(data: LabReportData) {
+    setLabReport(data)
+    setLabExplainError(null)
+    setLabExplanation(null)
+    setStep('explaining')
+
+    try {
+      const res = await fetch('/api/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      if (!res.ok) {
+        const { error: msg } = await res.json()
+        throw new Error(msg ?? 'Failed to analyse lab report')
+      }
+
+      setLabExplanation(await res.json() as LabReportExplanation)
+    } catch (err) {
+      setLabExplainError(err instanceof Error ? err.message : 'Something went wrong')
+    }
+  }
+
+  // ── Save lab analysis → localStorage & auth gate ───────────────────────────
+
+  function handleSaveLabReport() {
+    if (!labReport) return
+    const pending: PendingUpload = {
+      type:            'lab_report',
+      data:            labReport,
+      labExplanation:  labExplanation ?? null,
+      timestamp:       Date.now(),
+    }
     localStorage.setItem(PENDING_KEY, JSON.stringify(pending))
     router.push('/auth?mode=signup&return=/dashboard')
   }
@@ -142,7 +207,7 @@ export default function PublicUploadPage() {
     const pending: PendingUpload = {
       type:        'prescription',
       data:        prescription,
-      explanation: explanation ?? undefined,
+      explanation: explanation ?? null,
       timestamp:   Date.now(),
     }
     localStorage.setItem(PENDING_KEY, JSON.stringify(pending))
@@ -167,18 +232,17 @@ export default function PublicUploadPage() {
         </>
       )}
 
-      {step === 'processing' && <ProcessingState />}
-
-      {step === 'review' && documentType === 'lab_report' && labReport && (
-        <LabReportReviewScreen data={labReport} onConfirm={handleConfirmLabReport} onRetry={handleRetry} />
-      )}
+      {step === 'processing' && <ProcessingState documentType={documentType} />}
 
       {step === 'review' && documentType === 'prescription' && prescription && (
         <ReviewScreen data={prescription} onConfirm={handleConfirmPrescription} onRetry={handleRetry} />
       )}
 
-      {/* ── AI Explanation loading ── */}
-      {step === 'explaining' && !explanation && !explainError && (
+      {/* ── AI Explanation/Analysis loading ── */}
+      {step === 'explaining' && (
+        (documentType === 'prescription' && !explanation && !explainError) ||
+        (documentType === 'lab_report' && !labExplanation && !labExplainError)
+      ) && (
         <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 py-10">
           <div className="relative mb-8">
             <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-15 scale-110" />
@@ -191,16 +255,18 @@ export default function PublicUploadPage() {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-text-primary text-center">
-            Preparing your explanation…
+            {documentType === 'lab_report' ? 'Analysing your report...' : 'Preparing your explanation...'}
           </h2>
           <p className="text-lg text-text-muted mt-2 text-center leading-relaxed max-w-xs">
-            Our AI is writing a plain-language summary of each medicine
+            {documentType === 'lab_report'
+              ? 'Our AI is checking your results and writing a plain-language summary'
+              : 'Our AI is writing a plain-language summary of each medicine'}
           </p>
         </div>
       )}
 
-      {/* ── AI Explanation error ── */}
-      {step === 'explaining' && explainError && (
+      {/* ── Prescription explanation error ── */}
+      {step === 'explaining' && documentType === 'prescription' && explainError && (
         <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm flex flex-col items-center text-center gap-5">
             <div className="w-16 h-16 rounded-2xl bg-error-subtle flex items-center justify-center">
@@ -235,8 +301,44 @@ export default function PublicUploadPage() {
         </div>
       )}
 
-      {/* ── AI Explanation screen (Step 3) ── */}
-      {step === 'explaining' && explanation && (
+      {/* ── Lab report analysis error ── */}
+      {step === 'explaining' && documentType === 'lab_report' && labExplainError && (
+        <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 py-10">
+          <div className="w-full max-w-sm flex flex-col items-center text-center gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-error-subtle flex items-center justify-center">
+              <svg className="w-8 h-8 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-text-primary">Analysis failed</p>
+              <p className="text-base text-text-muted mt-1 leading-relaxed">{labExplainError}</p>
+            </div>
+            <div className="w-full flex flex-col gap-3">
+              <Button
+                onClick={() => labReport && handleConfirmLabReport(labReport)}
+                variant="primary"
+                size="lg"
+                fullWidth
+                className="min-h-[56px] rounded-2xl"
+              >
+                Try Again
+              </Button>
+              <Button
+                onClick={() => setStep('review')}
+                variant="ghost"
+                size="lg"
+                fullWidth
+              >
+                Go back and check the details
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── AI Explanation screen — Prescription (Step 3) ── */}
+      {step === 'explaining' && documentType === 'prescription' && explanation && (
         <div className="min-h-screen bg-surface flex flex-col">
 
           {/* Sticky header */}
@@ -304,6 +406,121 @@ export default function PublicUploadPage() {
 
               <Button
                 onClick={handleSaveFromExplanation}
+                variant="primary"
+                size="lg"
+                fullWidth
+                className="min-h-[60px] text-xl rounded-2xl"
+              >
+                Save to My Account — Free
+              </Button>
+              <p className="text-sm text-text-muted text-center mt-2">
+                Create a free account in 30 seconds · No credit card needed
+              </p>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ── Lab Report Analysis screen (Step 3) ── */}
+      {step === 'explaining' && documentType === 'lab_report' && labExplanation && (
+        <div className="min-h-screen bg-surface flex flex-col">
+
+          {/* Sticky header */}
+          <nav className="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm border-b border-border-subtle pt-safe">
+            <div className="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto w-full">
+              <button
+                onClick={() => setStep('review')}
+                className="flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary min-w-[44px] min-h-[44px]"
+                aria-label="Go back"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <div className="text-center">
+                <p className="text-base font-bold text-text-primary">Your Lab Report</p>
+                <p className="text-xs text-text-muted">
+                  {labExplanation.labName}{labExplanation.testDate ? ` · ${labExplanation.testDate}` : ''}
+                </p>
+              </div>
+              <div className="w-10" />
+            </div>
+          </nav>
+
+          {/* Step indicator */}
+          <div className="px-5 pt-4 pb-2 max-w-2xl mx-auto w-full">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-primary bg-primary-subtle px-3 py-1 rounded-full">
+                Step 3 of 3
+              </span>
+              <div className="flex gap-1.5">
+                <div className="w-8 h-1.5 rounded-full bg-primary" />
+                <div className="w-8 h-1.5 rounded-full bg-primary" />
+                <div className="w-8 h-1.5 rounded-full bg-primary" />
+              </div>
+            </div>
+          </div>
+
+          {/* Context line */}
+          <div className="px-5 pt-2 pb-1 max-w-2xl mx-auto w-full">
+            <p className="font-body text-sm text-text-muted">
+              {labExplanation.doctorName ? `Referred by ${labExplanation.doctorName} · ` : ''}
+              For {labExplanation.patientName || 'You'}
+            </p>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="px-5 pt-2 pb-1 max-w-2xl mx-auto w-full">
+            <DisclaimerBanner doctorName={labExplanation.doctorName || 'your doctor'} />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 px-5 pt-4 pb-56 space-y-4 max-w-2xl mx-auto w-full">
+
+            {/* Abnormal markers */}
+            {labExplanation.abnormalMarkers.length > 0 ? (
+              <>
+                <h2 className="font-display text-lg font-semibold text-text-primary">
+                  Parameters Outside Normal Range ({labExplanation.abnormalMarkers.length})
+                </h2>
+                {labExplanation.abnormalMarkers.map((marker) => (
+                  <AbnormalMarkerCard key={marker.id} marker={marker} />
+                ))}
+              </>
+            ) : (
+              <div className="bg-success-subtle rounded-2xl p-5 flex items-start gap-3">
+                <svg className="w-6 h-6 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-display text-base font-semibold text-success">All Clear</p>
+                  <p className="font-body text-sm text-text-secondary mt-1 leading-relaxed">
+                    All your test results are within normal range. Great news!
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Doctor notes */}
+            <DoctorNotes notes={labExplanation.doctorNotes} title="Things to follow" />
+          </div>
+
+          {/* Sticky Save CTA */}
+          <div className="fixed bottom-0 inset-x-0 z-30 pb-safe">
+            <div className="bg-surface-container-lowest border-t border-border-subtle px-5 pt-4 pb-5 max-w-lg mx-auto">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex gap-1">
+                  {['📋', '👨\u200D👩\u200D👧\u200D👦', '🔒'].map((e) => (
+                    <span key={e} className="text-base">{e}</span>
+                  ))}
+                </div>
+                <p className="text-sm text-text-secondary leading-tight">
+                  Save this · Add your family · Stay private
+                </p>
+              </div>
+              <Button
+                onClick={handleSaveLabReport}
                 variant="primary"
                 size="lg"
                 fullWidth

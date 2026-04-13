@@ -9,3 +9,6 @@ export type { DisclaimerBannerProps } from './DisclaimerBanner'
 
 export { ExplanationActions } from './ExplanationActions'
 export type { ExplanationActionsProps } from './ExplanationActions'
+
+export { AbnormalMarkerCard } from './AbnormalMarkerCard'
+export type { AbnormalMarkerCardProps } from './AbnormalMarkerCard'

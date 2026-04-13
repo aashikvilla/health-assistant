@@ -14,7 +14,7 @@
 import { useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
-import type { LabReportData }     from '@/types/lab-report'
+import type { LabReportData, LabReportExplanation }     from '@/types/lab-report'
 import { savePendingUpload }      from '@/app/(app)/dashboard/upload/[profileId]/actions'
 
 const PENDING_KEY = 'nuskha_pending_upload'
@@ -23,10 +23,11 @@ const MAX_AGE_MS  = 24 * 60 * 60 * 1000   // 24 hours
 type Status = 'saving' | 'error'
 
 interface PendingUpload {
-  type:         'prescription' | 'lab_report'
-  data:         PrescriptionData | LabReportData
-  explanation?: PrescriptionExplanation
-  timestamp:    number
+  type:            'prescription' | 'lab_report'
+  data:            PrescriptionData | LabReportData
+  explanation?:    PrescriptionExplanation | null
+  labExplanation?: LabReportExplanation | null
+  timestamp:       number
 }
 
 export function PendingUploadBanner() {
@@ -40,14 +41,14 @@ export function PendingUploadBanner() {
     setStatus('saving')
     setErrorMsg(null)
     startTransition(() => {
-      savePendingUpload(upload.type, upload.data, upload.explanation).then((result) => {
+      savePendingUpload(upload.type, upload.data, upload.explanation ?? undefined, upload.labExplanation ?? undefined).then((result) => {
         if (!result.success) {
           setStatus('error')
           setErrorMsg(result.error)
           return
         }
         localStorage.removeItem(PENDING_KEY)
-        router.push(`/records/${result.documentId}`)
+        router.push('/dashboard')
       })
     })
   }

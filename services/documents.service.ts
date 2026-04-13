@@ -14,7 +14,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { ApiResponse } from '@/types'
 import type { Json } from '@/types'
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
-import type { LabReportData } from '@/types/lab-report'
+import type { LabReportData, LabReportExplanation } from '@/types/lab-report'
 import type { MedicationExplanation } from '@/types/analysis'
 
 export type DocumentType = 'prescription' | 'lab_report'
@@ -76,7 +76,8 @@ export const documentsService = {
     type: DocumentType,
     data: PrescriptionData | LabReportData,
     fileUrl: string = 'ocr-extracted',
-    explanation?: PrescriptionExplanation
+    explanation?: PrescriptionExplanation,
+    labExplanation?: LabReportExplanation
   ): Promise<ApiResponse<SavedDocument>> {
     const supabase = await createClient()
 
@@ -125,14 +126,17 @@ export const documentsService = {
         }
         : {
           medications_found: [] as Json,
-          recommendations: [] as Json,
+          recommendations: (labExplanation?.doctorNotes ?? []) as Json,
           key_findings: { tests: (data as LabReportData).tests } as unknown as Json,
           risk_flags: (data as LabReportData).tests
             .filter((t) => t.status === 'critical')
             .map((t) => `${t.testName} is critical`) as Json,
-          values_out_of_range: (data as LabReportData).tests
-            .filter((t) => t.status !== 'normal' && t.status !== '')
-            .map((t) => ({ name: t.testName, result: t.result, status: t.status })) as unknown as Json,
+          values_out_of_range: (labExplanation?.abnormalMarkers
+            ? labExplanation.abnormalMarkers.map((m) => ({ name: m.name, result: m.value, status: m.status }))
+            : (data as LabReportData).tests
+                .filter((t) => t.status !== 'normal' && t.status !== '')
+                .map((t) => ({ name: t.testName, result: t.result, status: t.status }))
+          ) as unknown as Json,
           terms_explained: null,
         }
 
