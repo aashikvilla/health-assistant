@@ -254,53 +254,77 @@ export const familyService = {
     }
 
     // ── Case 3: brand new user — create group + profile + membership ────────
-    const { data: group, error: groupErr } = await supabase
-      .from('family_groups')
-      .insert({})
-      .select('id')
-      .single()
+    //
+    // Generate UUIDs client-side for family_group and family_profile.
+    // Reason: Supabase's insert().select() uses PostgREST RETURNING which is
+    // subject to RLS. The family_groups SELECT policy requires a membership row,
+    // but the membership doesn't exist yet — chicken-and-egg. Generating the ID
+    // client-side means we never need to SELECT the group back before adding the
+    // membership, breaking the cycle.
+    const { randomUUID } = await import('crypto')
+    const groupId = randomUUID()
+    const profileId = randomUUID()
 
-    if (groupErr || !group) {
-      return { data: null, error: groupErr?.message ?? 'Failed to create family group', success: false }
+    const { error: groupErr } = await supabase
+      .from('family_groups')
+      .insert({ id: groupId })
+
+    if (groupErr) {
+      return { data: null, error: groupErr.message, success: false }
     }
 
     const name = email.split('@')[0]
 
-    const { data: profile, error: profileErr } = await supabase
+    const { error: profileErr } = await supabase
       .from('family_profiles')
       .insert({
-        family_group_id: group.id,
+        id: profileId,
+        family_group_id: groupId,
         full_name: name,
         email,
       })
-      .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
-      .single()
 
-    if (profileErr || !profile) {
-      await supabase.from('family_groups').delete().eq('id', group.id)
-      return { data: null, error: profileErr?.message ?? 'Failed to create profile', success: false }
+    if (profileErr) {
+      await supabase.from('family_groups').delete().eq('id', groupId)
+      return { data: null, error: profileErr.message, success: false }
     }
 
     const { error: memberErr } = await supabase
       .from('profile_memberships')
       .insert({
         user_id: userId,
-        profile_id: profile.id,
-        family_group_id: group.id,
+        profile_id: profileId,
+        family_group_id: groupId,
         relationship: 'self',
         is_self: true,
       })
 
     if (memberErr) {
-      await supabase.from('family_profiles').delete().eq('id', profile.id)
-      await supabase.from('family_groups').delete().eq('id', group.id)
+      await supabase.from('family_profiles').delete().eq('id', profileId)
+      await supabase.from('family_groups').delete().eq('id', groupId)
       return { data: null, error: memberErr.message, success: false }
     }
 
+    // Fetch the created profile to return (now the membership exists, SELECT policy passes)
+    const { data: profile } = await supabase
+      .from('family_profiles')
+      .select('id, family_group_id, full_name, email, date_of_birth, avatar_url, created_at, updated_at')
+      .eq('id', profileId)
+      .single()
+
     return {
       data: {
-        ...(profile as unknown as FamilyProfile),
-        relationship: 'self',
+        ...(profile as unknown as FamilyProfile) ?? {
+          id: profileId,
+          family_group_id: groupId,
+          full_name: name,
+          email,
+          date_of_birth: null,
+          avatar_url: null,
+          created_at: null,
+          updated_at: null,
+        },
+        relationship: 'self' as const,
         is_self: true,
       },
       error: null,
