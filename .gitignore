@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# PWA workbox (generated files only)
+/public/workbox-*.js
+/public/workbox-*.js.map
+
 # production
 /build
 
@@ -40,3 +44,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
