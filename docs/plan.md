@@ -225,14 +225,17 @@ Can be done at any time — fully independent.
 
 ## Priority order for next work sessions
 
+> Last updated: 2026-04-13 — most core screens are complete. Focus is now on fixing the AI pipeline and wiring authenticated explanation.
+
 | Priority | Feature | Why |
 |---|---|---|
-| 🔴 1 | **F2-A** Fix AI model | Everything downstream uses mock data. Real extraction is broken. |
-| 🟡 2 | **F4-A** Wire explanation page | Core product value prop. Data is already in DB for public upload flow. |
-| 🟡 3 | **F1-A** users_profile creation | Settings + onboarding need it |
+| 🔴 1 | **F2-A** Fix AI model | Everything downstream uses mock data. Real extraction is broken. Pick: OpenRouter `google/gemini-flash-1.5`, Google AI direct, or Anthropic `claude-haiku-4-5-20251001`. |
+| 🟡 2 | **F4-A/B** Wire explanation page | Core product value prop. Components exist, data is in DB for public upload flow, just needs `getDocumentWithExplanation` in records.service + on-demand generate if empty. |
+| 🟡 3 | **F1-A** users_profile creation | Settings + onboarding need it. Add to `ensureSelfProfile`. |
 | 🟡 4 | **F1-B** Onboarding flow | Collect real name — self-profile currently uses email prefix |
-| 🟢 5 | **F6-A/B/C** Profile editing | Family sharing completeness |
-| 🟢 6 | **F5-A/B** Medications | Enables reminders |
-| ⬜ 7 | **F7** Share | Nice-to-have for MVP |
-| ⬜ 8 | **F8** Lab trends | Needs enough lab data to be useful |
-| ⬜ 9 | **F10** Token cleanup | Any time, low risk |
+| 🟢 5 | **F6-A/B/C** Profile editing | Family sharing completeness — edit name, DOB, health metrics, relationship label |
+| 🟢 6 | **F5-A/B** Medications table write + list UI | Enables reminders. Auto-create from `document_analyses.medications_found` on save. |
+| ⬜ 7 | **F7** Share via signed link | Nice-to-have for MVP |
+| ⬜ 8 | **F8** Lab trends | Needs real lab data from working AI first |
+| ⬜ 9 | **F5-C/D** Reminders + push | Highest complexity — do after F5-A/B |
+| ⬜ 10 | **F10** Token cleanup | Any time, low risk |
