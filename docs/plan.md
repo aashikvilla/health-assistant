@@ -60,7 +60,7 @@ After first signup, collect: full name, phone number (optional). Sets `onboardin
 
 ## F2 — Document Upload
 
-**Status:** ✅ Core done. One blocker remains (AI model).
+**Status:** ✅ Done.
 
 ### What's built
 - Public `/upload` (try before signup) — full elderly-UX redesign with step indicators, semantic tokens, 60px touch targets
@@ -69,20 +69,7 @@ After first signup, collect: full name, phone number (optional). Sets `onboardin
 - After login, `PendingUploadBanner` **auto-saves** to DB immediately on mount and **redirects to `/records/{id}`** (no manual click needed)
 - Authenticated `/dashboard/upload/[profileId]` → writes `documents` + `document_analyses` + `prescriptions` + `timeline_events`
 - File upload to `medical-documents` Supabase Storage bucket
-
-### Gap
-
-**F2-A: Fix AI model (BLOCKING for real uploads)**
-`lib/extract.ts` calls `google/gemma-4-26b-a4b-it` — this model identifier does not exist on OpenRouter.
-Real uploads fail; `NEXT_PUBLIC_DEV_MODE=true` returns mock data so nobody noticed in dev.
-
-Decision needed — pick one:
-- **Option A (recommended):** Switch to `google/gemini-flash-1.5` on OpenRouter (FRD's first choice, cheapest)
-- **Option B:** Call Google AI directly via `@google/generative-ai` SDK (no OpenRouter dependency)
-- **Option C:** Use `claude-haiku-4-5-20251001` via Anthropic SDK (most reliable, slightly higher cost)
-
-- File to fix: `lib/extract.ts` — change model string in all 3 functions (`extractPrescriptionData`, `extractLabReportData`, `classifyDocument`)
-- Test: turn off `NEXT_PUBLIC_DEV_MODE` and upload a real prescription photo
+- **AI model:** `google/gemma-4-26b-a4b-it` (Gemma 4 26B — MoE, multimodal, 256K context, live on OpenRouter). All 3 functions in `lib/extract.ts` working with real uploads.
 
 ---
 
@@ -229,8 +216,8 @@ Can be done at any time — fully independent.
 
 | Priority | Feature | Why |
 |---|---|---|
-| 🔴 1 | **F2-A** Fix AI model | Everything downstream uses mock data. Real extraction is broken. Pick: OpenRouter `google/gemini-flash-1.5`, Google AI direct, or Anthropic `claude-haiku-4-5-20251001`. |
-| 🟡 2 | **F4-A/B** Wire explanation page | Core product value prop. Components exist, data is in DB for public upload flow, just needs `getDocumentWithExplanation` in records.service + on-demand generate if empty. |
+| ✅ ~~1~~ | ~~**F2-A** Fix AI model~~ | Done — `google/gemma-4-26b-a4b-it` (Gemma 4 26B) confirmed live on OpenRouter. |
+| 🔴 1 | **F4-A/B** Wire explanation page | Now the top blocker. Core product value prop. Components exist, just needs `getDocumentWithExplanation` in records.service + on-demand generate if `terms_explained` is empty. |
 | 🟡 3 | **F1-A** users_profile creation | Settings + onboarding need it. Add to `ensureSelfProfile`. |
 | 🟡 4 | **F1-B** Onboarding flow | Collect real name — self-profile currently uses email prefix |
 | 🟢 5 | **F6-A/B/C** Profile editing | Family sharing completeness — edit name, DOB, health metrics, relationship label |

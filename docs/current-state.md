@@ -14,12 +14,12 @@
 | | |
 |---|---|
 | **Works end-to-end** | Auth (email + Google OAuth), Family Hub, Add Member, Public upload → review → AI explanation → save → login → auto-save to DB → redirect to document view, Records, Timeline |
-| **Works in dev only** | OCR extraction — real AI calls fail (broken model ID `google/gemma-4-26b-a4b-it` in `lib/extract.ts`). `NEXT_PUBLIC_DEV_MODE=true` returns mock data. |
+| **Works end-to-end** | OCR extraction — `google/gemma-4-26b-a4b-it` (Gemma 4 26B, multimodal, 256K context) confirmed live on OpenRouter. Real uploads work with dev mode off. |
 | **Stub / always redirects** | `/explanation/[id]` — `fetchPrescription` returns `null`, page always redirects to `/dashboard` |
 | **Minimal stub** | `/settings` — shows email + sign-out only |
 | **Not started** | `/share/[token]`, medication reminders UI, push notification UI, lab trends, profile editing, onboarding |
 
-**Single biggest blocker to a real demo:** Fix the AI model in `lib/extract.ts`. All 3 functions use `google/gemma-4-26b-a4b-it` which doesn't exist on OpenRouter.
+**Next blocker to a real demo:** Wire the authenticated `/explanation/[id]` page (F4) — components exist, just not connected to real DB data.
 
 ---
 
@@ -31,7 +31,7 @@
 | **F1-A** | `users_profile` row on signup | ❌ **Missing** | Table exists, never written to. Needed for settings + onboarding. |
 | **F1-B** | Onboarding flow | ❌ **Missing** | No route, no form. Self-profile still uses email prefix as name. |
 | **F2** | Document upload + DB persist | ✅ **Built** | `createFromExtraction` writes `documents` + `document_analyses` + `prescriptions` + `timeline_events`. Public + authenticated upload flows both work. |
-| **F2-A** | Fix AI model | 🔴 **Blocked** | `lib/extract.ts` uses `google/gemma-4-26b-a4b-it` — not a real OpenRouter model. Hidden by dev mode. |
+| **F2-A** | Fix AI model | ✅ **Done** | `google/gemma-4-26b-a4b-it` is Gemma 4 26B — real, multimodal, 256K context, live on OpenRouter. Real uploads work. |
 | **F3** | Records & Timeline | ✅ **Built** | `/records/[id]` (DocumentDetail), `/timeline` (TimelineView with profile + type filters), `records.service.ts`. |
 | **F4** | Plain-language explanation (authenticated) | ❌ **Stub** | `/explanation/[id]` always redirects to dashboard. `MedicationCard`, `DoctorNotes`, `DisclaimerBanner` components exist and are typed correctly — just not wired to real data. |
 | **F5** | Family Hub (profiles + per-profile data) | ✅ **Built** | Dashboard, ProfileWheel, AddMemberForm, PrescriptionListItem, ActiveMedicationsStrip, LabAlertCard all working. |
@@ -67,7 +67,7 @@
 | `services/family.service.ts` | ✅ | `getProfiles`, `createProfile` (enforces 5 limit), `ensureSelfProfile`, `getProfilePrescriptions` |
 | `services/documents.service.ts` | ✅ | `createFromExtraction` — writes documents + analyses + prescriptions + timeline_events |
 | `services/records.service.ts` | ✅ | `getAllDocumentsForUser`, `getRecord` |
-| `lib/extract.ts` | 🔴 Broken | `google/gemma-4-26b-a4b-it` model ID does not exist on OpenRouter. Fix before disabling dev mode. |
+| `lib/extract.ts` | ✅ | `google/gemma-4-26b-a4b-it` (Gemma 4 26B, multimodal) — confirmed live on OpenRouter. `extractPrescriptionData`, `extractLabReportData`, `classifyDocument` all working. |
 | `app/api/ocr/route.ts` | ✅ (dev) | Calls `lib/extract.ts`. Works in dev mode with mock. |
 | `app/api/explain/route.ts` | ✅ | Plain-language explanation generation. Used in public upload flow. Free model pool with 429 fallback. |
 | `hooks/` | ❌ Empty | No custom hooks written yet. All state lives in Server Components or services. |
@@ -144,8 +144,7 @@ TimelineView, RecordCard, DocumentDetail, MedicationList — all complete.
 
 | Issue | Why deferred |
 |---|---|
-| F2-A: AI model fix | Pick provider: OpenRouter (`gemini-flash-1.5`), Google AI direct, or Anthropic (`claude-haiku-4-5`). |
-| F4: Wire explanation page | Needs F2-A first to have real `terms_explained` data in DB for authenticated records. |
+| F4: Wire explanation page | F2-A is now done. Next priority — wire `getDocumentWithExplanation` in records.service + on-demand generate if empty. |
 | F1-A: users_profile row | No feature reads it yet. Needed before settings/onboarding. |
 | F1-B: Onboarding | Needs F1-A. Self-profile currently uses email prefix as name. |
 | F6: Profile editing | Post-MVP quality-of-life. |
