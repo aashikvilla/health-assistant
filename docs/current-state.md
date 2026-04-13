@@ -19,7 +19,7 @@
 | **Minimal stub** | `/settings` — shows email + sign-out only |
 | **Not started** | `/share/[token]`, medication reminders UI, push notification UI, lab trends, profile editing, onboarding |
 
-**Next blocker to a real demo:** Wire the authenticated `/explanation/[id]` page (F4) — components exist, just not connected to real DB data.
+**Core flow is complete.** Auth → upload → OCR → explanation → save → view all work end-to-end.
 
 ---
 
@@ -33,7 +33,7 @@
 | **F2** | Document upload + DB persist | ✅ **Built** | `createFromExtraction` writes `documents` + `document_analyses` + `prescriptions` + `timeline_events`. Public + authenticated upload flows both work. |
 | **F2-A** | Fix AI model | ✅ **Done** | `google/gemma-4-26b-a4b-it` is Gemma 4 26B — real, multimodal, 256K context, live on OpenRouter. Real uploads work. |
 | **F3** | Records & Timeline | ✅ **Built** | `/records/[id]` (DocumentDetail), `/timeline` (TimelineView with profile + type filters), `records.service.ts`. |
-| **F4** | Plain-language explanation (authenticated) | ❌ **Stub** | `/explanation/[id]` always redirects to dashboard. `MedicationCard`, `DoctorNotes`, `DisclaimerBanner` components exist and are typed correctly — just not wired to real data. |
+| **F4** | Plain-language explanation (authenticated) | ✅ **Done** | `/explanation/[id]` fetches document + analysis via `recordsService.getDocumentWithExplanation`. If no rich explanation in DB, generates on-demand via `lib/explain.ts` and persists back. |
 | **F5** | Family Hub (profiles + per-profile data) | ✅ **Built** | Dashboard, ProfileWheel, AddMemberForm, PrescriptionListItem, ActiveMedicationsStrip, LabAlertCard all working. |
 | **F6** | Profile editing | ❌ **Missing** | Add member works. No edit form. Profiles created with email prefix as name. |
 | **F7** | Share via signed link | ❌ **Missing** | No routes, no `shared_links` writes. DB table exists. |
@@ -55,7 +55,7 @@
 | `/records/[id]` | ✅ Built | Document detail: prescription summary, medication list with dosage/duration, lab report with test values + status badges |
 | `/timeline` | ✅ Built | All records chronological, filterable by profile + type (prescriptions / lab reports) |
 | `/settings` | ⚠ Stub | Shows email + sign-out. Needs F1-A (`users_profile`) before real content. |
-| `/explanation/[id]` | ❌ Stub | `fetchPrescription` returns `null` → always redirects to `/dashboard` |
+| `/explanation/[id]` | ✅ Built | Fetches prescription + explanation from DB. Generates on-demand if not stored, persists result. |
 | `/share/[token]` | ❌ Missing | Not started |
 
 ---
@@ -144,7 +144,7 @@ TimelineView, RecordCard, DocumentDetail, MedicationList — all complete.
 
 | Issue | Why deferred |
 |---|---|
-| F4: Wire explanation page | F2-A is now done. Next priority — wire `getDocumentWithExplanation` in records.service + on-demand generate if empty. |
+| F1-A: users_profile row | No feature reads it yet. Needed before settings/onboarding. |
 | F1-A: users_profile row | No feature reads it yet. Needed before settings/onboarding. |
 | F1-B: Onboarding | Needs F1-A. Self-profile currently uses email prefix as name. |
 | F6: Profile editing | Post-MVP quality-of-life. |

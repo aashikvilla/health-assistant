@@ -6,10 +6,25 @@
 import { createClient } from '@/lib/supabase/server'
 import type { ApiResponse } from '@/types'
 import type { MedicationExplanation } from '@/types/analysis'
+import type { Medication, PrescriptionData } from '@/types/prescription'
 import type { LabTest } from '@/types/lab-report'
 import type { Tables } from '@/types/database'
 
 // ─── Public types ─────────────────────────────────────────────────────────────
+
+export interface DocumentExplanationData {
+    documentId: string
+    doctorName: string | null
+    documentDate: string | null
+    patientName: string
+    tags: string[]
+    medications: (MedicationExplanation & { id: string })[]
+    doctorNotes: string[]
+    /** true = rich explanation is already in DB; false = only raw OCR data stored */
+    hasExplanation: boolean
+    /** Present only when hasExplanation is false — use to call generateExplanation() */
+    rawPrescriptionData: PrescriptionData | null
+}
 
 export interface RecordDetail {
     profileId: string
@@ -56,6 +71,18 @@ type DocWithAnalysis = {
         medications_found: unknown
         recommendations: unknown
         key_findings: unknown
+    }>
+}
+
+type DocWithAnalysisOnly = {
+    id: string
+    doctor_name: string | null
+    document_date: string | null
+    tags: string[] | null
+    profile_id: string
+    document_analyses: Array<{
+        medications_found: unknown
+        recommendations: unknown
     }>
 }
 
@@ -160,6 +187,107 @@ export const recordsService = {
         }
 
         return { data: null, error: 'Record not found', success: false }
+    },
+
+    /**
+     * Fetch a prescription document with its AI explanation for the /explanation/[id] page.
+     *
+     * Detects whether stored medications_found is a rich MedicationExplanation[]
+     * (has 'treats' field) or raw OCR Medication[] (has 'duration' field).
+     * When raw, returns rawPrescriptionData so the caller can generate on-demand.
+     */
+    async getDocumentWithExplanation(
+        id: string,
+        userId: string
+    ): Promise<ApiResponse<DocumentExplanationData>> {
+        const supabase = await createClient()
+
+        const { data: rawDoc } = await supabase
+            .from('documents')
+            .select(`
+                id, doctor_name, document_date, tags, profile_id,
+                document_analyses ( medications_found, recommendations )
+            `)
+            .eq('id', id)
+            .eq('user_id', userId)
+            .eq('document_type', 'prescription')
+            .maybeSingle()
+
+        if (!rawDoc) return { data: null, error: 'Record not found', success: false }
+
+        const d = rawDoc as unknown as DocWithAnalysisOnly
+        const analysis = d.document_analyses?.[0] ?? null
+        const storedMeds = (analysis?.medications_found as unknown[]) ?? []
+
+        // Detect rich vs raw: MedicationExplanation has 'treats', Medication has 'duration'
+        const hasExplanation =
+            storedMeds.length > 0 && 'treats' in (storedMeds[0] as Record<string, unknown>)
+
+        // Fetch profile name for the "For <name>" context line
+        const { data: profile } = await supabase
+            .from('family_profiles')
+            .select('full_name')
+            .eq('id', d.profile_id)
+            .maybeSingle()
+
+        const patientName = profile?.full_name ?? 'Family Member'
+
+        if (hasExplanation) {
+            const meds = (storedMeds as MedicationExplanation[]).map((m, i) => ({
+                ...m,
+                id: `med-${i}`,
+            }))
+            return {
+                data: {
+                    documentId: d.id,
+                    doctorName: d.doctor_name,
+                    documentDate: d.document_date,
+                    patientName,
+                    tags: d.tags ?? [],
+                    medications: meds,
+                    doctorNotes: (analysis?.recommendations as string[]) ?? [],
+                    hasExplanation: true,
+                    rawPrescriptionData: null,
+                },
+                error: null,
+                success: true,
+            }
+        }
+
+        // Build minimal PrescriptionData from stored OCR fields for on-demand generation
+        const rawMeds = (storedMeds as Partial<Medication>[]).filter(
+            (m): m is Medication => typeof m.name === 'string'
+        )
+        const rawPrescriptionData: PrescriptionData = {
+            doctor: d.doctor_name ?? '',
+            doctorConfidence: 'high',
+            date: d.document_date ?? '',
+            dateConfidence: 'high',
+            illness: d.tags?.[0] ?? '',
+            illnessConfidence: 'high',
+            medications: rawMeds.map((m) => ({
+                name: m.name,
+                dosage: m.dosage ?? '',
+                duration: m.duration ?? '',
+                confidence: 'high' as const,
+            })),
+        }
+
+        return {
+            data: {
+                documentId: d.id,
+                doctorName: d.doctor_name,
+                documentDate: d.document_date,
+                patientName,
+                tags: d.tags ?? [],
+                medications: [],
+                doctorNotes: [],
+                hasExplanation: false,
+                rawPrescriptionData,
+            },
+            error: null,
+            success: true,
+        }
     },
 
     /**

@@ -91,26 +91,14 @@ After first signup, collect: full name, phone number (optional). Sets `onboardin
 
 ## F4 — Plain-Language Explanation (Authenticated)
 
-**Status:** ❌ Stub only. Page always redirects to `/dashboard`.
+**Status:** ✅ Done.
 
-**Prerequisite:** F2-A (working AI extraction)
-
-### What's needed
-
-**F4-A: Wire `fetchPrescription` in explanation page**
-`app/(app)/explanation/[id]/page.tsx` has `fetchPrescription(_id)` that always returns `null`.
-
-- Service: `records.service.ts` → `getDocumentWithExplanation(id, userId)` — joins `documents` + `document_analyses`
-- Map `document_analyses.medications_found` → `MedicationExplanation[]` shape (check `types/analysis.ts`)
-- Map `document_analyses.terms_explained` → doctor notes / glossary
-- The `MedicationCard` components in `components/features/explanation/` are already correctly typed
-
-**F4-B: On-demand explanation generation**
-`document_analyses.terms_explained` and `recommendations` are empty for most records (only the public upload flow stores explanation data).
-
-- On page load, if `terms_explained` is empty → call `/api/explain` → update `document_analyses`
-- This is the same `/api/explain` endpoint already wired in the public upload flow
-- Show a loading state while generating (same spinner pattern as public upload)
+### What's built
+- `records.service.ts` → `getDocumentWithExplanation(id, userId)` — fetches `documents` + `document_analyses`, detects rich vs raw medication data
+- `lib/explain.ts` — shared explanation generation logic (extracted free-model pool, used by both API route and page)
+- `documents.service.ts` → `saveExplanationToAnalysis` — persists generated explanation back to DB
+- Page detects missing explanation, generates on-demand via `lib/explain.ts`, persists result so next view is instant
+- Handles empty medications gracefully (shows "No medication details available")
 
 ---
 
@@ -217,7 +205,8 @@ Can be done at any time — fully independent.
 | Priority | Feature | Why |
 |---|---|---|
 | ✅ ~~1~~ | ~~**F2-A** Fix AI model~~ | Done — `google/gemma-4-26b-a4b-it` (Gemma 4 26B) confirmed live on OpenRouter. |
-| 🔴 1 | **F4-A/B** Wire explanation page | Now the top blocker. Core product value prop. Components exist, just needs `getDocumentWithExplanation` in records.service + on-demand generate if `terms_explained` is empty. |
+| ✅ ~~2~~ | ~~**F4-A/B** Wire explanation page~~ | Done — `getDocumentWithExplanation`, on-demand generate, persist back to DB. |
+| 🔴 1 | **F1-A** users_profile creation | Settings + onboarding need it. Add to `ensureSelfProfile`. |
 | 🟡 3 | **F1-A** users_profile creation | Settings + onboarding need it. Add to `ensureSelfProfile`. |
 | 🟡 4 | **F1-B** Onboarding flow | Collect real name — self-profile currently uses email prefix |
 | 🟢 5 | **F6-A/B/C** Profile editing | Family sharing completeness — edit name, DOB, health metrics, relationship label |

@@ -171,6 +171,7 @@ export const documentsService = {
     }
 
     // 4. Write a timeline event (best-effort — non-fatal)
+
     const eventDate = buildDocDate(data, type) ?? new Date().toISOString().split('T')[0]
     const doctorLabel = buildDoctorName(data, type)
     await supabase.from('timeline_events').insert({
@@ -186,5 +187,26 @@ export const documentsService = {
     })
 
     return { data: doc, error: null, success: true }
+  },
+
+  /**
+   * Persist a generated explanation back into document_analyses.
+   * Called when the explanation page generates explanation on-demand for
+   * an authenticated upload that was saved without an explanation.
+   * Best-effort — caller should not fail if this does.
+   */
+  async saveExplanationToAnalysis(
+    documentId: string,
+    medications: MedicationExplanation[],
+    doctorNotes: string[]
+  ): Promise<void> {
+    const supabase = await createClient()
+    await supabase
+      .from('document_analyses')
+      .update({
+        medications_found: medications as unknown as Json,
+        recommendations: doctorNotes as Json,
+      })
+      .eq('document_id', documentId)
   },
 }
