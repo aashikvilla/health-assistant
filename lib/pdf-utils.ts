@@ -1,10 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { PDFParse } = require('pdf-parse') as { PDFParse: new (opts: { data: Buffer }) => { getText: () => Promise<{ text: string }>; destroy: () => Promise<void> } }
+import { extractText, getDocumentProxy } from 'unpdf'
 
 export async function extractTextFromPDF(arrayBuffer: ArrayBuffer): Promise<string> {
-  const buffer = Buffer.from(arrayBuffer)
-  const parser = new PDFParse({ data: buffer })
-  const { text } = await parser.getText()
-  await parser.destroy()
+  const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer))
+  const { text } = await extractText(pdf, { mergePages: true })
   return text
 }

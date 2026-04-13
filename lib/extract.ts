@@ -190,7 +190,7 @@ export async function extractLabReportData(input: ImageInput | TextInput): Promi
     },
     body: JSON.stringify({
       model: 'google/gemma-4-26b-a4b-it',
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [
         {
           role: 'user',

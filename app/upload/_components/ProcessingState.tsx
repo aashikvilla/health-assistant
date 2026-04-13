@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 
 const STEPS = [
-  'Detecting text in image',
-  'Identifying medications & dosages',
-  'Structuring prescription data',
+  'Reading your document',
+  'Identifying key data',
+  'Structuring results',
   'Generating explanation',
 ]
 
@@ -36,7 +36,7 @@ export default function ProcessingState() {
         </div>
 
         <h2 className="text-2xl font-bold text-center mb-2" style={{ color: 'var(--nuskha-on-surface)', fontFamily: 'var(--font-jakarta)' }}>
-          Reading your prescription
+          Reading your document
         </h2>
         <p className="text-sm text-center mb-10" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.5, fontFamily: 'var(--font-manrope)' }}>
           This usually takes 3–5 seconds
