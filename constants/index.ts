@@ -1,7 +1,7 @@
 // App-wide constants. No magic strings in components.
 
-export const APP_NAME    = 'Nuskha'
-export const APP_TAGLINE = 'Upload, understand, and manage your family\'s prescriptions'
+export const APP_NAME    = 'Vitae'
+export const APP_TAGLINE = 'Your AI-powered family health record manager'
 
 export const ROUTES = {
   home:      '/',
