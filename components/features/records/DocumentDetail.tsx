@@ -140,7 +140,14 @@ export function DocumentDetail({ record, profileName }: DocumentDetailProps) {
             <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
               Medications · {medicationCount ?? medications.length}
             </h3>
-            <MedicationList medications={medications} />
+            {!hasMedications && (medicationCount ?? 0) > 0 ? (
+              <div className="bg-surface-subtle rounded-2xl p-4 text-center">
+                <p className="text-sm text-text-secondary">Medication details unavailable for this record.</p>
+                <p className="text-xs text-text-muted mt-1">Re-upload the prescription to extract details.</p>
+              </div>
+            ) : (
+              <MedicationList medications={medications} />
+            )}
           </section>
         )}
  
