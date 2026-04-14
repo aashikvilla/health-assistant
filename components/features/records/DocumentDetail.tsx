@@ -1,10 +1,11 @@
 // Server component
- 
+
 import Link from 'next/link'
 import type { RecordDetail } from '@/services/records.service'
 import type { LabTest }      from '@/types/lab-report'
 import { Badge }             from '@/components/ui'
 import { MedicationList }    from './MedicationList'
+import { ShareButton }       from '@/components/features/share'
  
 interface DocumentDetailProps {
   record:      RecordDetail
@@ -49,6 +50,7 @@ function LabTestRow({ test }: { test: LabTest }) {
  
 export function DocumentDetail({ record, profileName }: DocumentDetailProps) {
   const {
+    profileId,
     documentType,
     doctorName,
     documentDate,
@@ -86,9 +88,18 @@ export function DocumentDetail({ record, profileName }: DocumentDetailProps) {
           <h1 className="font-display text-base font-semibold text-text-primary">
             {docTypeLabel}
           </h1>
- 
-          {/* Spacer to keep title centred */}
-          <div className="w-10" aria-hidden="true" />
+
+          {hasMedications ? (
+            <ShareButton
+              doctorName={doctorName}
+              patientName={profileName}
+              date={documentDate}
+              medications={medications}
+              doctorNotes={recommendations}
+            />
+          ) : (
+            <div className="w-10" aria-hidden="true" />
+          )}
         </div>
       </nav>
  
