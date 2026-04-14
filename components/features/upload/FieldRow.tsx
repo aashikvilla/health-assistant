@@ -4,13 +4,15 @@ import { useState } from 'react'
 import type { Confidence } from '@/types/prescription'
 
 interface Props {
-  label:    string
-  value:    string
+  label:      string
+  value:      string
   confidence: Confidence
-  onChange: (val: string) => void
+  onChange:   (val: string) => void
+  required?:  boolean
 }
 
-export default function FieldRow({ label, value, confidence, onChange }: Props) {
+export default function FieldRow({ label, value, confidence, onChange, required = false }: Props) {
+  const isEmpty = !value?.trim()
   const [editing, setEditing] = useState(false)
   const [draft,   setDraft]   = useState(value)
 
@@ -22,9 +24,19 @@ export default function FieldRow({ label, value, confidence, onChange }: Props) 
   return (
     <div className="flex items-start gap-3 py-4 min-h-[64px]">
 
-      {/* Confidence indicator */}
+      {/* Confidence / required indicator */}
       <div className="flex-shrink-0 mt-1">
-        {confidence === 'high' ? (
+        {required && isEmpty ? (
+          <span
+            className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-error-subtle"
+            title="Required — tap to fill in"
+            aria-label="Required field"
+          >
+            <svg className="w-3.5 h-3.5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v4m0 4h.01" />
+            </svg>
+          </span>
+        ) : confidence === 'high' ? (
           <span
             className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-subtle"
             title="Looks good"

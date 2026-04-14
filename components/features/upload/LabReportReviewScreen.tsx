@@ -47,6 +47,8 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
     ...report.tests.map((t) => (t.confidence === 'low' ? 1 : 0)),
   ].reduce((a, b) => a + b, 0)
 
+  const missingRequired = report.tests.some((t) => !t.result?.trim())
+
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="flex-1 px-5 pt-7 pb-32 flex flex-col gap-5 max-w-2xl mx-auto w-full">
@@ -131,6 +133,7 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
                     value={`${test.result}${test.unit ? ' ' + test.unit : ''}`}
                     confidence={test.confidence}
                     onChange={(v) => updateTest(i, 'result', v)}
+                    required
                   />
                   <FieldRow
                     label="Reference Range"
@@ -153,11 +156,17 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
       {/* ── Sticky action bar ──────────────────────────────────── */}
       <div className="fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-sm px-5 py-4 pb-safe border-t border-border-subtle">
         <div className="max-w-2xl mx-auto flex flex-col gap-3">
+          {missingRequired && (
+            <p className="text-sm text-error text-center font-medium">
+              Please fill in all test result values before continuing.
+            </p>
+          )}
           <Button
             onClick={() => onConfirm(report)}
             variant="primary"
             size="lg"
             fullWidth
+            disabled={missingRequired}
             className="min-h-[60px] text-xl rounded-2xl"
           >
             Yes, This Looks Right →

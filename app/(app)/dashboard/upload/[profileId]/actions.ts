@@ -21,7 +21,8 @@ export type SaveUploadResult =
 export async function savePrescription(
   profileId: string,
   data: PrescriptionData,
-  fileUrl: string = 'ocr-extracted'
+  fileUrl: string = 'ocr-extracted',
+  explanation?: PrescriptionExplanation
 ): Promise<SaveUploadResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -37,7 +38,8 @@ export async function savePrescription(
     profileId,
     'prescription',
     data,
-    fileUrl
+    fileUrl,
+    explanation
   )
 
   if (!result.success) return { success: false, error: result.error ?? 'Save failed' }
