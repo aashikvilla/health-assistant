@@ -25,14 +25,20 @@ export default async function AppLayout({
 
   if (!user) redirect('/auth')
 
-  // Ensure self-profile + family group exist for this user.
-  // Idempotent — one fast DB lookup and early-return if already set up.
-  // This is the safety net for every sign-in path (email, OAuth, confirmation link).
-  const setupResult = await familyService.ensureSelfProfile(user.id, user.email ?? '')
-  if (!setupResult.success) {
-    // Surface the error rather than silently proceeding — a missing family group
-    // breaks all profile and document operations downstream.
-    throw new Error(`Profile setup failed: ${setupResult.error}`)
+  // In dev bypass mode, skip ensureSelfProfile — Supabase DB calls would fail
+  // with placeholder keys. The mock user is good enough for UI development.
+  const isDevBypass = process.env.DEV_BYPASS_AUTH === 'true' && process.env.NODE_ENV === 'development'
+
+  if (!isDevBypass) {
+    // Ensure self-profile + family group exist for this user.
+    // Idempotent — one fast DB lookup and early-return if already set up.
+    // This is the safety net for every sign-in path (email, OAuth, confirmation link).
+    const setupResult = await familyService.ensureSelfProfile(user.id, user.email ?? '')
+    if (!setupResult.success) {
+      // Surface the error rather than silently proceeding — a missing family group
+      // breaks all profile and document operations downstream.
+      throw new Error(`Profile setup failed: ${setupResult.error}`)
+    }
   }
 
   // Onboarding gate — redirect new users to collect their full name.
