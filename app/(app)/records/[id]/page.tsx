@@ -5,7 +5,7 @@ import { recordsService } from '@/services/records.service'
 import { familyService }  from '@/services/family.service'
 import { DocumentDetail } from '@/components/features/records/DocumentDetail'
  
-export const metadata: Metadata = { title: 'Record — Nuskha' }
+export const metadata: Metadata = { title: 'Record — Vitae' }
  
 export default async function RecordPage({
   params,
@@ -23,7 +23,7 @@ export default async function RecordPage({
     familyService.getProfiles(user.id),
   ])
  
-  if (!recordResult.success || !recordResult.data) redirect('/hub')
+  if (!recordResult.success || !recordResult.data) redirect('/dashboard')
  
   const profile = profilesResult.data?.find(
     (p) => p.id === recordResult.data!.profileId
