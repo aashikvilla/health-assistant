@@ -144,16 +144,14 @@ export default async function ExplanationPage({
         )}
 
         {/* ── WhatsApp share ── */}
-        {medications.length > 0 && (
-          <ShareButton
-            doctorName={prescription.doctorName}
-            patientName={prescription.patientName}
-            date={prescription.date ? formatDate(prescription.date) : null}
-            medications={medications}
-            doctorNotes={doctorNotes}
-            variant="full"
-          />
-        )}
+        <ShareButton
+          doctorName={prescription.doctorName}
+          patientName={prescription.patientName}
+          date={prescription.date ? formatDate(prescription.date) : null}
+          medications={prescription.medications}
+          doctorNotes={prescription.doctorNotes}
+          variant="full"
+        />
       </section>
 
       {/* ── Sticky bottom CTAs ── */}
