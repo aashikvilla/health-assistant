@@ -1,7 +1,7 @@
 import { redirect }                    from 'next/navigation'
 import { createClient }               from '@/lib/supabase/server'
 import { familyService }              from '@/services/family.service'
-import { ProfileWheel }               from '@/components/features/family/ProfileWheel'
+import { ProfileSectionWithEdit }      from '@/components/features/family/ProfileSectionWithEdit'
 import { PrescriptionListItem }       from '@/components/features/family/PrescriptionListItem'
 import { EmptyPrescriptions }         from '@/components/features/family/EmptyPrescriptions'
 import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
@@ -69,10 +69,10 @@ async function fetchActiveMedications(
 async function fetchLabAlerts(
   supabase: Awaited<ReturnType<typeof createClient>>,
   profileId: string
-): Promise<{ values: OutOfRangeValue[]; reportDate: string | null }> {
+): Promise<{ values: OutOfRangeValue[]; reportDate: string | null; documentId: string | null }> {
   const { data } = await supabase
     .from('documents')
-    .select('document_date, document_analyses ( values_out_of_range )')
+    .select('id, document_date, document_analyses ( values_out_of_range )')
     .eq('profile_id', profileId)
     .eq('document_type', 'lab_report')
     .not('document_date', 'is', null)
@@ -80,15 +80,16 @@ async function fetchLabAlerts(
     .limit(1)
     .maybeSingle()
 
-  if (!data) return { values: [], reportDate: null }
+  if (!data) return { values: [], reportDate: null, documentId: null }
 
   const doc = data as unknown as {
+    id: string
     document_date: string | null
     document_analyses: { values_out_of_range: OutOfRangeValue[] | null }[]
   }
 
   const values = doc.document_analyses?.[0]?.values_out_of_range ?? []
-  return { values, reportDate: doc.document_date }
+  return { values, reportDate: doc.document_date, documentId: doc.id }
 }
 
 // ── Page ───────────────────────────────────────────────────────────────────────
@@ -151,16 +152,11 @@ export default async function HubPage({ searchParams }: HubPageProps) {
         </div>
 
         {/* ── Profile Wheel ──────────────────────────────────────── */}
-        <section aria-labelledby="profiles-heading">
-          <h2 id="profiles-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-            Family Profiles
-          </h2>
-          <ProfileWheel
-            profiles={profiles}
-            activeProfileId={activeProfile.id}
-            baseHref="/dashboard"
-          />
-        </section>
+        <ProfileSectionWithEdit
+          profiles={profiles}
+          activeProfile={activeProfile}
+          baseHref="/dashboard"
+        />
 
         {/* ── Active Medications ─────────────────────────────────── */}
         <ActiveMedicationsStrip
@@ -175,6 +171,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
           reportDate={labAlerts.reportDate}
           profileName={activeProfile.full_name}
           isSelf={activeProfile.is_self}
+          documentId={labAlerts.documentId}
         />
 
         {/* ── Prescriptions ──────────────────────────────────────── */}

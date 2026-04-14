@@ -1,22 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import { Plus_Jakarta_Sans, Manrope } from 'next/font/google'
 import { ServiceWorkerRegistration } from '@/components/layout/ServiceWorkerRegistration'
 import { PWAInstallBanner } from '@/components/layout/PWAInstallBanner'
 import './globals.css'
-
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: '--font-plus-jakarta',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  display: 'swap',
-})
-
-const manrope = Manrope({
-  variable: '--font-manrope',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-})
 
 // ─── Viewport (PWA + mobile) ──────────────────────────────────────────────────
 
@@ -32,11 +17,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default:  'Nuskha',
-    template: '%s | Nuskha',
+    default:  'Vitae',
+    template: '%s | Vitae',
   },
-  description: 'Upload, understand, and manage your family\'s prescriptions with AI',
-  applicationName: 'Nuskha',
+  description: 'Your AI-powered family health record manager',
+  applicationName: 'Vitae',
   keywords: ['health', 'prescription', 'medicine', 'family', 'medical records'],
   manifest: '/manifest.webmanifest',
 
@@ -44,15 +29,15 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Nuskha',
+    title: 'Vitae',
   },
 
   // Open Graph
   openGraph: {
     type: 'website',
-    siteName: 'Nuskha',
-    title: 'Nuskha — Family Prescription Manager',
-    description: 'Upload, understand, and manage your family\'s prescriptions with AI',
+    siteName: 'Vitae',
+    title: 'Vitae — Family Health Record Manager',
+    description: 'Your AI-powered family health record manager',
   },
 
   // Icons
@@ -70,7 +55,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${manrope.variable} h-full antialiased`}
+      className="h-full antialiased"
       style={{ colorScheme: 'light' }}
     >
       <body className="min-h-full flex flex-col bg-surface text-text-primary">

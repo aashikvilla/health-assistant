@@ -241,6 +241,12 @@ export const familyService = {
           try { await supabase.from('profile_memberships').insert(memberships) } catch { /* ignore */ }
         }
 
+        // Ensure users_profile row exists for this account
+        await supabase.from('users_profile').upsert(
+          { user_id: userId, full_name: (claimable as unknown as FamilyProfile).full_name ?? email.split('@')[0], onboarding_completed: false },
+          { onConflict: 'user_id', ignoreDuplicates: true }
+        )
+
         return {
           data: {
             ...(claimable as unknown as FamilyProfile),
@@ -304,6 +310,12 @@ export const familyService = {
       await supabase.from('family_groups').delete().eq('id', groupId)
       return { data: null, error: memberErr.message, success: false }
     }
+
+    // Ensure users_profile row exists for this new account (best-effort — non-fatal)
+    await supabase.from('users_profile').upsert(
+      { user_id: userId, full_name: name, onboarding_completed: false },
+      { onConflict: 'user_id', ignoreDuplicates: true }
+    )
 
     // Fetch the created profile to return (now the membership exists, SELECT policy passes)
     const { data: profile } = await supabase

@@ -76,7 +76,7 @@ export function DocumentDetail({ record, profileName }: DocumentDetailProps) {
       <nav className="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-lg pt-safe">
         <div className="flex items-center justify-between px-4 h-14">
           <Link
-            href="/hub"
+            href="/dashboard"
             className="touch-target flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary hover:bg-surface-subtle transition-colors"
             aria-label="Back to hub"
           >
@@ -167,7 +167,7 @@ export function DocumentDetail({ record, profileName }: DocumentDetailProps) {
         {hasRecommendations && (
           <section>
             <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-              Things to tell your doctor
+              {isPrescription ? 'Things to tell your doctor' : 'Things to follow'}
             </h3>
             <ul
               className="bg-surface-container-lowest rounded-2xl p-4 space-y-2"
