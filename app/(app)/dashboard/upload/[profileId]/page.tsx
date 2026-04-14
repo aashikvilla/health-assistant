@@ -19,7 +19,7 @@ import { useState, useTransition, use } from 'react'
 import { useRouter }      from 'next/navigation'
 import { createClient }   from '@/lib/supabase/client'
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
-import type { LabReportData }    from '@/types/lab-report'
+import type { LabReportData, LabReportExplanation } from '@/types/lab-report'
 import UploadPicker      from '@/components/features/upload/UploadPicker'
 import ProcessingState   from '@/components/features/upload/ProcessingState'
 import ReviewScreen      from '@/components/features/upload/ReviewScreen'
@@ -29,6 +29,7 @@ import {
   DoctorNotes,
   DisclaimerBanner,
   ExplanationActions,
+  AbnormalMarkerCard,
 } from '@/components/features/explanation'
 import { savePrescription, saveLabReport } from './actions'
 
@@ -75,8 +76,10 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [error, setError]               = useState<string | null>(null)
   const [saveError, setSaveError]       = useState<string | null>(null)
-  const [explanation, setExplanation]   = useState<PrescriptionExplanation | null>(null)
-  const [explainError, setExplainError] = useState<string | null>(null)
+  const [explanation, setExplanation]         = useState<PrescriptionExplanation | null>(null)
+  const [explainError, setExplainError]       = useState<string | null>(null)
+  const [labExplanation, setLabExplanation]   = useState<LabReportExplanation | null>(null)
+  const [labExplainError, setLabExplainError] = useState<string | null>(null)
   const [showNotMedicalModal, setShowNotMedicalModal] = useState(false)
 
   // ── OCR / extraction ───────────────────────────────────────────────────────
@@ -140,6 +143,8 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
     setSaveError(null)
     setExplanation(null)
     setExplainError(null)
+    setLabExplanation(null)
+    setLabExplainError(null)
     setStep('pick')
   }
 
@@ -189,7 +194,32 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
     })
   }
 
-  function handleConfirmLabReport(data: LabReportData) {
+  async function handleConfirmLabReport(data: LabReportData) {
+    setLabReport(data)
+    setLabExplainError(null)
+    setLabExplanation(null)
+    setStep('explaining')
+
+    try {
+      const res = await fetch('/api/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      if (!res.ok) {
+        const { error: msg } = await res.json()
+        throw new Error(msg ?? 'Failed to analyse lab report')
+      }
+
+      setLabExplanation(await res.json() as LabReportExplanation)
+    } catch (err) {
+      setLabExplainError(err instanceof Error ? err.message : 'Something went wrong')
+    }
+  }
+
+  function handleSaveFromLabExplanation() {
+    if (!labReport) return
     setSaveError(null)
     setStep('saving')
     startTransition(async () => {
@@ -197,13 +227,13 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         ? (await uploadToStorage(selectedFile)) ?? 'ocr-extracted'
         : 'ocr-extracted'
 
-      const result = await saveLabReport(profileId, data, fileUrl)
+      const result = await saveLabReport(profileId, labReport, fileUrl, labExplanation ?? undefined)
       if (!result.success) {
         setSaveError(result.error)
-        setStep('review')
+        setStep('explaining')
         return
       }
-      router.push(`/dashboard?profile=${profileId}`)
+      router.push(`/records/${result.documentId}`)
     })
   }
 
@@ -259,8 +289,11 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         />
       )}
 
-      {/* S05 — AI Explanation */}
-      {step === 'explaining' && !explanation && !explainError && (
+      {/* S05 — AI Explanation / Analysis loading */}
+      {step === 'explaining' && (
+        (documentType === 'prescription' && !explanation && !explainError) ||
+        (documentType === 'lab_report' && !labExplanation && !labExplainError)
+      ) && (
         <div className="min-h-screen bg-surface flex items-center justify-center">
           <div className="text-center space-y-4">
             <div
@@ -268,13 +301,13 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
               style={{ borderColor: 'var(--nuskha-primary)', borderTopColor: 'transparent' }}
             />
             <p className="text-sm font-body" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.5 }}>
-              Generating explanation...
+              {documentType === 'lab_report' ? 'Analysing your report...' : 'Generating explanation...'}
             </p>
           </div>
         </div>
       )}
 
-      {step === 'explaining' && explainError && (
+      {step === 'explaining' && documentType === 'prescription' && explainError && (
         <div className="min-h-screen bg-surface flex items-center justify-center px-5">
           <div className="text-center space-y-4 max-w-xs">
             <p className="text-sm text-error font-body">{explainError}</p>
@@ -296,7 +329,96 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         </div>
       )}
 
-      {step === 'explaining' && explanation && (
+      {step === 'explaining' && documentType === 'lab_report' && labExplainError && (
+        <div className="min-h-screen bg-surface flex items-center justify-center px-5">
+          <div className="text-center space-y-4 max-w-xs">
+            <p className="text-sm text-error font-body">{labExplainError}</p>
+            <div className="space-y-2">
+              <button
+                onClick={() => labReport && handleConfirmLabReport(labReport)}
+                className="text-primary text-sm font-medium font-body underline"
+              >
+                Try again
+              </button>
+              <button
+                onClick={() => setStep('review')}
+                className="block mx-auto text-text-secondary text-sm font-body"
+              >
+                Go back to review
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {step === 'explaining' && documentType === 'lab_report' && labExplanation && (
+        <main className="min-h-screen bg-surface flex flex-col">
+          <nav className="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-lg pt-safe">
+            <div className="flex items-center justify-between px-4 h-14">
+              <button
+                onClick={() => setStep('review')}
+                className="touch-target flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary hover:bg-surface-subtle transition-colors"
+                aria-label="Go back"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <h1 className="font-display text-base font-semibold text-text-primary">Your Lab Report</h1>
+              <div className="w-10" />
+            </div>
+          </nav>
+
+          <div className="px-5 pt-3 pb-2">
+            <p className="font-body text-sm text-text-muted">
+              {labExplanation.doctorName ? `Referred by ${labExplanation.doctorName} · ` : ''}
+              For {labExplanation.patientName || 'You'}
+            </p>
+          </div>
+
+          <div className="px-5 pb-4">
+            <DisclaimerBanner doctorName={labExplanation.doctorName || 'your doctor'} />
+          </div>
+
+          <section className="flex-1 px-5 pt-4 pb-28 space-y-4">
+            {labExplanation.abnormalMarkers.length > 0 ? (
+              <>
+                <h2 className="font-display text-lg font-semibold text-text-primary">
+                  Parameters Outside Normal Range ({labExplanation.abnormalMarkers.length})
+                </h2>
+                {labExplanation.abnormalMarkers.map((marker) => (
+                  <AbnormalMarkerCard key={marker.id} marker={marker} />
+                ))}
+              </>
+            ) : (
+              <div className="bg-success-subtle rounded-2xl p-5 flex items-start gap-3">
+                <svg className="w-6 h-6 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-display text-base font-semibold text-success">All Clear</p>
+                  <p className="font-body text-sm text-text-secondary mt-1 leading-relaxed">
+                    All your test results are within normal range. Great news!
+                  </p>
+                </div>
+              </div>
+            )}
+            <DoctorNotes notes={labExplanation.doctorNotes} title="Things to follow" />
+          </section>
+
+          <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface-container-lowest/80 backdrop-blur-lg px-5 py-4 pb-safe">
+            <button
+              onClick={handleSaveFromLabExplanation}
+              disabled={isPending}
+              className="w-full h-14 bg-primary text-primary-foreground font-semibold rounded-2xl hover:opacity-90 disabled:opacity-60 transition-opacity"
+            >
+              {isPending ? 'Saving…' : 'Save Lab Report'}
+            </button>
+          </div>
+        </main>
+      )}
+
+      {step === 'explaining' && documentType === 'prescription' && explanation && (
         <main className="min-h-screen bg-surface">
           <div className="px-5 pt-3 pb-2">
             <p className="font-body text-sm text-text-muted">

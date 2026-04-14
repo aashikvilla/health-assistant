@@ -25,7 +25,7 @@ function AuthForm() {
   const info     = stateInfo(signUpState)
 
   return (
-    <div className="w-full max-w-md bg-surface-lowest rounded-2xl shadow-md p-8 space-y-6">
+    <div className="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-md p-8 space-y-6">
 
       {/* Logo */}
       <div className="text-center space-y-2">
@@ -44,7 +44,7 @@ function AuthForm() {
           onClick={() => setIsSignUp(false)}
           className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
             !isSignUp
-              ? 'bg-surface-lowest text-text-primary shadow-xs'
+              ? 'bg-surface-container-lowest text-text-primary shadow-xs'
               : 'text-text-muted hover:text-text-secondary'
           }`}
         >
@@ -55,7 +55,7 @@ function AuthForm() {
           onClick={() => setIsSignUp(true)}
           className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
             isSignUp
-              ? 'bg-surface-lowest text-text-primary shadow-xs'
+              ? 'bg-surface-container-lowest text-text-primary shadow-xs'
               : 'text-text-muted hover:text-text-secondary'
           }`}
         >
@@ -65,6 +65,7 @@ function AuthForm() {
 
       {/* Google OAuth — secondary button style, no border */}
       <form action={signInWithGoogle}>
+        <input type="hidden" name="returnTo" value={returnTo} />
         <button
           type="submit"
           className="w-full flex items-center justify-center gap-3 h-11 px-4 bg-surface-subtle text-text-primary text-sm font-medium rounded-xl hover:bg-surface-muted transition-colors"
@@ -98,7 +99,7 @@ function AuthForm() {
               type="email"
               required
               placeholder="you@example.com"
-              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-lowest focus:ring-1 focus:ring-black/20"
+              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-black/20"
             />
           </div>
           <div className="space-y-1.5">
@@ -110,7 +111,7 @@ function AuthForm() {
               required
               minLength={6}
               placeholder="Min. 6 characters"
-              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-lowest focus:ring-1 focus:ring-black/20"
+              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-black/20"
             />
           </div>
           {info && (
@@ -140,7 +141,7 @@ function AuthForm() {
               type="email"
               required
               placeholder="you@example.com"
-              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-lowest focus:ring-1 focus:ring-black/20"
+              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-black/20"
             />
           </div>
           <div className="space-y-1.5">
@@ -151,7 +152,7 @@ function AuthForm() {
               type="password"
               required
               placeholder="Your password"
-              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-lowest focus:ring-1 focus:ring-black/20"
+              className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted transition-all focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-black/20"
             />
           </div>
           {error && (
@@ -185,7 +186,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center px-4">
       <Suspense fallback={
-        <div className="w-full max-w-md bg-surface-lowest rounded-2xl shadow-md p-8 h-96 animate-pulse" />
+        <div className="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-md p-8 h-96 animate-pulse" />
       }>
         <AuthForm />
       </Suspense>

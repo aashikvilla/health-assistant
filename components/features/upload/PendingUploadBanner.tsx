@@ -48,7 +48,7 @@ export function PendingUploadBanner() {
           return
         }
         localStorage.removeItem(PENDING_KEY)
-        router.push('/dashboard')
+        router.push(`/records/${result.documentId}`)
       })
     })
   }

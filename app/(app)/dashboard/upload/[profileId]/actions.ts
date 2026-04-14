@@ -53,7 +53,8 @@ export async function savePrescription(
 export async function saveLabReport(
   profileId: string,
   data: LabReportData,
-  fileUrl: string = 'ocr-extracted'
+  fileUrl: string = 'ocr-extracted',
+  labExplanation?: LabReportExplanation
 ): Promise<SaveUploadResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -68,7 +69,9 @@ export async function saveLabReport(
     profileId,
     'lab_report',
     data,
-    fileUrl
+    fileUrl,
+    undefined,
+    labExplanation
   )
 
   if (!result.success) return { success: false, error: result.error ?? 'Save failed' }

@@ -19,13 +19,13 @@ export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {}
 
 const variants: Record<Variant, string> = {
   // Interactive card — #ffffff pops against #f7f9ff surface base. No border needed.
-  default:  'bg-surface-lowest',
+  default:  'bg-surface-container-lowest',
   // Grouping area — sits recessed on the page
   subtle:   'bg-surface-subtle',
   // Accessibility fallback — ghost border at 15% opacity (design.md rule)
-  outlined: 'bg-surface-lowest ring-1 ring-black/[0.15]',
+  outlined: 'bg-surface-container-lowest ring-1 ring-black/[0.15]',
   // Floating element — ambient shadow only, no muddy drop shadow
-  elevated: 'bg-surface-lowest shadow-md',
+  elevated: 'bg-surface-container-lowest shadow-md',
 }
 
 const paddings = {

@@ -192,22 +192,6 @@ export const documentsService = {
       }
     }
 
-    // 5. Write a timeline event (best-effort — non-fatal)
-
-    const eventDate = buildDocDate(data, type) ?? new Date().toISOString().split('T')[0]
-    const doctorLabel = buildDoctorName(data, type)
-    await supabase.from('timeline_events').insert({
-      user_id: userId,
-      profile_id: profileId,
-      event_type: type === 'prescription' ? 'document' : 'lab_report',
-      event_date: eventDate,
-      title: type === 'prescription'
-        ? `Prescription from ${doctorLabel ?? 'Unknown Doctor'}`
-        : `Lab report${doctorLabel ? ` from ${doctorLabel}` : ''}`,
-      description: summary,
-      source_document_id: doc.id,
-    })
-
     return { data: doc, error: null, success: true }
   },
 

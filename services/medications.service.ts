@@ -25,7 +25,6 @@ export const medicationsService = {
     let query = supabase
       .from('medications')
       .select('id, user_id, profile_id, name, dosage, frequency, start_date, end_date, status, source_document_id, created_at')
-      .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
     if (profileId) {

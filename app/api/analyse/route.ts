@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { LabReportData } from '@/types/lab-report'
 import type { LabReportExplanation } from '@/types/lab-report'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+const RATE_LIMIT     = 100
+const RATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
 
 const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true'
 
@@ -114,6 +118,14 @@ async function callModel(apiKey: string, model: string, prompt: string): Promise
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (!checkRateLimit(ip, RATE_LIMIT, RATE_WINDOW_MS)) {
+    return NextResponse.json({ error: 'Too many requests' }, {
+      status: 429,
+      headers: { 'Retry-After': String(Math.ceil(RATE_WINDOW_MS / 1000)) },
+    })
+  }
+
   try {
     const report: LabReportData = await req.json()
 

@@ -122,7 +122,6 @@ export const recordsService = {
         document_analyses ( summary, medications_found, recommendations, key_findings )
       `)
             .eq('id', id)
-            .eq('user_id', userId)
             .maybeSingle()
 
         if (rawDoc) {
@@ -190,7 +189,6 @@ export const recordsService = {
             .from('prescriptions')
             .select('*')
             .eq('id', id)
-            .eq('user_id', userId)
             .maybeSingle()
 
         if (rx) {
@@ -209,7 +207,6 @@ export const recordsService = {
                     .select('id, document_analyses ( summary, medications_found, recommendations )')
                     .eq('profile_id', p.profile_id)
                     .eq('document_type', 'prescription')
-                    .eq('user_id', userId)
 
                 if (p.doctor_name)      docQuery = docQuery.eq('doctor_name', p.doctor_name)
                 if (p.prescription_date) docQuery = docQuery.eq('document_date', p.prescription_date)
@@ -269,7 +266,6 @@ export const recordsService = {
                 document_analyses ( medications_found, recommendations )
             `)
             .eq('id', id)
-            .eq('user_id', userId)
             .eq('document_type', 'prescription')
             .maybeSingle()
 
@@ -393,7 +389,6 @@ export const recordsService = {
         doctor_name, tags, created_at,
         document_analyses ( summary )
       `)
-            .eq('user_id', userId)
             .order('document_date', { ascending: false, nullsFirst: false })
             .limit(100)
 

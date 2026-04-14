@@ -52,15 +52,16 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   return { info: 'Check your email! We sent you a confirmation link to finish signing up.' }
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(formData: FormData) {
   const supabase = await createClient()
-  const origin = (await headers()).get('origin')
+  const origin   = (await headers()).get('origin')
+  const returnTo = (formData.get('returnTo') as string | null) ?? '/dashboard'
+
+  const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(returnTo)}`
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: `${origin}/auth/callback`,
-    },
+    options: { redirectTo: callbackUrl },
   })
 
   if (error || !data.url) redirect('/auth?error=google_auth_failed')
