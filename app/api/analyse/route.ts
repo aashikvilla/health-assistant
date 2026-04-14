@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { LabReportData } from '@/types/lab-report'
-import type { LabReportExplanation } from '@/types/lab-report'
+import type { LabReportData, LabReportExplanation } from '@/types/lab-report'
 import { checkRateLimit } from '@/lib/rate-limit'
-
-const RATE_LIMIT     = 100
-const RATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
-
-const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true'
+import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 
 const FREE_MODELS = [
   'google/gemma-4-31b-it:free',
@@ -16,37 +11,6 @@ const FREE_MODELS = [
   'meta-llama/llama-3.3-70b-instruct:free',
   'google/gemma-3-27b-it:free',
 ]
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function buildMockAnalysis(data: LabReportData): LabReportExplanation {
-  const abnormal = data.tests
-    .filter((t) => t.status === 'low' || t.status === 'high' || t.status === 'critical')
-    .map((t, i) => ({
-      id: `marker-${i}`,
-      name: t.testName,
-      value: t.result,
-      unit: t.unit,
-      status: t.status as 'low' | 'high' | 'critical',
-      referenceRange: t.referenceRange,
-      explanation: `Your ${t.testName} is ${t.status === 'low' ? 'below' : 'above'} the normal range. This is something to discuss with your doctor at your next visit.`,
-    }))
-
-  return {
-    patientName: data.patientName || 'Patient',
-    labName: data.labName || 'Lab',
-    testDate: data.testDate || new Date().toLocaleDateString('en-IN'),
-    doctorName: data.doctorName || 'your doctor',
-    abnormalMarkers: abnormal,
-    doctorNotes: [
-      'Bring this report to your next doctor visit for review.',
-      'Do not stop or change any medication based on these results without consulting your doctor.',
-      'If you feel unwell or notice new symptoms, contact your doctor promptly.',
-    ],
-  }
-}
 
 function stripJsonFences(text: string): string {
   return text
@@ -128,11 +92,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const report: LabReportData = await req.json()
-
-    if (DEV_MODE) {
-      await sleep(1500)
-      return NextResponse.json(buildMockAnalysis(report))
-    }
 
     const apiKey = process.env.OPENROUTER_API_KEY
     if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set')

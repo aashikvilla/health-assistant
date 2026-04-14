@@ -24,10 +24,6 @@ export async function createProfile(
   if (!name)         return { error: 'Name is required.' }
   if (!relationship) return { error: 'Relationship is required.' }
 
-  if (process.env.DEV_BYPASS_AUTH === 'true' && process.env.NODE_ENV === 'development') {
-    redirect('/dashboard')
-  }
-
   const result = await familyService.createProfile(user.id, { name, relationship, dob, email })
 
   if (!result.success) return { error: result.error }

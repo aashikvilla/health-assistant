@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
-import type { MedicationExplanation } from '@/types/analysis'
 import { checkRateLimit } from '@/lib/rate-limit'
-
-const RATE_LIMIT     = 100
-const RATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
-
-const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true'
+import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 
 // Tried in order — skips to next on 429 rate limit
 const FREE_MODELS = [
@@ -17,40 +12,6 @@ const FREE_MODELS = [
   'meta-llama/llama-3.3-70b-instruct:free',
   'google/gemma-3-27b-it:free',
 ]
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function buildMockExplanation(data: PrescriptionData): PrescriptionExplanation {
-  const medications: (MedicationExplanation & { id: string })[] = data.medications.map((m, i) => ({
-    id: `med-${i}`,
-    name: m.name,
-    dosage: m.dosage,
-    frequency: m.dosage,
-    treats: `Prescribed for ${data.illness || 'your condition'}.`,
-    how_to_take: m.duration
-      ? `Take as directed for ${m.duration}. Follow your doctor's instructions carefully.`
-      : 'Take as directed by your doctor.',
-    side_effects: 'May cause mild nausea or dizziness. Contact your doctor if symptoms are severe or persist.',
-    avoid: 'Avoid alcohol while taking this medication. Inform your doctor of any other medicines you are taking.',
-  }))
-
-  return {
-    id: 'preview',
-    doctorName: data.doctor || 'Your Doctor',
-    date: data.date || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-    patientName: 'You',
-    disclaimerDoctorName: data.doctor || 'your doctor',
-    medications,
-    doctorNotes: [
-      `Complete the full course as prescribed${data.doctor ? ` by ${data.doctor}` : ''}.`,
-      'Report any unusual side effects or allergic reactions immediately.',
-      data.illness ? `Monitor your ${data.illness} symptoms and note any changes.` : 'Track your symptoms daily.',
-      'Do not stop or adjust dosage without consulting your doctor first.',
-    ],
-  }
-}
 
 function stripJsonFences(text: string): string {
   return text
@@ -126,11 +87,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const prescription: PrescriptionData = await req.json()
-
-    if (DEV_MODE) {
-      await sleep(1500)
-      return NextResponse.json(buildMockExplanation(prescription))
-    }
 
     const apiKey = process.env.OPENROUTER_API_KEY
     if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set')
