@@ -129,7 +129,35 @@ export const recordsService = {
             // Cast: shape is known from the select above
             const d = rawDoc as unknown as DocWithAnalysis
             const analysis = d.document_analyses?.[0] ?? null
-            const meds = (analysis?.medications_found as MedicationExplanation[]) ?? []
+            const storedMeds = (analysis?.medications_found as unknown[]) ?? []
+
+            // Detect rich MedicationExplanation[] vs raw OCR Medication[]:
+            // rich format has 'treats'; raw OCR format has 'duration'/'confidence'.
+            const isRichExplanation =
+                storedMeds.length > 0 &&
+                'treats' in (storedMeds[0] as Record<string, unknown>)
+
+            let meds: MedicationExplanation[] = isRichExplanation
+                ? (storedMeds as MedicationExplanation[])
+                : []
+
+            // Fall back to medications table when JSONB is empty or raw OCR format
+            if (meds.length === 0 && d.document_type === 'prescription') {
+                const { data: medRows } = await supabase
+                    .from('medications')
+                    .select('name, dosage, frequency')
+                    .eq('source_document_id', d.id)
+
+                meds = (medRows ?? []).map((m) => ({
+                    name: m.name,
+                    dosage: m.dosage ?? '',
+                    frequency: m.frequency ?? '',
+                    treats: '',
+                    how_to_take: '',
+                    side_effects: '',
+                    avoid: '',
+                }))
+            }
 
             // Lab tests live in key_findings.tests (set by documents.service.ts for lab_report type)
             const keyFindings = analysis?.key_findings as Record<string, unknown> | null
@@ -288,9 +316,25 @@ export const recordsService = {
         }
 
         // Build minimal PrescriptionData from stored OCR fields for on-demand generation
-        const rawMeds = (storedMeds as Partial<Medication>[]).filter(
+        let rawMeds = (storedMeds as Partial<Medication>[]).filter(
             (m): m is Medication => typeof m.name === 'string'
         )
+
+        // If JSONB has no usable medication data, fall back to medications table
+        if (rawMeds.length === 0) {
+            const { data: medRows } = await supabase
+                .from('medications')
+                .select('name, dosage, frequency')
+                .eq('source_document_id', d.id)
+
+            rawMeds = (medRows ?? []).map((m) => ({
+                name: m.name,
+                dosage: m.dosage ?? '',
+                duration: m.frequency ?? '',
+                confidence: 'high' as const,
+            }))
+        }
+
         const rawPrescriptionData: PrescriptionData = {
             doctor: d.doctor_name ?? '',
             doctorConfidence: 'high',

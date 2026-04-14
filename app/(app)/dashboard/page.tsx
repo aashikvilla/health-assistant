@@ -32,16 +32,11 @@ async function fetchActiveMedications(
   supabase: Awaited<ReturnType<typeof createClient>>,
   profileId: string
 ): Promise<Medication[]> {
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-  const since = thirtyDaysAgo.toISOString()
-
   const { data } = await supabase
     .from('medications')
     .select('name, dosage, frequency')
     .eq('profile_id', profileId)
     .eq('status', 'active')
-    .gte('created_at', since)
     .order('created_at', { ascending: false })
 
   if (!data) return []

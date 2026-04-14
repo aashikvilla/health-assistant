@@ -17,7 +17,7 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
         <h2 id="active-meds-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider">
           {label} Active Medications
         </h2>
-        <span className="text-xs text-text-muted">Last 30 days</span>
+        <span className="text-xs text-text-muted">Active</span>
       </div>
 
       <div className="rounded-2xl bg-surface-subtle border border-border p-4 flex flex-col gap-3">
