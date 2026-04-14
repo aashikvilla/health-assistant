@@ -78,8 +78,7 @@ export async function deleteDocument(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated.' }
 
-  const documentId    = formData.get('document_id') as string | null
-  const prescriptionId = formData.get('prescription_id') as string | null
+  const documentId = formData.get('document_id') as string | null
 
   // Delete document row (document_analyses cascade-deletes via FK)
   if (documentId) {
@@ -87,11 +86,6 @@ export async function deleteDocument(
     await supabase.from('timeline_events').delete().eq('source_document_id', documentId)
     await supabase.from('document_analyses').delete().eq('document_id', documentId)
     await supabase.from('documents').delete().eq('id', documentId).eq('user_id', user.id)
-  }
-
-  // Delete prescriptions row
-  if (prescriptionId) {
-    await supabase.from('prescriptions').delete().eq('id', prescriptionId).eq('user_id', user.id)
   }
 
   revalidatePath('/dashboard')
@@ -106,9 +100,8 @@ export async function reassignDocument(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated.' }
 
-  const documentId    = formData.get('document_id') as string | null
-  const prescriptionId = formData.get('prescription_id') as string | null
-  const newProfileId  = formData.get('new_profile_id') as string | null
+  const documentId   = formData.get('document_id') as string | null
+  const newProfileId = formData.get('new_profile_id') as string | null
   if (!newProfileId) return { error: 'Select a profile to move this to.' }
 
   // Verify new profile belongs to user
@@ -124,9 +117,6 @@ export async function reassignDocument(
     await supabase.from('documents').update({ profile_id: newProfileId }).eq('id', documentId).eq('user_id', user.id)
     await supabase.from('medications').update({ profile_id: newProfileId }).eq('source_document_id', documentId)
     await supabase.from('timeline_events').update({ profile_id: newProfileId }).eq('source_document_id', documentId)
-  }
-  if (prescriptionId) {
-    await supabase.from('prescriptions').update({ profile_id: newProfileId }).eq('id', prescriptionId).eq('user_id', user.id)
   }
 
   revalidatePath('/dashboard')

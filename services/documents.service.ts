@@ -161,20 +161,7 @@ export const documentsService = {
       }
     }
 
-    // 3. Write to prescriptions table (prescriptions only, best-effort — non-fatal)
-    if (type === 'prescription') {
-      const rx = data as PrescriptionData
-      await supabase.from('prescriptions').insert({
-        profile_id: profileId,
-        user_id: userId,
-        doctor_name: buildDoctorName(data, type),
-        prescription_date: buildDocDate(data, type),
-        condition_tags: [rx.illness].filter(Boolean) as string[],
-        medication_count: rx.medications.length,
-      })
-    }
-
-    // 4. Write individual medication rows (best-effort — non-fatal)
+    // 3. Write individual medication rows (best-effort — non-fatal)
     if (type === 'prescription') {
       const meds = prescriptionMeds ?? (data as PrescriptionData).medications
       if (meds && meds.length > 0) {
@@ -199,7 +186,7 @@ export const documentsService = {
     await supabase.from('timeline_events').insert({
       user_id: userId,
       profile_id: profileId,
-      event_type: type === 'prescription' ? 'prescription_uploaded' : 'lab_report_uploaded',
+      event_type: type === 'prescription' ? 'document' : 'lab_report',
       event_date: eventDate,
       title: type === 'prescription'
         ? `Prescription from ${doctorLabel ?? 'Unknown Doctor'}`

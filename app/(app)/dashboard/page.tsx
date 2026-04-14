@@ -34,37 +34,24 @@ async function fetchActiveMedications(
 ): Promise<Medication[]> {
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-  const since = thirtyDaysAgo.toISOString().split('T')[0]
+  const since = thirtyDaysAgo.toISOString()
 
   const { data } = await supabase
-    .from('documents')
-    .select('document_analyses ( medications_found )')
+    .from('medications')
+    .select('name, dosage, frequency')
     .eq('profile_id', profileId)
-    .eq('document_type', 'prescription')
-    .gte('document_date', since)
-    .order('document_date', { ascending: false })
-    .limit(3)
+    .eq('status', 'active')
+    .gte('created_at', since)
+    .order('created_at', { ascending: false })
 
   if (!data) return []
 
-  // Flatten medications from all recent prescriptions, deduplicate by name
-  const seen = new Set<string>()
-  const meds: Medication[] = []
-
-  for (const doc of data) {
-    const analyses = (doc as unknown as { document_analyses: { medications_found: Medication[] | null }[] }).document_analyses
-    for (const analysis of analyses ?? []) {
-      for (const med of analysis.medications_found ?? []) {
-        const key = med.name.toLowerCase()
-        if (!seen.has(key)) {
-          seen.add(key)
-          meds.push(med)
-        }
-      }
-    }
-  }
-
-  return meds
+  return data.map((m) => ({
+    name: m.name,
+    dosage: m.dosage ?? '',
+    duration: m.frequency ?? '',
+    confidence: 'high' as const,
+  }))
 }
 
 async function fetchLabAlerts(
