@@ -167,6 +167,37 @@ export const recordsService = {
 
         if (rx) {
             const p = rx as Tables<'prescriptions'>
+
+            // Try to find the linked document via profile + doctor + date so we
+            // can show medications even for prescriptions without a direct document_id.
+            let medications: MedicationExplanation[] = []
+            let recommendations: string[] = []
+            let summary: string | null = null
+            let resolvedDocumentId: string | null = null
+
+            if (p.profile_id && (p.doctor_name || p.prescription_date)) {
+                let docQuery = supabase
+                    .from('documents')
+                    .select('id, document_analyses ( summary, medications_found, recommendations )')
+                    .eq('profile_id', p.profile_id)
+                    .eq('document_type', 'prescription')
+                    .eq('user_id', userId)
+
+                if (p.doctor_name)      docQuery = docQuery.eq('doctor_name', p.doctor_name)
+                if (p.prescription_date) docQuery = docQuery.eq('document_date', p.prescription_date)
+
+                const { data: docs } = await docQuery.limit(1).maybeSingle()
+
+                if (docs) {
+                    const linked = docs as unknown as DocWithAnalysisOnly
+                    const analysis = linked.document_analyses?.[0] ?? null
+                    resolvedDocumentId = linked.id
+                    medications = (analysis?.medications_found as MedicationExplanation[]) ?? []
+                    recommendations = (analysis?.recommendations as string[]) ?? []
+                    summary = (analysis as unknown as { summary?: string })?.summary ?? null
+                }
+            }
+
             return {
                 data: {
                     profileId: p.profile_id,
@@ -176,10 +207,10 @@ export const recordsService = {
                     prescriptionId: p.id,
                     conditionTags: p.condition_tags ?? [],
                     medicationCount: p.medication_count,
-                    documentId: null,
-                    summary: null,
-                    medications: [],
-                    recommendations: [],
+                    documentId: resolvedDocumentId,
+                    summary,
+                    medications,
+                    recommendations,
                     labTests: null,
                 },
                 error: null,
