@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { ApiResponse } from '@/types'
 import type { MedicationExplanation } from '@/types/analysis'
 import type { Medication, PrescriptionData } from '@/types/prescription'
-import type { LabTest } from '@/types/lab-report'
+import type { LabTest, AbnormalMarker } from '@/types/lab-report'
 import type { Tables } from '@/types/database'
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -32,6 +32,7 @@ export interface RecordDetail {
     documentType: string
     doctorName: string | null
     documentDate: string | null
+    fileUrl: string | null
     // Prescription summary fields (from prescriptions table or derived)
     prescriptionId: string | null
     conditionTags: string[]
@@ -42,6 +43,8 @@ export interface RecordDetail {
     medications: MedicationExplanation[]
     recommendations: string[]
     labTests: LabTest[] | null
+    /** AI-explained out-of-range markers with plain-language explanation text */
+    abnormalMarkers: AbnormalMarker[]
 }
 
 export interface TimelineDocument {
@@ -66,6 +69,7 @@ type DocWithAnalysis = {
     document_type: string
     doctor_name: string | null
     document_date: string | null
+    file_url: string | null
     tags: string[] | null
     document_analyses: Array<{
         summary: string
@@ -118,7 +122,7 @@ export const recordsService = {
         const { data: rawDoc } = await supabase
             .from('documents')
             .select(`
-        id, profile_id, document_type, doctor_name, document_date, tags,
+        id, profile_id, document_type, doctor_name, document_date, file_url, tags,
         document_analyses ( summary, medications_found, recommendations, key_findings )
       `)
             .eq('id', id)
@@ -158,11 +162,27 @@ export const recordsService = {
                 }))
             }
 
-            // Lab tests live in key_findings.tests (set by documents.service.ts for lab_report type)
+            // Lab tests + abnormal markers live in key_findings (set by documents.service.ts)
             const keyFindings = analysis?.key_findings as Record<string, unknown> | null
             const labTests = keyFindings?.tests != null
                 ? (keyFindings.tests as LabTest[])
                 : null
+
+            // abnormalMarkers: prefer stored AI-explained version; fall back to deriving from raw tests
+            const storedAbnormal = keyFindings?.abnormalMarkers as AbnormalMarker[] | null
+            const abnormalMarkers: AbnormalMarker[] = storedAbnormal?.length
+                ? storedAbnormal
+                : (labTests ?? [])
+                    .filter((t) => t.status !== 'normal' && t.status !== '')
+                    .map((t, i) => ({
+                        id: `marker-${i}`,
+                        name: t.testName,
+                        value: t.result,
+                        unit: t.unit,
+                        status: t.status as 'low' | 'high' | 'critical',
+                        referenceRange: t.referenceRange,
+                        explanation: '',
+                    }))
 
             return {
                 data: {
@@ -170,6 +190,7 @@ export const recordsService = {
                     documentType: d.document_type,
                     doctorName: d.doctor_name,
                     documentDate: d.document_date,
+                    fileUrl: d.file_url,
                     prescriptionId: null,
                     conditionTags: d.tags ?? [],
                     medicationCount: meds.length > 0 ? meds.length : null,
@@ -178,6 +199,7 @@ export const recordsService = {
                     medications: meds,
                     recommendations: (analysis?.recommendations as string[]) ?? [],
                     labTests,
+                    abnormalMarkers,
                 },
                 error: null,
                 success: true,
@@ -229,6 +251,7 @@ export const recordsService = {
                     documentType: 'prescription',
                     doctorName: p.doctor_name,
                     documentDate: p.prescription_date,
+                    fileUrl: null,
                     prescriptionId: p.id,
                     conditionTags: p.condition_tags ?? [],
                     medicationCount: p.medication_count,
@@ -237,6 +260,7 @@ export const recordsService = {
                     medications,
                     recommendations,
                     labTests: null,
+                    abnormalMarkers: [],
                 },
                 error: null,
                 success: true,

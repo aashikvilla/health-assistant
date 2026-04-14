@@ -1,6 +1,6 @@
-# Nuskha — Stage 5 Development Log
+# Vitae — Stage 5 Development Log
 
-*Last updated: April 11, 2026 · Author: Gaurav (stage-5-family-hub)*
+_Last updated: April 11, 2026 · Author: Gaurav (stage-5-family-hub)_
 
 ---
 
@@ -36,7 +36,7 @@
 
 ### What was accomplished
 
-1. Created wireframes and screen specifications for all 14 Nuskha screens
+1. Created wireframes and screen specifications for all 14 Vitae screens
 2. Set up GitHub branch structure for the full team
 3. Built and pushed Stage 5 (Family Hub) — 3 screens, fully functional
 
@@ -46,31 +46,31 @@
 
 All files live in `C:\Users\Gaurav Gupta\Documents\Projects\Rethink Buildathon\` (outside the repo).
 
-| File | Purpose |
-|------|---------|
-| `nuskha-wireframes.html` | Low-fidelity wireframes of all 14 screens — open in browser |
-| `nuskha-screens.md` | Full screen spec: purpose, elements, user actions, design notes per screen |
-| `nuskha-product-plan.md` | Product decision record — all locked decisions |
-| `nuskha-plan.html` | Visual pitch deck |
+| File                     | Purpose                                                                    |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `nuskha-wireframes.html` | Low-fidelity wireframes of all 14 screens — open in browser                |
+| `nuskha-screens.md`      | Full screen spec: purpose, elements, user actions, design notes per screen |
+| `nuskha-product-plan.md` | Product decision record — all locked decisions                             |
+| `nuskha-plan.html`       | Visual pitch deck                                                          |
 
 ### The 14 Screens (in flow order)
 
-| Screen | Route | Stage |
-|--------|-------|-------|
-| S01 Landing | `/` | Stage 1 — Discovery |
-| S02 Upload Picker | `/upload` | Stage 2 — Upload |
-| S03 OCR Loading | `/upload` (loading state) | Stage 2 — Upload |
-| S04 Confirm & Review | `/upload` (confirm state) | Stage 2 — Upload |
-| S05 AI Explanation | `/rx/:id/explain` | Stage 3 — Insight |
-| S06 Save Prompt (Auth Gate) | Bottom sheet on S05 | Stage 4 — Auth Gate |
-| S07 OTP Entry | `/auth` (OTP variant) | Stage 4 — Auth Gate |
-| S08 Family Hub — Empty | `/hub` | **Stage 5 — Family Hub** |
-| S09 Add Family Profile | `/hub/add-member` | **Stage 5 — Family Hub** |
-| S10 Family Hub — Populated | `/hub?profile=<id>` | **Stage 5 — Family Hub** |
-| S11 Prescription Detail | `/records/:id` | Stage 6 — Records |
-| S12 Medical History Timeline | `/timeline` | Stage 6 — Records |
-| S13 Share + Doctor PDF | `/records/:id/share` | Stage 7 — Share |
-| S14 Share Link (read-only) | `/rx/:uuid` | Stage 7 — Share |
+| Screen                       | Route                     | Stage                    |
+| ---------------------------- | ------------------------- | ------------------------ |
+| S01 Landing                  | `/`                       | Stage 1 — Discovery      |
+| S02 Upload Picker            | `/upload`                 | Stage 2 — Upload         |
+| S03 OCR Loading              | `/upload` (loading state) | Stage 2 — Upload         |
+| S04 Confirm & Review         | `/upload` (confirm state) | Stage 2 — Upload         |
+| S05 AI Explanation           | `/rx/:id/explain`         | Stage 3 — Insight        |
+| S06 Save Prompt (Auth Gate)  | Bottom sheet on S05       | Stage 4 — Auth Gate      |
+| S07 OTP Entry                | `/auth` (OTP variant)     | Stage 4 — Auth Gate      |
+| S08 Family Hub — Empty       | `/hub`                    | **Stage 5 — Family Hub** |
+| S09 Add Family Profile       | `/hub/add-member`         | **Stage 5 — Family Hub** |
+| S10 Family Hub — Populated   | `/hub?profile=<id>`       | **Stage 5 — Family Hub** |
+| S11 Prescription Detail      | `/records/:id`            | Stage 6 — Records        |
+| S12 Medical History Timeline | `/timeline`               | Stage 6 — Records        |
+| S13 Share + Doctor PDF       | `/records/:id/share`      | Stage 7 — Share          |
+| S14 Share Link (read-only)   | `/rx/:uuid`               | Stage 7 — Share          |
 
 ---
 
@@ -85,17 +85,17 @@ All files live in `C:\Users\Gaurav Gupta\Documents\Projects\Rethink Buildathon\`
 
 All branches created from `develop` and pushed to remote:
 
-| Branch | Owner | Status |
-|--------|-------|--------|
-| `master` | — | Production |
-| `develop` | — | Integration base |
-| `stage-1-discovery` | Teammate | Not started |
-| `stage-2-upload` | Teammate | Not started |
-| `stage-3-insight` | Teammate | Not started |
-| `stage-4-auth-gate` | Teammate | Not started |
+| Branch               | Owner      | Status                                        |
+| -------------------- | ---------- | --------------------------------------------- |
+| `master`             | —          | Production                                    |
+| `develop`            | —          | Integration base                              |
+| `stage-1-discovery`  | Teammate   | Not started                                   |
+| `stage-2-upload`     | Teammate   | Not started                                   |
+| `stage-3-insight`    | Teammate   | Not started                                   |
+| `stage-4-auth-gate`  | Teammate   | Not started                                   |
 | `stage-5-family-hub` | **Gaurav** | **Done ✓ — design updated + pushed (Apr 11)** |
-| `stage-6-records` | Teammate | Not started |
-| `stage-7-share` | Teammate | Not started |
+| `stage-6-records`    | Teammate   | Not started                                   |
+| `stage-7-share`      | Teammate   | Not started                                   |
 
 ### Git Commands Reference
 
@@ -243,12 +243,12 @@ npm run dev
 
 Sign in at `http://localhost:3000/auth` with Google. The Supabase auth trigger creates your `users_profile` and self `family_profile` automatically on first sign-in.
 
-| URL | Screen | What to check |
-|-----|--------|---------------|
-| `http://localhost:3000/hub` | Redirects to `/auth` | Auth protection working |
-| `http://localhost:3000/auth` | Sign in with Google | Auth trigger creates profiles |
-| `http://localhost:3000/hub` | S08/S10 — Hub | Profile wheel, prescriptions list |
-| `http://localhost:3000/hub/add-member` | S09 — Add Profile | Fill form, save → returns to /hub |
+| URL                                      | Screen               | What to check                     |
+| ---------------------------------------- | -------------------- | --------------------------------- |
+| `http://localhost:3000/hub`              | Redirects to `/auth` | Auth protection working           |
+| `http://localhost:3000/auth`             | Sign in with Google  | Auth trigger creates profiles     |
+| `http://localhost:3000/hub`              | S08/S10 — Hub        | Profile wheel, prescriptions list |
+| `http://localhost:3000/hub/add-member`   | S09 — Add Profile    | Fill form, save → returns to /hub |
 | `http://localhost:3000/hub?profile=<id>` | S10 — Profile switch | Different profile's prescriptions |
 
 > **Note:** For `localhost` OAuth to work, `http://localhost:3000` must be in Supabase → Authentication → URL Configuration → Redirect URLs. Ask aashikvilla if it isn't.
@@ -258,6 +258,7 @@ Sign in at `http://localhost:3000/auth` with Google. The Supabase auth trigger c
 Set `DEV_BYPASS_AUTH=true` in `.env.local` and restart the server. This injects a mock user so all three screens are accessible without signing in. DB reads return empty (RLS blocks unauthenticated queries), so you'll see empty states — useful for layout/design checks only.
 
 Screens accessible in bypass mode:
+
 - `http://localhost:3000/hub` — shows empty hub (no profiles)
 - `http://localhost:3000/hub/add-member` — shows form (submit skips DB, redirects to /hub)
 
@@ -276,36 +277,36 @@ Screens accessible in bypass mode:
 
 ### Color tokens (updated in `app/globals.css`)
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `primary` | `#0058bd` | CTAs, active states, links |
-| `teal` | `#006a66` | Human health tracks, condition tags, success |
-| `error` | `#ab2653` | Alerts, urgent health markers |
-| `surface` | `#f7f9ff` | Base background |
-| `surface-subtle` | `#f1f4fa` | Section grouping (surface-container-low) |
-| `surface-muted` | `#e8edf5` | Chips, inactive elements |
-| `surface-container-lowest` | `#ffffff` | Interactive cards — top visual layer |
-| `text-primary` | `#181c21` | Body text (never pure black) |
+| Token                      | Value     | Usage                                        |
+| -------------------------- | --------- | -------------------------------------------- |
+| `primary`                  | `#0058bd` | CTAs, active states, links                   |
+| `teal`                     | `#006a66` | Human health tracks, condition tags, success |
+| `error`                    | `#ab2653` | Alerts, urgent health markers                |
+| `surface`                  | `#f7f9ff` | Base background                              |
+| `surface-subtle`           | `#f1f4fa` | Section grouping (surface-container-low)     |
+| `surface-muted`            | `#e8edf5` | Chips, inactive elements                     |
+| `surface-container-lowest` | `#ffffff` | Interactive cards — top visual layer         |
+| `text-primary`             | `#181c21` | Body text (never pure black)                 |
 
 ### Typography
 
-| Font | Variable | Usage |
-|------|----------|-------|
-| Plus Jakarta Sans | `font-display` | Headlines, app name, section titles |
-| Manrope | `font-sans` (default) | Body, labels, metadata |
+| Font              | Variable              | Usage                               |
+| ----------------- | --------------------- | ----------------------------------- |
+| Plus Jakarta Sans | `font-display`        | Headlines, app name, section titles |
+| Manrope           | `font-sans` (default) | Body, labels, metadata              |
 
 ### Component changes (Stage 5)
 
-| Component | Change |
-|-----------|--------|
-| `BottomNav` | Glassmorphism — removed `border-t` |
-| `hub/page.tsx` header | Glassmorphism — removed `border-b` |
-| `add-member/page.tsx` header | Glassmorphism |
-| `ProfileChip` | Blue gradient on active, tonal bg inactive — no borders |
-| `AddProfileChip` | Tonal bg — no dashed border |
-| `PrescriptionListItem` | `surface-container-lowest` card + ambient shadow, teal tags — no border |
-| `EmptyPrescriptions` | Tonal bg — no dashed border |
-| `Input` (ui) | `surface-subtle` bg + ghost `ring-1` on focus — no border |
+| Component                    | Change                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| `BottomNav`                  | Glassmorphism — removed `border-t`                                      |
+| `hub/page.tsx` header        | Glassmorphism — removed `border-b`                                      |
+| `add-member/page.tsx` header | Glassmorphism                                                           |
+| `ProfileChip`                | Blue gradient on active, tonal bg inactive — no borders                 |
+| `AddProfileChip`             | Tonal bg — no dashed border                                             |
+| `PrescriptionListItem`       | `surface-container-lowest` card + ambient shadow, teal tags — no border |
+| `EmptyPrescriptions`         | Tonal bg — no dashed border                                             |
+| `Input` (ui)                 | `surface-subtle` bg + ghost `ring-1` on focus — no border               |
 
 ---
 
@@ -314,15 +315,18 @@ Screens accessible in bypass mode:
 Stage 5 is done. These are the remaining stages for the team:
 
 ### Stage 4 — Auth Gate (`stage-4-auth-gate`)
+
 - S06: "Save to Records" bottom sheet (not a full-page auth wall)
 - S07: Phone number input + OTP flow (replace existing email/password auth)
 - After OTP success: call `familyService.ensureSelfProfile(userId, name)` then redirect to `/hub`
 
 ### Stage 1 — Discovery (`stage-1-discovery`)
-- S01: Landing page — Nuskha branding, "Upload a Prescription" CTA, feature list
+
+- S01: Landing page — Vitae branding, "Upload a Prescription" CTA, feature list
 - Update `app/page.tsx` (currently generic Health Assistant landing)
 
 ### Stage 2 — Upload (`stage-2-upload`)
+
 - S02: Upload picker (photo / PDF / manual)
 - S03: OCR loading screen
 - S04: Confirm & Review (extracted data table, low-confidence flagging)
@@ -330,14 +334,17 @@ Stage 5 is done. These are the remaining stages for the team:
 - Creates rows in `prescriptions` table (extends the stub schema)
 
 ### Stage 3 — Insight (`stage-3-insight`)
+
 - S05: AI Explanation — medication cards, "Things to tell your doctor"
 - Claude Sonnet integration for plain-language summaries
 
 ### Stage 6 — Records (`stage-6-records`)
+
 - S11: Prescription Detail (`/records/:id`)
 - S12: Medical History Timeline (`/timeline`)
 
 ### Stage 7 — Share (`stage-7-share`)
+
 - S13: Share + Doctor PDF generation (`/records/:id/share`)
 - S14: Read-only share link view (`/rx/:uuid`) — no login required
 
@@ -351,8 +358,11 @@ Stage 5 is done. These are the remaining stages for the team:
 Call this in Stage 4 after OTP signup. Creates the "You" self-profile. Idempotent.
 
 ```ts
-import { familyService } from '@/services/family.service'
-await familyService.ensureSelfProfile(user.id, user.email?.split('@')[0] ?? 'You')
+import { familyService } from "@/services/family.service";
+await familyService.ensureSelfProfile(
+  user.id,
+  user.email?.split("@")[0] ?? "You",
+);
 ```
 
 **`/hub` route**
@@ -366,4 +376,4 @@ Stage 6 should activate the Timeline tab. Stage 3/7 can add tabs if needed. File
 
 ---
 
-*Stage 5 complete. Auth is live. Design system applied. Next: coordinate with team on remaining stages (1–4, 6–7) and test end-to-end on the deployed URL once Stage 4 OTP auth is built.*
+_Stage 5 complete. Auth is live. Design system applied. Next: coordinate with team on remaining stages (1–4, 6–7) and test end-to-end on the deployed URL once Stage 4 OTP auth is built._

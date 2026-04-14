@@ -127,7 +127,11 @@ export const documentsService = {
         : {
           medications_found: [] as Json,
           recommendations: (labExplanation?.doctorNotes ?? []) as Json,
-          key_findings: { tests: (data as LabReportData).tests } as unknown as Json,
+          // Store full abnormalMarkers (with explanation text) so /records/[id] never needs to re-call the LLM
+          key_findings: {
+            tests: (data as LabReportData).tests,
+            abnormalMarkers: labExplanation?.abnormalMarkers ?? [],
+          } as unknown as Json,
           risk_flags: (data as LabReportData).tests
             .filter((t) => t.status === 'critical')
             .map((t) => `${t.testName} is critical`) as Json,

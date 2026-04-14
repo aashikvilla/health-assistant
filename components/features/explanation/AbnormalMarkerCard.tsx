@@ -94,15 +94,17 @@ function AbnormalMarkerCard({ marker, className = '' }: AbnormalMarkerCardProps)
           </div>
         </div>
 
-        {/* Explanation */}
-        <div
-          className="rounded-2xl p-3"
-          style={{ background: config.bg, borderLeft: `3px solid ${config.border}` }}
-        >
-          <p className="font-body text-sm text-text-primary leading-relaxed">
-            {marker.explanation}
-          </p>
-        </div>
+        {/* Explanation — only rendered when AI text is available */}
+        {marker.explanation && (
+          <div
+            className="rounded-2xl p-3"
+            style={{ background: config.bg, borderLeft: `3px solid ${config.border}` }}
+          >
+            <p className="font-body text-sm text-text-primary leading-relaxed">
+              {marker.explanation}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-# Nuskha — Feature Plan
+# Vitae — Feature Plan
 
 > **Last updated:** 2026-04-13
 > Each feature below is independently workable. They have explicit dependencies, a DB
@@ -29,6 +29,7 @@ F4 Records ──► F11 Lab Trends                                  │
 **Status:** ✅ Core done. Two gaps remain.
 
 ### What's built
+
 - Email + Google OAuth sign-in/sign-up
 - `ensureSelfProfile` called in **`(app)/layout.tsx`** on every authenticated render (idempotent safety net — prevents "No family group found" for all sign-in paths)
 - `emailRedirectTo` set in `signUp` so email confirmation links hit `/auth/callback` (which calls `ensureSelfProfile`)
@@ -63,6 +64,7 @@ After first signup, collect: full name, phone number (optional). Sets `onboardin
 **Status:** ✅ Done.
 
 ### What's built
+
 - Public `/upload` (try before signup) — full elderly-UX redesign with step indicators, semantic tokens, 60px touch targets
 - After uploading: OCR → review screen → AI explanation → "Save to My Account" CTA
 - Save redirects to `/auth?mode=signup&return=/dashboard`; `returnTo` is passed through auth forms
@@ -78,6 +80,7 @@ After first signup, collect: full name, phone number (optional). Sets `onboardin
 **Status:** ✅ Done.
 
 ### What's built
+
 - `app/(app)/records/[id]/page.tsx` — document detail page (Server Component)
 - `services/records.service.ts` — `getRecord(id, userId)` joins documents + document_analyses
 - `components/features/records/DocumentDetail.tsx` — full prescription/lab report view
@@ -94,6 +97,7 @@ After first signup, collect: full name, phone number (optional). Sets `onboardin
 **Status:** ✅ Done.
 
 ### What's built
+
 - `records.service.ts` → `getDocumentWithExplanation(id, userId)` — fetches `documents` + `document_analyses`, detects rich vs raw medication data
 - `lib/explain.ts` — shared explanation generation logic (extracted free-model pool, used by both API route and page)
 - `documents.service.ts` → `saveExplanationToAnalysis` — persists generated explanation back to DB
@@ -183,6 +187,7 @@ Upload avatar, update `family_profiles.avatar_url`.
 ## F10 — Design Token Cleanup
 
 **Status:** ⚠ Partial.
+
 - Upload screens + dashboard upload flow: fully migrated to semantic tokens
 - Other pages: may still have `bg-surface-lowest` (→ `bg-surface-container-lowest`), `from-primary-bright`, `to-tertiary`, `shadow-ambient`
 
@@ -202,16 +207,16 @@ Can be done at any time — fully independent.
 
 > Last updated: 2026-04-13 — most core screens are complete. Focus is now on fixing the AI pipeline and wiring authenticated explanation.
 
-| Priority | Feature | Why |
-|---|---|---|
-| ✅ ~~1~~ | ~~**F2-A** Fix AI model~~ | Done — `google/gemma-4-26b-a4b-it` (Gemma 4 26B) confirmed live on OpenRouter. |
-| ✅ ~~2~~ | ~~**F4-A/B** Wire explanation page~~ | Done — `getDocumentWithExplanation`, on-demand generate, persist back to DB. |
-| 🔴 1 | **F1-A** users_profile creation | Settings + onboarding need it. Add to `ensureSelfProfile`. |
-| 🟡 3 | **F1-A** users_profile creation | Settings + onboarding need it. Add to `ensureSelfProfile`. |
-| 🟡 4 | **F1-B** Onboarding flow | Collect real name — self-profile currently uses email prefix |
-| 🟢 5 | **F6-A/B/C** Profile editing | Family sharing completeness — edit name, DOB, health metrics, relationship label |
-| 🟢 6 | **F5-A/B** Medications table write + list UI | Enables reminders. Auto-create from `document_analyses.medications_found` on save. |
-| ⬜ 7 | **F7** Share via signed link | Nice-to-have for MVP |
-| ⬜ 8 | **F8** Lab trends | Needs real lab data from working AI first |
-| ⬜ 9 | **F5-C/D** Reminders + push | Highest complexity — do after F5-A/B |
-| ⬜ 10 | **F10** Token cleanup | Any time, low risk |
+| Priority | Feature                                      | Why                                                                                |
+| -------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| ✅ ~~1~~ | ~~**F2-A** Fix AI model~~                    | Done — `google/gemma-4-26b-a4b-it` (Gemma 4 26B) confirmed live on OpenRouter.     |
+| ✅ ~~2~~ | ~~**F4-A/B** Wire explanation page~~         | Done — `getDocumentWithExplanation`, on-demand generate, persist back to DB.       |
+| 🔴 1     | **F1-A** users_profile creation              | Settings + onboarding need it. Add to `ensureSelfProfile`.                         |
+| 🟡 3     | **F1-A** users_profile creation              | Settings + onboarding need it. Add to `ensureSelfProfile`.                         |
+| 🟡 4     | **F1-B** Onboarding flow                     | Collect real name — self-profile currently uses email prefix                       |
+| 🟢 5     | **F6-A/B/C** Profile editing                 | Family sharing completeness — edit name, DOB, health metrics, relationship label   |
+| 🟢 6     | **F5-A/B** Medications table write + list UI | Enables reminders. Auto-create from `document_analyses.medications_found` on save. |
+| ⬜ 7     | **F7** Share via signed link                 | Nice-to-have for MVP                                                               |
+| ⬜ 8     | **F8** Lab trends                            | Needs real lab data from working AI first                                          |
+| ⬜ 9     | **F5-C/D** Reminders + push                  | Highest complexity — do after F5-A/B                                               |
+| ⬜ 10    | **F10** Token cleanup                        | Any time, low risk                                                                 |

@@ -4,7 +4,7 @@
 > **Source:** Defined in `app/globals.css` `:root` block
 > **Theme:** Light-only, glassmorphic, no-line tonal layering
 
-This is the canonical reference for Nuskha's visual identity. All colors, radii, shadows, and spacing are semantic tokens that map to Tailwind utilities via `@theme inline`.
+This is the canonical reference for Vitae's visual identity. All colors, radii, shadows, and spacing are semantic tokens that map to Tailwind utilities via `@theme inline`.
 
 ---
 
@@ -15,16 +15,11 @@ The "Clinical Curator" palette is a professional, healthcare-grade color system 
 ### Brand Colors
 
 ```css
---color-brand-50:  #dce8ff   /* Lightest tint */
---color-brand-100: #b6d0ff
---color-brand-200: #8cb7ff
---color-brand-300: #5b9cf6
---color-brand-400: #3b82f6
---color-brand-500: #1e6fe8
---color-brand-600: #0058bd   ← Primary in use
---color-brand-700: #004494
---color-brand-800: #003170
---color-brand-900: #001f4d   /* Darkest shade */
+--color-brand-50: #dce8ff /* Lightest tint */ --color-brand-100: #b6d0ff
+  --color-brand-200: #8cb7ff --color-brand-300: #5b9cf6
+  --color-brand-400: #3b82f6 --color-brand-500: #1e6fe8
+  --color-brand-600: #0058bd ← Primary in use --color-brand-700: #004494
+  --color-brand-800: #003170 --color-brand-900: #001f4d /* Darkest shade */;
 ```
 
 ### Semantic Tokens
@@ -33,78 +28,78 @@ The "Clinical Curator" palette is a professional, healthcare-grade color system 
 
 Used for primary CTAs, links, and trust-building.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--color-primary` | `#0058bd` | Primary action buttons, links |
-| `--color-primary-hover` | `#004494` | Hover state, active focus |
-| `--color-primary-subtle` | `#dce8ff` | Soft background / accent |
-| `--color-primary-container` | `#d1e4ff` | Elevated container |
-| `--color-primary-foreground` | `#ffffff` | Text on primary background |
+| Token                        | Value     | Usage                         |
+| ---------------------------- | --------- | ----------------------------- |
+| `--color-primary`            | `#0058bd` | Primary action buttons, links |
+| `--color-primary-hover`      | `#004494` | Hover state, active focus     |
+| `--color-primary-subtle`     | `#dce8ff` | Soft background / accent      |
+| `--color-primary-container`  | `#d1e4ff` | Elevated container            |
+| `--color-primary-foreground` | `#ffffff` | Text on primary background    |
 
 #### Health / Wellness (Teal)
 
 Used for positive health tracks, success states, and "all good" signals.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--color-teal` | `#006a66` | Health metrics, success |
+| Token                 | Value     | Usage                      |
+| --------------------- | --------- | -------------------------- |
+| `--color-teal`        | `#006a66` | Health metrics, success    |
 | `--color-teal-subtle` | `#dff4f2` | Background for health data |
 
 #### Alert / Urgent (Red-Pink)
 
 Used for warnings, side effects, critical flags, and urgent actions. In a family/pet context, differentiates urgent medical signals.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--color-tertiary` | `#ab2653` | Warnings, side effects, urgent |
-| `--color-tertiary-subtle` | `#ffd9e2` | Soft alert background |
+| Token                     | Value     | Usage                          |
+| ------------------------- | --------- | ------------------------------ |
+| `--color-tertiary`        | `#ab2653` | Warnings, side effects, urgent |
+| `--color-tertiary-subtle` | `#ffd9e2` | Soft alert background          |
 
 #### Surface Hierarchy
 
 Stacked "sheets of paper" — multiple levels of depth using subtle tint shifts.
 
-| Token | Value | CSS Var | Usage |
-|---|---|---|---|
-| `--color-surface` | `#f7f9ff` | Base page background | `bg-surface` |
-| `--color-surface-subtle` | `#f1f4fa` | surface-container-low | Slight card lift |
-| `--color-surface-muted` | `#e8edf5` | surface-container | Interactive hover states |
-| `--color-surface-container-lowest` | `#ffffff` | Pure white | Highest interactive layer (buttons, form fields, top card) |
-| `--color-surface-inverse` | `#181c21` | Dark mode stub (not used) | For future dark mode |
+| Token                              | Value     | CSS Var                   | Usage                                                      |
+| ---------------------------------- | --------- | ------------------------- | ---------------------------------------------------------- |
+| `--color-surface`                  | `#f7f9ff` | Base page background      | `bg-surface`                                               |
+| `--color-surface-subtle`           | `#f1f4fa` | surface-container-low     | Slight card lift                                           |
+| `--color-surface-muted`            | `#e8edf5` | surface-container         | Interactive hover states                                   |
+| `--color-surface-container-lowest` | `#ffffff` | Pure white                | Highest interactive layer (buttons, form fields, top card) |
+| `--color-surface-inverse`          | `#181c21` | Dark mode stub (not used) | For future dark mode                                       |
 
 #### Borders & Dividers (Ghost rule — no lines)
 
 Per design brief, no hard borders. Use subtle tints at 12–20% opacity only.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--color-border` | `#dde2ec` | Default dividers (12% opacity) |
-| `--color-border-subtle` | `#edf0f7` | Very faint separator |
+| Token                   | Value     | Usage                                |
+| ----------------------- | --------- | ------------------------------------ |
+| `--color-border`        | `#dde2ec` | Default dividers (12% opacity)       |
+| `--color-border-subtle` | `#edf0f7` | Very faint separator                 |
 | `--color-border-strong` | `#c8cdd6` | Stronger visual weight (20% opacity) |
 
 #### Typography
 
 All on-surface, no flipping in dark mode.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--color-text-primary` | `#181c21` | Body text, headings |
-| `--color-text-secondary` | `#43474e` | Supporting text |
-| `--color-text-muted` | `#74777f` | Labels, placeholders, hints |
-| `--color-text-inverse` | `#ffffff` | Text on colored backgrounds |
-| `--color-text-link` | `#0058bd` | Inline links (same as primary) |
+| Token                    | Value     | Usage                          |
+| ------------------------ | --------- | ------------------------------ |
+| `--color-text-primary`   | `#181c21` | Body text, headings            |
+| `--color-text-secondary` | `#43474e` | Supporting text                |
+| `--color-text-muted`     | `#74777f` | Labels, placeholders, hints    |
+| `--color-text-inverse`   | `#ffffff` | Text on colored backgrounds    |
+| `--color-text-link`      | `#0058bd` | Inline links (same as primary) |
 
 #### Status Colors
 
-| Token | Value | Usage |
-|---|---|---|
-| `--color-success` | `#006a66` | ✓ Success states (same as teal) |
-| `--color-success-subtle` | `#dff4f2` | Success backgrounds |
-| `--color-warning` | `#7b5800` | ⚠ Warning (neutral amber) |
-| `--color-warning-subtle` | `#ffefd6` | Warning backgrounds |
-| `--color-error` | `#ab2653` | ✕ Error (same as tertiary) |
-| `--color-error-subtle` | `#ffd9e2` | Error backgrounds |
-| `--color-info` | `#0058bd` | ℹ Info (same as primary) |
-| `--color-info-subtle` | `#dce8ff` | Info backgrounds |
+| Token                    | Value     | Usage                           |
+| ------------------------ | --------- | ------------------------------- |
+| `--color-success`        | `#006a66` | ✓ Success states (same as teal) |
+| `--color-success-subtle` | `#dff4f2` | Success backgrounds             |
+| `--color-warning`        | `#7b5800` | ⚠ Warning (neutral amber)       |
+| `--color-warning-subtle` | `#ffefd6` | Warning backgrounds             |
+| `--color-error`          | `#ab2653` | ✕ Error (same as tertiary)      |
+| `--color-error-subtle`   | `#ffd9e2` | Error backgrounds               |
+| `--color-info`           | `#0058bd` | ℹ Info (same as primary)        |
+| `--color-info-subtle`    | `#dce8ff` | Info backgrounds                |
 
 ---
 
@@ -112,12 +107,12 @@ All on-surface, no flipping in dark mode.
 
 Using Tailwind's 4px default grid.
 
-| Token | Value |
-|---|---|
-| `--spacing-1` | 0.25rem (4px) |
-| `--spacing-2` | 0.5rem (8px) |
-| `--spacing-3` | 0.75rem (12px) |
-| `--spacing-4` | 1rem (16px) |
+| Token                        | Value          |
+| ---------------------------- | -------------- |
+| `--spacing-1`                | 0.25rem (4px)  |
+| `--spacing-2`                | 0.5rem (8px)   |
+| `--spacing-3`                | 0.75rem (12px) |
+| `--spacing-4`                | 1rem (16px)    |
 | (... and so on via Tailwind) |
 
 ---
@@ -126,16 +121,16 @@ Using Tailwind's 4px default grid.
 
 Consistent rounded corners — no sharp angles.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--radius-xs` | 0.25rem (4px) | Small inline elements |
-| `--radius-sm` | 0.375rem (6px) | Input focus rings |
-| `--radius-md` | 0.5rem (8px) | Small containers |
-| `--radius-lg` | 0.75rem (12px) | Cards, buttons |
-| `--radius-xl` | 1rem (16px) | Large cards, modals |
-| `--radius-2xl` | 1.25rem (20px) | Major UI sections |
-| `--radius-3xl` | 1.5rem (24px) | Full-bleed sections |
-| `--radius-full` | 9999px | Avatars, badges, pills |
+| Token           | Value          | Usage                  |
+| --------------- | -------------- | ---------------------- |
+| `--radius-xs`   | 0.25rem (4px)  | Small inline elements  |
+| `--radius-sm`   | 0.375rem (6px) | Input focus rings      |
+| `--radius-md`   | 0.5rem (8px)   | Small containers       |
+| `--radius-lg`   | 0.75rem (12px) | Cards, buttons         |
+| `--radius-xl`   | 1rem (16px)    | Large cards, modals    |
+| `--radius-2xl`  | 1.25rem (20px) | Major UI sections      |
+| `--radius-3xl`  | 1.5rem (24px)  | Full-bleed sections    |
+| `--radius-full` | 9999px         | Avatars, badges, pills |
 
 ---
 
@@ -143,12 +138,12 @@ Consistent rounded corners — no sharp angles.
 
 Ambient, layered, tinted with on-surface.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--shadow-xs` | `0 2px 8px rgba(24,28,33,0.04)` | Subtle lift |
-| `--shadow-sm` | `0 2px 12px rgba(24,28,33,0.06)` | Cards at rest |
-| `--shadow-md` | `0 4px 24px rgba(24,28,33,0.06)` | Floating buttons |
-| `--shadow-lg` | `0 8px 32px rgba(24,28,33,0.08)` | Elevated modals |
+| Token         | Value                             | Usage            |
+| ------------- | --------------------------------- | ---------------- |
+| `--shadow-xs` | `0 2px 8px rgba(24,28,33,0.04)`   | Subtle lift      |
+| `--shadow-sm` | `0 2px 12px rgba(24,28,33,0.06)`  | Cards at rest    |
+| `--shadow-md` | `0 4px 24px rgba(24,28,33,0.06)`  | Floating buttons |
+| `--shadow-lg` | `0 8px 32px rgba(24,28,33,0.08)`  | Elevated modals  |
 | `--shadow-xl` | `0 16px 48px rgba(24,28,33,0.10)` | Top-layer sheets |
 
 ---

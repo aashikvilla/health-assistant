@@ -105,7 +105,7 @@ export async function extractPrescriptionData(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://nuskha.app',
-      'X-Title': 'Nuskha',
+      'X-Title': 'Vitae',
     },
     body: JSON.stringify({
       model: 'google/gemma-4-26b-a4b-it',
@@ -154,7 +154,7 @@ export async function classifyDocument(input: ImageInput | TextInput): Promise<'
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://nuskha.app',
-      'X-Title': 'Nuskha',
+      'X-Title': 'Vitae',
     },
     body: JSON.stringify({
       model: 'google/gemma-4-26b-a4b-it',
@@ -186,7 +186,7 @@ export async function extractLabReportData(input: ImageInput | TextInput): Promi
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://nuskha.app',
-      'X-Title': 'Nuskha',
+      'X-Title': 'Vitae',
     },
     body: JSON.stringify({
       model: 'google/gemma-4-26b-a4b-it',

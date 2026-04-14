@@ -61,7 +61,7 @@ async function callModel(apiKey: string, model: string, prompt: string): Promise
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
       'HTTP-Referer': 'https://nuskha.app',
-      'X-Title': 'Nuskha',
+      'X-Title': 'Vitae',
     },
     body: JSON.stringify({
       model,
