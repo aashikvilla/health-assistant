@@ -142,6 +142,18 @@ export default async function ExplanationPage({
         {prescription.doctorNotes.length > 0 && (
           <DoctorNotes notes={prescription.doctorNotes} />
         )}
+
+        {/* ── WhatsApp share ── */}
+        {medications.length > 0 && (
+          <ShareButton
+            doctorName={prescription.doctorName}
+            patientName={prescription.patientName}
+            date={prescription.date ? formatDate(prescription.date) : null}
+            medications={medications}
+            doctorNotes={doctorNotes}
+            variant="full"
+          />
+        )}
       </section>
 
       {/* ── Sticky bottom CTAs ── */}
