@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 interface OutOfRangeValue {
   name:   string
   result: string
@@ -9,6 +11,7 @@ interface Props {
   reportDate:  string | null
   profileName: string
   isSelf:      boolean
+  documentId?: string | null
 }
 
 const STATUS_CONFIG = {
@@ -30,7 +33,7 @@ function formatDate(iso: string | null) {
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-export function LabAlertCard({ values, reportDate, profileName, isSelf }: Props) {
+export function LabAlertCard({ values, reportDate, profileName, isSelf, documentId }: Props) {
   if (values.length === 0) return null
 
   const label    = isSelf ? 'Your' : `${profileName.split(' ')[0]}'s`
@@ -85,10 +88,23 @@ export function LabAlertCard({ values, reportDate, profileName, isSelf }: Props)
           })}
           {values.length > 5 && (
             <div className="px-4 py-2.5 text-xs text-text-muted text-center">
-              +{values.length - 5} more — view full report
+              +{values.length - 5} more
             </div>
           )}
         </div>
+
+        {/* View full report link */}
+        {documentId && (
+          <Link
+            href={`/records/${documentId}`}
+            className="flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-semibold text-primary hover:bg-surface-muted transition-colors border-t border-border"
+          >
+            View full report
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        )}
       </div>
     </section>
   )

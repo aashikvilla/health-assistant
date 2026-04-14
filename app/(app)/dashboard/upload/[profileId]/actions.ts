@@ -5,7 +5,7 @@ import { createClient }        from '@/lib/supabase/server'
 import { documentsService }    from '@/services/documents.service'
 import { familyService }       from '@/services/family.service'
 import type { PrescriptionData, PrescriptionExplanation }  from '@/types/prescription'
-import type { LabReportData }     from '@/types/lab-report'
+import type { LabReportData, LabReportExplanation }     from '@/types/lab-report'
 
 export type SaveUploadResult =
   | { success: true;  documentId: string }
@@ -81,7 +81,8 @@ export async function saveLabReport(
 export async function savePendingUpload(
   type: 'prescription' | 'lab_report',
   data: PrescriptionData | LabReportData,
-  explanation?: PrescriptionExplanation
+  explanation?: PrescriptionExplanation,
+  labExplanation?: LabReportExplanation
 ): Promise<SaveUploadResult> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -98,7 +99,8 @@ export async function savePendingUpload(
     type,
     data,
     'ocr-extracted',
-    explanation
+    explanation,
+    labExplanation
   )
 
   if (!result.success) return { success: false, error: result.error ?? 'Save failed' }

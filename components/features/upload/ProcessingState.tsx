@@ -4,16 +4,25 @@ import { useEffect, useState } from 'react'
 
 interface ProcessingStateProps {
   label?: string
+  documentType?: 'prescription' | 'lab_report'
 }
 
-const STEPS = [
+const PRESCRIPTION_STEPS = [
   'Detecting text in your document',
   'Identifying medicines and dosages',
   'Organising prescription details',
   'Preparing your summary',
 ]
 
-export default function ProcessingState({ label }: ProcessingStateProps) {
+const LAB_REPORT_STEPS = [
+  'Detecting text in your report',
+  'Identifying test parameters',
+  'Checking values against reference ranges',
+  'Preparing your summary',
+]
+
+export default function ProcessingState({ label, documentType }: ProcessingStateProps) {
+  const STEPS = documentType === 'lab_report' ? LAB_REPORT_STEPS : PRESCRIPTION_STEPS
   const [activeStep, setActiveStep] = useState(0)
 
   useEffect(() => {
@@ -40,7 +49,7 @@ export default function ProcessingState({ label }: ProcessingStateProps) {
 
         {/* ── Text ───────────────────────────────────────────── */}
         <h2 className="text-3xl font-bold text-text-primary text-center leading-tight">
-          {label ?? 'Reading your prescription…'}
+          {label ?? (documentType === 'lab_report' ? 'Reading your report…' : 'Reading your prescription…')}
         </h2>
         <p className="text-lg text-text-muted mt-2 text-center leading-relaxed">
           {label ? 'Almost done, please wait' : 'This usually takes just a few seconds'}

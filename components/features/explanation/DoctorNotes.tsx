@@ -1,9 +1,10 @@
 interface DoctorNotesProps {
   notes: string[]
+  title?: string
   className?: string
 }
 
-function DoctorNotes({ notes, className = '' }: DoctorNotesProps) {
+function DoctorNotes({ notes, title = 'Things to tell your doctor', className = '' }: DoctorNotesProps) {
   if (notes.length === 0) return null
 
   return (
@@ -16,7 +17,7 @@ function DoctorNotes({ notes, className = '' }: DoctorNotesProps) {
         .join(' ')}
     >
       <h3 className="font-display text-base font-semibold text-text-primary mb-4">
-        Things to tell your doctor
+        {title}
       </h3>
       <ul className="space-y-3">
         {notes.map((note, i) => (
