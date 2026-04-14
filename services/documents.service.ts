@@ -174,7 +174,25 @@ export const documentsService = {
       })
     }
 
-    // 4. Write a timeline event (best-effort — non-fatal)
+    // 4. Write individual medication rows (best-effort — non-fatal)
+    if (type === 'prescription') {
+      const meds = prescriptionMeds ?? (data as PrescriptionData).medications
+      if (meds && meds.length > 0) {
+        await supabase.from('medications').insert(
+          meds.map((m) => ({
+            user_id: userId,
+            profile_id: profileId,
+            name: m.name,
+            dosage: m.dosage ?? null,
+            frequency: (m as { frequency?: string }).frequency ?? null,
+            source_document_id: doc.id,
+            status: 'active',
+          }))
+        )
+      }
+    }
+
+    // 5. Write a timeline event (best-effort — non-fatal)
 
     const eventDate = buildDocDate(data, type) ?? new Date().toISOString().split('T')[0]
     const doctorLabel = buildDoctorName(data, type)

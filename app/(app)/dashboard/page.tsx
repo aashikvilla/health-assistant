@@ -1,7 +1,7 @@
 import { redirect }                    from 'next/navigation'
 import { createClient }               from '@/lib/supabase/server'
 import { familyService }              from '@/services/family.service'
-import { ProfileWheel }               from '@/components/features/family/ProfileWheel'
+import { ProfileSectionWithEdit }      from '@/components/features/family/ProfileSectionWithEdit'
 import { PrescriptionListItem }       from '@/components/features/family/PrescriptionListItem'
 import { EmptyPrescriptions }         from '@/components/features/family/EmptyPrescriptions'
 import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
@@ -152,16 +152,11 @@ export default async function HubPage({ searchParams }: HubPageProps) {
         </div>
 
         {/* ── Profile Wheel ──────────────────────────────────────── */}
-        <section aria-labelledby="profiles-heading">
-          <h2 id="profiles-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-            Family Profiles
-          </h2>
-          <ProfileWheel
-            profiles={profiles}
-            activeProfileId={activeProfile.id}
-            baseHref="/dashboard"
-          />
-        </section>
+        <ProfileSectionWithEdit
+          profiles={profiles}
+          activeProfile={activeProfile}
+          baseHref="/dashboard"
+        />
 
         {/* ── Active Medications ─────────────────────────────────── */}
         <ActiveMedicationsStrip

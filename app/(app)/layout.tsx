@@ -35,6 +35,19 @@ export default async function AppLayout({
     throw new Error(`Profile setup failed: ${setupResult.error}`)
   }
 
+  // Onboarding gate — redirect new users to collect their full name.
+  // Safe to do unconditionally here: /onboarding lives outside this (app) route group,
+  // so this layout never runs when the user is already on /onboarding.
+  const { data: userProfile } = await supabase
+    .from('users_profile')
+    .select('onboarding_completed')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (userProfile && !userProfile.onboarding_completed) {
+    redirect('/onboarding')
+  }
+
   return (
     <PageLayout
       header={

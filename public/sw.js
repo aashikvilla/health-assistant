@@ -1,5 +1,5 @@
 /**
- * Health Assistant — Service Worker
+ * Vitae — Service Worker
  *
  * Strategy:
  *   - Static assets (JS, CSS, fonts, images) → Cache-first

@@ -11,6 +11,10 @@ html {
 }
 
 :root {
+  /* Font fallbacks used in local/offline builds */
+  --font-plus-jakarta: system-ui, sans-serif;
+  --font-manrope: system-ui, sans-serif;
+
   /* Brand — Clinical Curator palette (design.md) */
   --color-brand-50:  #dce8ff;
   --color-brand-100: #b6d0ff;

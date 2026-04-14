@@ -72,3 +72,21 @@ export async function signOut() {
   await supabase.auth.signOut()
   redirect('/')
 }
+
+export async function completeOnboarding(_prevState: unknown, formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth')
+
+  const fullName = (formData.get('full_name') as string | null)?.trim()
+  if (!fullName) return { error: 'Please enter your full name.' }
+
+  const { error } = await supabase
+    .from('users_profile')
+    .update({ full_name: fullName, onboarding_completed: true })
+    .eq('user_id', user.id)
+
+  if (error) return { error: error.message }
+
+  redirect('/dashboard')
+}

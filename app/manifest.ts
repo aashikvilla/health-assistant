@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Nuskha',
-    short_name: 'Nuskha',
-    description: 'Upload, understand, and manage your family\'s prescriptions with AI',
+    name: 'Vitae',
+    short_name: 'Vitae',
+    description: 'Your AI-powered family health record manager',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
