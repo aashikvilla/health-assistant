@@ -75,7 +75,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
         {/* ── Heading ────────────────────────────────────────── */}
         <div>
           <h1 className="text-3xl font-bold text-text-primary leading-tight">
-            Add Your Prescription
+            Add Your Prescription/Blood Report
           </h1>
           <p className="text-lg text-text-secondary mt-2 leading-relaxed">
             Take a photo or upload from your phone
@@ -113,12 +113,10 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xl font-bold text-white leading-tight">Take or Upload a Photo</p>
-                <p className="text-base text-white/80 mt-0.5">Camera, gallery, or screenshot</p>
+                <p className="text-xl font-bold text-white leading-tight">Upload a Photo</p>
+                <p className="text-base text-white/80 mt-0.5">From Gallery</p>
               </div>
-              <span className="bg-white text-primary text-xs font-bold px-3 py-1 rounded-full flex-shrink-0">
-                Best
-              </span>
+
             </div>
           </label>
 
@@ -140,7 +138,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-lg font-semibold text-text-primary">Upload a PDF</p>
-                <p className="text-base text-text-muted mt-0.5">For digital hospital prescriptions</p>
+                <p className="text-base text-text-muted mt-0.5">For digital hospital prescriptions/reports</p>
               </div>
             </div>
           </label>
@@ -158,7 +156,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-lg font-semibold text-text-primary">Type It Manually</p>
+              <p className="text-lg font-semibold text-text-primary">Enter your prescription manually</p>
               <p className="text-base text-text-muted mt-0.5">If the photo isn&apos;t clear enough</p>
             </div>
             <svg
@@ -257,8 +255,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
         <div className="flex items-start gap-3 bg-warning-subtle rounded-2xl px-4 py-4">
           <span className="text-xl flex-shrink-0 mt-0.5">💡</span>
           <p className="text-base text-text-secondary leading-relaxed">
-            <strong className="text-text-primary">Got a WhatsApp prescription?</strong> Screenshot it and upload the image.
-            Make sure it&apos;s flat and well-lit for best results.
+            Please make sure the image is not blurry and well lit for best results.
           </p>
         </div>
 
