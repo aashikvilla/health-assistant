@@ -21,12 +21,10 @@ const base =
   'inline-flex items-center justify-center gap-2 font-medium rounded-3xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer'
 
 const variants: Record<Variant, string> = {
-  // High-gloss gradient per design.md — primary → primary-bright (top-to-bottom)
-  primary:   'bg-gradient-to-b from-primary-bright to-primary text-primary-foreground hover:opacity-90 active:opacity-95',
+  primary:   'bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-hover',
   secondary: 'bg-surface-muted text-text-primary border border-border shadow-sm hover:bg-surface-subtle active:shadow-none',
-  // Transparent — background shift on hover only
   ghost:     'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
-  danger:    'bg-gradient-to-b from-[#c42d60] to-tertiary text-tertiary-foreground hover:opacity-90',
+  danger:    'bg-tertiary text-tertiary-foreground hover:opacity-90',
   link:      'text-text-link underline-offset-4 hover:underline p-0 h-auto rounded-none',
 }
 

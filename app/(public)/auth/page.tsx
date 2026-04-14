@@ -29,7 +29,7 @@ function AuthForm() {
 
       {/* Logo */}
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-b from-primary-bright to-primary rounded-xl shadow-sm">
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-xl shadow-sm">
           <svg className="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
@@ -123,7 +123,7 @@ function AuthForm() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full h-11 bg-gradient-to-b from-primary-bright to-primary text-primary-foreground font-semibold rounded-3xl hover:opacity-90 disabled:opacity-60 transition-opacity"
+              className="w-full h-11 bg-primary text-primary-foreground font-semibold rounded-3xl hover:opacity-90 disabled:opacity-60 transition-opacity"
             >
               {signUpPending ? 'Creating account…' : 'Create Account'}
             </button>
@@ -160,7 +160,7 @@ function AuthForm() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full h-11 bg-gradient-to-b from-primary-bright to-primary text-primary-foreground font-semibold rounded-3xl hover:opacity-90 disabled:opacity-60 transition-opacity"
+            className="w-full h-11 bg-primary text-primary-foreground font-semibold rounded-3xl hover:opacity-90 disabled:opacity-60 transition-opacity"
           >
             {signInPending ? 'Signing in…' : 'Sign In'}
           </button>

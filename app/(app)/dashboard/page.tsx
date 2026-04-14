@@ -3,6 +3,7 @@ import { createClient }               from '@/lib/supabase/server'
 import { familyService }              from '@/services/family.service'
 import { ProfileSectionWithEdit }      from '@/components/features/family/ProfileSectionWithEdit'
 import { PrescriptionListItem }       from '@/components/features/family/PrescriptionListItem'
+import { PrescriptionActions }        from '@/components/features/family/PrescriptionActions'
 import { EmptyPrescriptions }         from '@/components/features/family/EmptyPrescriptions'
 import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
 import { ActiveMedicationsStrip }     from '@/components/features/hub/ActiveMedicationsStrip'
@@ -178,7 +179,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
         <section aria-labelledby="prescriptions-heading">
           <div className="flex items-center justify-between mb-3">
             <h2 id="prescriptions-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-              {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Prescriptions
+              {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Documents
             </h2>
             {!isEmpty && (
               <Link
@@ -199,7 +200,12 @@ export default async function HubPage({ searchParams }: HubPageProps) {
           ) : (
             <div className="flex flex-col gap-2">
               {prescriptions.map((rx) => (
-                <PrescriptionListItem key={rx.id} prescription={rx} />
+                <div key={rx.id} className="flex items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <PrescriptionListItem prescription={rx} />
+                  </div>
+                  <PrescriptionActions prescription={rx} profiles={profiles} />
+                </div>
               ))}
             </div>
           )}

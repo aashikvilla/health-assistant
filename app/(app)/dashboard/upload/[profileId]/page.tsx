@@ -179,7 +179,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         ? (await uploadToStorage(selectedFile)) ?? 'ocr-extracted'
         : 'ocr-extracted'
 
-      const result = await savePrescription(profileId, prescription, fileUrl)
+      const result = await savePrescription(profileId, prescription, fileUrl, explanation ?? undefined)
       if (!result.success) {
         setSaveError(result.error)
         setStep('explaining')

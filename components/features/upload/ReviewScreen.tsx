@@ -33,6 +33,8 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
     ...prescription.medications.map((m) => (m.confidence === 'low' ? 1 : 0)),
   ].reduce((a, b) => a + b, 0)
 
+  const missingRequired = prescription.medications.some((m) => !m.name?.trim())
+
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="flex-1 px-5 pt-7 pb-32 flex flex-col gap-5 max-w-2xl mx-auto w-full">
@@ -99,7 +101,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                 <div className="py-2.5">
                   <p className="text-xs font-semibold text-primary uppercase tracking-wider">Medicine {i + 1}</p>
                 </div>
-                <FieldRow label="Name"     value={med.name}     confidence={med.confidence} onChange={(v) => updateMedication(i, 'name', v)} />
+                <FieldRow label="Name"     value={med.name}     confidence={med.confidence} onChange={(v) => updateMedication(i, 'name', v)} required />
                 <FieldRow label="Dosage"   value={med.dosage}   confidence={med.confidence} onChange={(v) => updateMedication(i, 'dosage', v)} />
                 <FieldRow label="Duration" value={med.duration} confidence={med.confidence} onChange={(v) => updateMedication(i, 'duration', v)} />
               </div>
@@ -117,11 +119,17 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
       {/* ── Sticky action bar ──────────────────────────────────── */}
       <div className="fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-sm px-5 py-4 pb-safe border-t border-border-subtle">
         <div className="max-w-2xl mx-auto flex flex-col gap-3">
+          {missingRequired && (
+            <p className="text-sm text-error text-center font-medium">
+              Please fill in all medicine names before continuing.
+            </p>
+          )}
           <Button
             onClick={() => onConfirm(prescription)}
             variant="primary"
             size="lg"
             fullWidth
+            disabled={missingRequired}
             className="min-h-[60px] text-xl rounded-2xl"
           >
             Yes, This Looks Right →

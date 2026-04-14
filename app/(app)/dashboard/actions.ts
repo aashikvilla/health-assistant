@@ -69,3 +69,66 @@ export async function updateProfile(
   revalidatePath('/dashboard')
   return { error: null, success: true }
 }
+
+export async function deleteDocument(
+  _prev: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
+  const documentId    = formData.get('document_id') as string | null
+  const prescriptionId = formData.get('prescription_id') as string | null
+
+  // Delete document row (document_analyses cascade-deletes via FK)
+  if (documentId) {
+    await supabase.from('medications').delete().eq('source_document_id', documentId)
+    await supabase.from('timeline_events').delete().eq('source_document_id', documentId)
+    await supabase.from('document_analyses').delete().eq('document_id', documentId)
+    await supabase.from('documents').delete().eq('id', documentId).eq('user_id', user.id)
+  }
+
+  // Delete prescriptions row
+  if (prescriptionId) {
+    await supabase.from('prescriptions').delete().eq('id', prescriptionId).eq('user_id', user.id)
+  }
+
+  revalidatePath('/dashboard')
+  return { error: null, success: true }
+}
+
+export async function reassignDocument(
+  _prev: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated.' }
+
+  const documentId    = formData.get('document_id') as string | null
+  const prescriptionId = formData.get('prescription_id') as string | null
+  const newProfileId  = formData.get('new_profile_id') as string | null
+  if (!newProfileId) return { error: 'Select a profile to move this to.' }
+
+  // Verify new profile belongs to user
+  const { data: membership } = await supabase
+    .from('profile_memberships')
+    .select('profile_id')
+    .eq('user_id', user.id)
+    .eq('profile_id', newProfileId)
+    .maybeSingle()
+  if (!membership) return { error: 'Profile not found.' }
+
+  if (documentId) {
+    await supabase.from('documents').update({ profile_id: newProfileId }).eq('id', documentId).eq('user_id', user.id)
+    await supabase.from('medications').update({ profile_id: newProfileId }).eq('source_document_id', documentId)
+    await supabase.from('timeline_events').update({ profile_id: newProfileId }).eq('source_document_id', documentId)
+  }
+  if (prescriptionId) {
+    await supabase.from('prescriptions').update({ profile_id: newProfileId }).eq('id', prescriptionId).eq('user_id', user.id)
+  }
+
+  revalidatePath('/dashboard')
+  return { error: null, success: true }
+}
