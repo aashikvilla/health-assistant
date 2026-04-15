@@ -75,10 +75,10 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
         {/* ── Heading ────────────────────────────────────────── */}
         <div>
           <h1 className="text-3xl font-bold text-text-primary leading-tight">
-            Add Your Prescription/Blood Report
+            Add a Health Record
           </h1>
           <p className="text-lg text-text-secondary mt-2 leading-relaxed">
-            Take a photo or upload from your phone
+            Take a photo, upload a file, or enter details manually
           </p>
         </div>
 
@@ -114,9 +114,14 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xl font-bold text-white leading-tight">Upload a Photo</p>
-                <p className="text-base text-white/80 mt-0.5">From Gallery</p>
+                <p className="text-base text-white/80 mt-0.5">Take a photo or pick from your camera roll</p>
               </div>
-
+            </div>
+            <div className="flex items-center gap-2 mt-2 px-1">
+              <svg className="w-3.5 h-3.5 text-text-muted flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-text-muted">Works best with a steady, well-lit photo — no flash needed</p>
             </div>
           </label>
 
@@ -138,7 +143,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-lg font-semibold text-text-primary">Upload a PDF</p>
-                <p className="text-base text-text-muted mt-0.5">For digital hospital prescriptions/reports</p>
+                <p className="text-base text-text-muted mt-0.5">Tap if you have a PDF file</p>
               </div>
             </div>
           </label>
@@ -156,8 +161,8 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-lg font-semibold text-text-primary">Enter your prescription manually</p>
-              <p className="text-base text-text-muted mt-0.5">If the photo isn&apos;t clear enough</p>
+              <p className="text-lg font-semibold text-text-primary">Enter details manually</p>
+              <p className="text-base text-text-muted mt-0.5">Type in your prescription — takes about 2 minutes</p>
             </div>
             <svg
               className="w-5 h-5 text-text-muted flex-shrink-0 transition-transform"
@@ -251,11 +256,13 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
           )}
         </div>
 
-        {/* ── Tip ────────────────────────────────────────────── */}
-        <div className="flex items-start gap-3 bg-warning-subtle rounded-2xl px-4 py-4">
-          <span className="text-xl flex-shrink-0 mt-0.5">💡</span>
-          <p className="text-base text-text-secondary leading-relaxed">
-            Please make sure the image is not blurry and well lit for best results.
+        {/* ── Privacy reassurance ────────────────────────────── */}
+        <div className="flex items-center justify-center gap-2">
+          <svg className="w-3.5 h-3.5 text-text-muted flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <p className="text-sm text-text-muted text-center">
+            Your document is encrypted and never shared
           </p>
         </div>
 
