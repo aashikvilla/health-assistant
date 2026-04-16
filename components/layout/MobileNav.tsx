@@ -26,9 +26,9 @@ export function MobileNav() {
       {open && (
         <div className="hp-mobile-menu" onClick={() => setOpen(false)}>
           <div className="hp-mobile-menu-inner" onClick={(e) => e.stopPropagation()}>
-            <a href="#how-it-works" onClick={() => setOpen(false)}>How it works</a>
-            <a href="#features" onClick={() => setOpen(false)}>For Families</a>
-            <a href="#" onClick={() => setOpen(false)}>Privacy</a>
+            <a href="#features" onClick={() => setOpen(false)}>Features</a>
+            <a href="#how-it-works" onClick={() => setOpen(false)}>How it Works</a>
+            <a href="#testimonials" onClick={() => setOpen(false)}>Testimonials</a>
             <hr />
             <Link href="/auth" onClick={() => setOpen(false)}>Sign in</Link>
             <Link href="/upload" className="hp-mobile-cta" onClick={() => setOpen(false)}>Open App</Link>
