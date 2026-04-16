@@ -29,6 +29,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
 
   const email    = formData.get('email')    as string
   const password = formData.get('password') as string
+  const fullName = (formData.get('full_name') as string | null)?.trim() || undefined
   const returnTo = formData.get('returnTo') as string | null
 
   // Point email confirmation link back to our callback so ensureSelfProfile runs
@@ -37,14 +38,17 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: callbackUrl },
+    options: {
+      emailRedirectTo: callbackUrl,
+      data: fullName ? { full_name: fullName } : undefined,
+    },
   })
 
   if (error) return { error: error.message }
 
   if (data.user && data.session) {
     // Email confirmation disabled — session available immediately
-    await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email)
+    await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email, fullName)
     redirect(returnTo ?? '/dashboard')
   }
 

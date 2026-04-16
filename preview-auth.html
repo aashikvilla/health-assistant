@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no"/>
+  <title>Sign In — Vitae</title>
+
+  <!-- PWA -->
+  <meta name="theme-color" content="#f8f9ff"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="application-name" content="Vitae"/>
+  <meta name="apple-mobile-web-app-title" content="Vitae"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
+
+    :root{
+      --bg:#f8f9ff;--surface:#f2f3ff;--white:#ffffff;
+      --blue:#1d4ed8;--blue-h:#1e40af;--blue-s:#dbeafe;
+      --accent:#9333ea;--accent-s:#f3e8ff;
+      --violet:#a855f7;--violet-s:#f3e8ff;
+      --pink:#ec4899;--pink-s:#fce7f3;
+      --grad:linear-gradient(135deg,#1d4ed8 0%,#a855f7 100%);
+      --grad-pk:linear-gradient(135deg,#a855f7 0%,#ec4899 100%);
+      --grad-full:linear-gradient(135deg,#1d4ed8 0%,#a855f7 55%,#ec4899 100%);
+      --text:#0a0a18;--text-2:#1e1e3c;--text-m:#4f4f72;
+      --border:rgba(168,85,247,.13);--border-h:rgba(168,85,247,.35);
+      --sh-sm:0 2px 12px rgba(29,78,216,.06);
+      --sh-md:0 4px 24px rgba(29,78,216,.10);
+      --sh-lg:0 8px 40px rgba(29,78,216,.14);
+      --r-md:12px;--r-lg:16px;--r-xl:20px;--r-2xl:24px;--r-3xl:32px;--r-full:9999px;
+      --fd:'Plus Jakarta Sans',system-ui,sans-serif;
+      --fb:'Manrope',system-ui,sans-serif;
+    }
+
+    body{
+      font-family:var(--fb);font-weight:500;
+      background:var(--bg);color:var(--text);
+      overflow-x:hidden;
+      min-height:100vh;min-height:100dvh;
+      display:flex;flex-direction:column;
+    }
+
+    a{text-decoration:none;cursor:pointer;color:inherit}
+    button{cursor:pointer;font-family:var(--fb);border:none;background:none}
+    input{font-family:var(--fb)}
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+    @keyframes blobMove{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,25px) scale(.97)}}
+    @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+    @keyframes checkAppear{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+
+    .fi1{animation:fadeUp .6s ease both .1s}
+    .fi2{animation:fadeUp .6s ease both .2s}
+    .fi3{animation:fadeUp .6s ease both .3s}
+    .fi4{animation:fadeUp .6s ease both .4s}
+    .fi5{animation:fadeUp .6s ease both .5s}
+    .fi6{animation:fadeUp .6s ease both .6s}
+
+    /* ── PAGE SHELL ── */
+    .auth-page{
+      flex:1;display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;
+      padding:40px 20px;
+    }
+
+    /* Dot grid background — matches homepage hero */
+    .auth-page::before{
+      content:'';position:absolute;inset:0;
+      background-image:radial-gradient(circle,rgba(168,85,247,.05) 1px,transparent 1px);
+      background-size:36px 36px;pointer-events:none;
+    }
+
+    /* Blobs — same as homepage */
+    .blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:blobMove 12s ease-in-out infinite}
+    .blob-1{width:420px;height:420px;background:radial-gradient(circle,rgba(29,78,216,.09) 0%,transparent 70%);top:-160px;left:-120px}
+    .blob-2{width:350px;height:350px;background:radial-gradient(circle,rgba(168,85,247,.08) 0%,transparent 70%);bottom:-100px;right:-80px;animation-delay:-4s}
+    .blob-3{width:280px;height:280px;background:radial-gradient(circle,rgba(236,72,153,.06) 0%,transparent 70%);top:50%;left:60%;animation-delay:-8s}
+
+    /* ── AUTH CARD ── */
+    .auth-card{
+      position:relative;z-index:2;
+      width:100%;max-width:420px;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border-radius:var(--r-2xl);
+      border:1px solid rgba(168,85,247,.12);
+      box-shadow:0 20px 70px rgba(29,78,216,.10),0 4px 20px rgba(168,85,247,.08);
+      padding:36px 32px 32px;
+    }
+
+    /* ── LOGO ── */
+    .auth-logo{text-align:center;margin-bottom:6px}
+    .auth-logo .logo-mark{
+      display:inline-flex;align-items:center;justify-content:center;
+    }
+    .auth-brand{
+      font-family:var(--fd);font-weight:800;font-size:22px;
+      color:var(--text);text-align:center;margin-bottom:4px;
+    }
+    .auth-subtitle{
+      font-size:14px;font-weight:500;color:var(--text-m);
+      text-align:center;line-height:1.6;margin-bottom:28px;
+    }
+
+    /* ── TABS ── */
+    .auth-tabs{
+      display:flex;background:var(--surface);
+      border-radius:var(--r-lg);padding:4px;
+      margin-bottom:24px;
+    }
+    .auth-tab{
+      flex:1;padding:10px 0;font-size:14px;font-weight:600;
+      border-radius:10px;text-align:center;
+      color:var(--text-m);transition:all 200ms;
+    }
+    .auth-tab.active{
+      background:var(--white);color:var(--text);
+      box-shadow:0 2px 8px rgba(29,78,216,.08);
+    }
+    .auth-tab:not(.active):hover{color:var(--text-2)}
+
+    /* ── GOOGLE BUTTON ── */
+    .btn-google{
+      width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+      height:48px;padding:0 16px;
+      background:var(--white);
+      border:1.5px solid var(--border);
+      border-radius:var(--r-lg);
+      font-size:14px;font-weight:600;color:var(--text);
+      transition:all 200ms;
+      box-shadow:var(--sh-sm);
+    }
+    .btn-google:hover{
+      border-color:var(--border-h);
+      box-shadow:var(--sh-md);
+      transform:translateY(-1px);
+    }
+    .btn-google:active{transform:translateY(0)}
+    .btn-google svg{flex-shrink:0}
+
+    /* ── DIVIDER ── */
+    .auth-divider{
+      display:flex;align-items:center;gap:14px;
+      margin:20px 0;
+    }
+    .auth-divider::before,.auth-divider::after{
+      content:'';flex:1;height:1px;
+      background:var(--border);
+    }
+    .auth-divider span{
+      font-size:12px;font-weight:600;color:var(--text-m);
+      white-space:nowrap;letter-spacing:.02em;
+    }
+
+    /* ── FORM ── */
+    .auth-form{display:flex;flex-direction:column;gap:16px}
+    .auth-form[hidden]{display:none}
+
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{
+      font-size:13px;font-weight:700;color:var(--text);
+      letter-spacing:.02em;
+    }
+    .field input{
+      width:100%;height:48px;padding:0 16px;
+      background:var(--surface);
+      border:1.5px solid transparent;
+      border-radius:var(--r-lg);
+      font-size:15px;font-weight:500;color:var(--text);
+      transition:all 200ms;
+      outline:none;
+    }
+    .field input::placeholder{color:var(--text-m);font-weight:400}
+    .field input:focus{
+      background:var(--white);
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(29,78,216,.1);
+    }
+
+    .field-row{
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .field-link{
+      font-size:12px;font-weight:600;color:var(--violet);
+      transition:color 150ms;
+    }
+    .field-link:hover{color:var(--blue)}
+
+    /* ── SUBMIT BUTTON ── */
+    .btn-submit{
+      width:100%;height:48px;
+      background:var(--grad);
+      color:#fff;font-size:15px;font-weight:700;
+      border-radius:var(--r-full);
+      box-shadow:0 8px 32px rgba(168,85,247,.3);
+      transition:all 200ms;
+      position:relative;overflow:hidden;
+    }
+    .btn-submit:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 40px rgba(168,85,247,.4);
+    }
+    .btn-submit:active{transform:translateY(0)}
+
+    /* ── FOOTER TOGGLE ── */
+    .auth-footer{
+      text-align:center;margin-top:20px;
+      font-size:13px;color:var(--text-m);
+    }
+    .auth-footer button{
+      color:var(--violet);font-weight:700;font-size:13px;
+      transition:color 150ms;
+    }
+    .auth-footer button:hover{color:var(--blue)}
+
+    /* ── TRUST BADGES ── */
+    .auth-trust{
+      display:flex;align-items:center;justify-content:center;
+      gap:16px;flex-wrap:wrap;
+      margin-top:24px;
+    }
+    .trust-badge{
+      display:flex;align-items:center;gap:5px;
+      font-size:11px;font-weight:600;color:var(--text-m);
+    }
+    .trust-badge svg{flex-shrink:0}
+
+    /* ── BACK LINK ── */
+    .back-link{
+      position:absolute;top:20px;left:20px;z-index:10;
+      display:flex;align-items:center;gap:6px;
+      font-size:13px;font-weight:600;color:var(--text-m);
+      transition:color 150ms;
+    }
+    .back-link:hover{color:var(--blue)}
+
+    /* ── ERROR / INFO MESSAGES ── */
+    .msg{
+      padding:10px 14px;border-radius:var(--r-md);
+      font-size:13px;font-weight:600;display:none;
+    }
+    .msg.error{
+      background:rgba(239,68,68,.08);color:#dc2626;
+      border:1px solid rgba(239,68,68,.15);
+    }
+    .msg.success{
+      background:rgba(16,185,129,.08);color:#059669;
+      border:1px solid rgba(16,185,129,.15);
+    }
+
+    /* ── TERMS ── */
+    .auth-terms{
+      text-align:center;margin-top:16px;
+      font-size:11px;color:var(--text-m);line-height:1.6;
+    }
+    .auth-terms a{color:var(--violet);font-weight:600}
+    .auth-terms a:hover{text-decoration:underline}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:480px){
+      .auth-page{padding:24px 16px;align-items:flex-start;padding-top:60px}
+      .auth-card{padding:28px 20px 24px;border-radius:var(--r-xl)}
+      .back-link{top:16px;left:16px}
+      /* 44px touch targets */
+      .field input{height:48px;font-size:16px}/* 16px prevents iOS zoom */
+      .btn-submit{height:52px}
+      .btn-google{height:52px}
+      .auth-tab{padding:12px 0;min-height:44px}
+    }
+
+    /* ── STANDALONE PWA — remove browser chrome padding ── */
+    @media(display-mode:standalone){
+      .auth-page{padding-top:env(safe-area-inset-top,20px)}
+      .back-link{top:calc(env(safe-area-inset-top,20px) + 8px)}
+    }
+
+    /* ── PREVIEW BANNER (remove in prod) ── */
+    .preview-banner{
+      background:#fef3c7;border-bottom:1px solid #fcd34d;
+      padding:8px 16px;text-align:center;
+      font-size:12px;color:#92400e;font-weight:600;
+      flex-shrink:0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="preview-banner">Preview only — styles will be ported to the Next.js auth page</div>
+
+  <div class="auth-page">
+
+    <!-- Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Back to home -->
+    <a href="preview-homepage.html" class="back-link fi1">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      Back
+    </a>
+
+    <div class="auth-card">
+
+      <!-- Logo -->
+      <div class="auth-logo fi1">
+        <span class="logo-mark">
+          <svg width="36" height="36" viewBox="0 0 30 30" fill="none">
+            <rect width="30" height="30" rx="8.5" fill="#1d4ed8"/>
+            <path d="M4 15 L8.5 15 L10.5 10 L15 21 L19.5 10 L21.5 15 L26 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </span>
+      </div>
+      <div class="auth-brand fi1">Vitae</div>
+      <p class="auth-subtitle fi2">Your health records, finally understood.</p>
+
+      <!-- Tabs -->
+      <div class="auth-tabs fi3" role="tablist">
+        <button class="auth-tab active" role="tab" aria-selected="true" data-tab="signin" onclick="switchTab('signin')">Sign In</button>
+        <button class="auth-tab" role="tab" aria-selected="false" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Google -->
+      <button class="btn-google fi4" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <!-- Divider -->
+      <div class="auth-divider fi4"><span>or continue with email</span></div>
+
+      <!-- Sign In Form -->
+      <form class="auth-form fi5" id="signin-form" onsubmit="return false">
+        <div class="field">
+          <label for="signin-email">Email</label>
+          <input id="signin-email" type="email" placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+        <div class="field">
+          <div class="field-row">
+            <label for="signin-password">Password</label>
+            <a href="#" class="field-link">Forgot password?</a>
+          </div>
+          <input id="signin-password" type="password" placeholder="Your password" required autocomplete="current-password"/>
+        </div>
+        <div class="msg error" id="signin-error"></div>
+        <button type="submit" class="btn-submit">Sign In</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form class="auth-form fi5" id="signup-form" hidden onsubmit="return false">
+        <div class="field">
+          <label for="signup-name">Full Name</label>
+          <input id="signup-name" type="text" placeholder="Your name" required autocomplete="name"/>
+        </div>
+        <div class="field">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+        <div class="field">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" type="password" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password"/>
+        </div>
+        <div class="msg error" id="signup-error"></div>
+        <div class="msg success" id="signup-success"></div>
+        <button type="submit" class="btn-submit">Create Account</button>
+      </form>
+
+      <!-- Footer toggle -->
+      <div class="auth-footer fi6" id="footer-signin">
+        Don't have an account?
+        <button type="button" onclick="switchTab('signup')">Sign up</button>
+      </div>
+      <div class="auth-footer fi6" id="footer-signup" style="display:none">
+        Already have an account?
+        <button type="button" onclick="switchTab('signin')">Sign in</button>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="auth-trust fi6">
+        <div class="trust-badge">
+          <svg width="13" height="13" fill="none" stroke="#a855f7" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          End-to-end encrypted
+        </div>
+        <div class="trust-badge">
+          <svg width="13" height="13" fill="none" stroke="#a855f7" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Data never sold
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <p class="auth-terms fi6">
+        By continuing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+      </p>
+
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      const signinForm = document.getElementById('signin-form');
+      const signupForm = document.getElementById('signup-form');
+      const footerSignin = document.getElementById('footer-signin');
+      const footerSignup = document.getElementById('footer-signup');
+      const tabs = document.querySelectorAll('.auth-tab');
+
+      tabs.forEach(t => {
+        const isActive = t.dataset.tab === tab;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', isActive);
+      });
+
+      if (tab === 'signup') {
+        signinForm.hidden = true;
+        signupForm.hidden = false;
+        footerSignin.style.display = 'none';
+        footerSignup.style.display = '';
+      } else {
+        signinForm.hidden = false;
+        signupForm.hidden = true;
+        footerSignin.style.display = '';
+        footerSignup.style.display = 'none';
+      }
+    }
+
+    // Read ?mode= param
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'signup') switchTab('signup');
+  </script>
+
+</body>
+</html>
