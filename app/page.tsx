@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { ContactModal } from '@/components/layout/ContactModal'
+import { NewsletterForm } from '@/components/layout/NewsletterForm'
 import './homepage.css'
 
 /**
@@ -316,12 +317,7 @@ export default function HomePage() {
           </div>
           {/* Col 2: Newsletter */}
           <div>
-            <div className="foot-newsletter-head">Stay Updated</div>
-            <div className="foot-newsletter-sub">Health tips + new features. No spam.</div>
-            <form className="foot-newsletter-form" onSubmit={(e) => e.preventDefault()}>
-              <input className="foot-newsletter-input" type="email" placeholder="Your email address" aria-label="Email for newsletter" />
-              <button className="foot-newsletter-btn" type="submit">Go</button>
-            </form>
+            <NewsletterForm />
           </div>
           {/* Col 3: Get in touch */}
           <div>

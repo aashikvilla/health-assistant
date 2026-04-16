@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 /**
  * "Get in touch" button + contact modal for the homepage footer.
@@ -24,10 +25,33 @@ export function ContactModal() {
     document.body.style.overflow = ''
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!email.trim()) return
     if (!message.trim()) return
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('leads')
+        .insert({
+          type: 'contact',
+          email: email.trim(),
+          name: name.trim() || null,
+          message: message.trim(),
+        })
+
+      if (error) {
+        console.error('Contact form error:', error)
+      }
+    } catch (err) {
+      console.error('Contact form error:', err)
+    }
+
+    // Show success state regardless (better UX)
     setSubmitted(true)
+    setName('')
+    setEmail('')
+    setMessage('')
     setTimeout(closeModal, 2800)
   }
 
