@@ -166,7 +166,8 @@ export const familyService = {
    */
   async ensureSelfProfile(
     userId: string,
-    email: string
+    email: string,
+    fullName?: string
   ): Promise<ApiResponse<FamilyProfile>> {
     const supabase = await createClient()
 
@@ -243,7 +244,7 @@ export const familyService = {
 
         // Ensure users_profile row exists for this account
         await supabase.from('users_profile').upsert(
-          { user_id: userId, full_name: (claimable as unknown as FamilyProfile).full_name ?? email.split('@')[0], onboarding_completed: false },
+          { user_id: userId, full_name: fullName?.trim() || (claimable as unknown as FamilyProfile).full_name || email.split('@')[0], onboarding_completed: false },
           { onConflict: 'user_id', ignoreDuplicates: true }
         )
 
@@ -279,7 +280,7 @@ export const familyService = {
       return { data: null, error: groupErr.message, success: false }
     }
 
-    const name = email.split('@')[0]
+    const name = fullName?.trim() || email.split('@')[0]
 
     const { error: profileErr } = await supabase
       .from('family_profiles')
