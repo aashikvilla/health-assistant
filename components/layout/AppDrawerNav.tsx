@@ -67,6 +67,15 @@ export function AppDrawerNav() {
 
   const visible = PRIMARY_PATHS.some((p) => pathname === p)
 
+  // Detect desktop client-side — avoids Tailwind v4 hidden/sm:flex cascade issues
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 640)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   return (
     <>
       {/* ── Hamburger trigger — desktop only, primary routes only ─── */}
@@ -74,8 +83,13 @@ export function AppDrawerNav() {
         onClick={() => setOpen(true)}
         aria-label="Open navigation"
         aria-expanded={open}
-        className="hidden sm:flex fixed top-[10px] right-5 z-[100] w-9 h-9 rounded-xl items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80"
-        style={{ background: 'rgba(255,255,255,.22)', border: '1px solid rgba(255,255,255,.4)', backdropFilter: 'blur(8px)' }}
+        className="fixed top-[10px] right-5 z-[100] w-9 h-9 rounded-xl items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80"
+        style={{
+          display: isDesktop ? 'flex' : 'none',
+          background: 'rgba(255,255,255,.22)',
+          border: '1px solid rgba(255,255,255,.4)',
+          backdropFilter: 'blur(8px)',
+        }}
       >
         <span className="w-[14px] h-[2px] bg-white rounded-full block" style={{ boxShadow: '0 0 4px rgba(0,0,0,.3)' }} />
         <span className="w-[14px] h-[2px] bg-white rounded-full block" style={{ boxShadow: '0 0 4px rgba(0,0,0,.3)' }} />
