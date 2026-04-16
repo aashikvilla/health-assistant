@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { extractPrescriptionData, classifyDocument, extractLabReportData } from '@/lib/extract'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
+import { createClient } from '@/lib/supabase/server'
+import { usageService } from '@/services/usage.service'
+
+export const USAGE_LIMIT_ERROR = 'USAGE_LIMIT_REACHED'
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -10,6 +14,17 @@ export async function POST(req: NextRequest) {
       status: 429,
       headers: { 'Retry-After': String(Math.ceil(RATE_WINDOW_MS / 1000)) },
     })
+  }
+
+  // Resolve authenticated user (anonymous uploads bypass quota)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    const limit = await usageService.checkLimit(user.id)
+    if (!limit.allowed) {
+      return NextResponse.json({ error: USAGE_LIMIT_ERROR }, { status: 429 })
+    }
   }
 
   try {
@@ -21,6 +36,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'text field is required' }, { status: 400 })
       }
       const prescription = await extractPrescriptionData({ type: 'text', content: text })
+      if (user) await usageService.incrementSuccessful(user.id)
       return NextResponse.json({ documentType: 'prescription', data: prescription })
     }
 
@@ -47,17 +63,21 @@ export async function POST(req: NextRequest) {
         const { extractTextFromPDF } = await import('@/lib/pdf-utils')
         const text = await extractTextFromPDF(arrayBuffer)
         if (!text.trim()) {
+          if (user) await usageService.incrementInvalid(user.id)
           return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
         }
         const docType = await classifyDocument({ type: 'text', content: text })
         if (docType === 'other') {
+          if (user) await usageService.incrementInvalid(user.id)
           return NextResponse.json({ error: 'This doesn\'t look like a prescription or lab report. Please upload a medical document.' }, { status: 422 })
         }
         if (docType === 'lab_report') {
           const report = await extractLabReportData({ type: 'text', content: text })
+          if (user) await usageService.incrementSuccessful(user.id)
           return NextResponse.json({ documentType: 'lab_report', data: report })
         }
         const prescription = await extractPrescriptionData({ type: 'text', content: text })
+        if (user) await usageService.incrementSuccessful(user.id)
         return NextResponse.json({ documentType: 'prescription', data: prescription })
       }
 
@@ -65,13 +85,16 @@ export async function POST(req: NextRequest) {
       const imageInput = { type: 'image' as const, base64, mimeType: file.type }
       const docType = await classifyDocument(imageInput)
       if (docType === 'other') {
+        if (user) await usageService.incrementInvalid(user.id)
         return NextResponse.json({ error: 'This doesn\'t look like a prescription or lab report. Please upload a medical document.' }, { status: 422 })
       }
       if (docType === 'lab_report') {
         const report = await extractLabReportData(imageInput)
+        if (user) await usageService.incrementSuccessful(user.id)
         return NextResponse.json({ documentType: 'lab_report', data: report })
       }
       const prescription = await extractPrescriptionData(imageInput)
+      if (user) await usageService.incrementSuccessful(user.id)
       return NextResponse.json({ documentType: 'prescription', data: prescription })
     }
 

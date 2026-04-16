@@ -777,6 +777,36 @@ export type Database = {
           },
         ]
       }
+      user_usage: {
+        Row: {
+          created_at:         string | null
+          id:                 string
+          invalid_uploads:    number
+          is_blocked:         boolean
+          successful_uploads: number
+          updated_at:         string | null
+          user_id:            string
+        }
+        Insert: {
+          created_at?:         string | null
+          id?:                 string
+          invalid_uploads?:    number
+          is_blocked?:         boolean
+          successful_uploads?: number
+          updated_at?:         string | null
+          user_id:             string
+        }
+        Update: {
+          created_at?:         string | null
+          id?:                 string
+          invalid_uploads?:    number
+          is_blocked?:         boolean
+          successful_uploads?: number
+          updated_at?:         string | null
+          user_id?:            string
+        }
+        Relationships: []
+      }
       users_profile: {
         Row: {
           avatar_url: string | null
@@ -821,6 +851,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_successful_upload: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      increment_invalid_upload: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       get_shared_link: {
         Args: { token: string }
         Returns: {
