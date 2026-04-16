@@ -154,8 +154,8 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             >
               {APP_NAME}
             </span>
-            {/* Inline sign-out — white icon on dark gradient */}
-            <form action={signOut}>
+            {/* Sign-out — hidden on desktop where AppDrawerNav's hamburger takes over */}
+            <form action={signOut} className="sm:hidden">
               <button
                 type="submit"
                 aria-label="Sign out"

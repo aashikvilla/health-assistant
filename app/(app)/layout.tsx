@@ -13,7 +13,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { familyService } from '@/services/family.service'
-import { PageLayout, PageHeader, BottomNav, LogoutButton } from '@/components/layout'
+import { PageLayout, PageHeader, BottomNav, AppDrawerNav, LogoutButton } from '@/components/layout'
 
 export default async function AppLayout({
   children,
@@ -56,6 +56,7 @@ export default async function AppLayout({
     >
       {children}
       <BottomNav />
+      <AppDrawerNav />
     </PageLayout>
   )
 }
