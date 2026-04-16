@@ -82,6 +82,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
   const [labExplanation, setLabExplanation]   = useState<LabReportExplanation | null>(null)
   const [labExplainError, setLabExplainError] = useState<string | null>(null)
   const [showNotMedicalModal, setShowNotMedicalModal] = useState(false)
+  const [showUsageWallModal,  setShowUsageWallModal]  = useState(false)
 
   // ── OCR / extraction ───────────────────────────────────────────────────────
 
@@ -105,6 +106,11 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
 
       if (!res.ok) {
         const { error: msg } = await res.json()
+        if (msg === 'USAGE_LIMIT_REACHED') {
+          setStep('pick')
+          setShowUsageWallModal(true)
+          return
+        }
         if (msg === NOT_MEDICAL_MSG) {
           setStep('pick')
           setShowNotMedicalModal(true)
@@ -447,6 +453,38 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
             />
           </div>
         </main>
+      )}
+
+      {/* Usage wall modal */}
+      {showUsageWallModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-6"
+          style={{ background: 'rgba(24,28,33,0.5)', backdropFilter: 'blur(4px)' }}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl px-6 py-8 flex flex-col items-center text-center gap-4 bg-surface-container-lowest"
+            style={{ boxShadow: '0 8px 48px rgba(24,28,33,0.18)' }}
+          >
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-surface-subtle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-secondary">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-lg font-bold text-text-primary">Early Access Limit Reached</h2>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                You&apos;ve reached the limit for early access. Stay tuned for our official launch to unlock full access.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="w-full py-3.5 rounded-2xl font-semibold text-sm bg-primary text-text-inverse"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Not a medical document modal */}
