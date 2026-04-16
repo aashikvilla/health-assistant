@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { LabReportData, LabTest } from '@/types/lab-report'
+import type { LabReportData } from '@/types/lab-report'
 import type { Confidence } from '@/types/prescription'
 import { Button } from '@/components/ui'
 import FieldRow from './FieldRow'
@@ -31,22 +31,14 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
     setReport((r) => ({ ...r, [field]: val, [confidenceField]: 'high' as Confidence }))
   }
 
-  function updateTest(index: number, field: keyof LabTest, val: string) {
-    setReport((r) => {
-      const tests = [...r.tests]
-      tests[index] = { ...tests[index], [field]: val, confidence: 'high' as Confidence }
-      return { ...r, tests }
-    })
-  }
-
   const lowCount = [
     report.patientNameConfidence === 'low' ? 1 : 0,
     report.testDateConfidence    === 'low' ? 1 : 0,
     report.labNameConfidence     === 'low' ? 1 : 0,
     report.doctorNameConfidence  === 'low' ? 1 : 0,
-    ...report.tests.map((t) => (t.confidence === 'low' ? 1 : 0)),
   ].reduce((a, b) => a + b, 0)
 
+  const abnormalCount = report.tests.filter(t => t.status === 'high' || t.status === 'low' || t.status === 'critical').length
   const missingRequired = report.tests.some((t) => !t.result?.trim())
 
   return (
@@ -66,9 +58,17 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
 
         {/* ── Heading ────────────────────────────────────────── */}
         <div>
-          <h1 className="text-3xl font-bold text-text-primary leading-tight">
-            Check the Details
-          </h1>
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="text-3xl font-bold text-text-primary leading-tight">
+              Check the Details
+            </h1>
+            <button
+              onClick={onRetry}
+              className="flex-shrink-0 text-sm font-medium text-primary mt-1.5 hover:underline"
+            >
+              Change document
+            </button>
+          </div>
           <p className="text-lg text-text-secondary mt-2 leading-relaxed">
             We read your lab report. Please check if everything looks right.
           </p>
@@ -105,21 +105,34 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
 
         {/* ── Test results ───────────────────────────────────── */}
         <section>
-          <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-2 px-1">
-            Test Results ({report.tests.length})
-          </h2>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider">
+              Test Results ({report.tests.length})
+            </h2>
+            {abnormalCount > 0 && (
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{ background: 'var(--color-error-subtle)', color: 'var(--color-error)' }}>
+                {abnormalCount} outside range
+              </span>
+            )}
+          </div>
           <div className="flex flex-col gap-3">
             {report.tests.map((test, i) => {
+              const isAbnormal = test.status === 'high' || test.status === 'low' || test.status === 'critical'
               const style = STATUS_STYLE[test.status] ?? STATUS_STYLE['']
               return (
-                <div key={i} className="bg-surface-container-lowest rounded-2xl px-4 divide-y divide-border-subtle"
-                  style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}>
-                  {/* Test header row */}
-                  <div className="flex items-center justify-between py-3">
-                    <p className="text-base font-semibold text-text-primary truncate mr-2">
-                      {test.testName || <span className="text-text-muted">Unknown test</span>}
+                <div key={i}
+                  className="bg-surface-container-lowest rounded-2xl overflow-hidden"
+                  style={{
+                    boxShadow: '0 2px 12px rgba(24,28,33,0.06)',
+                    borderLeft: isAbnormal ? `3px solid ${style.text}` : undefined,
+                  }}>
+                  {/* Test name + badge */}
+                  <div className="flex items-center justify-between px-4 pt-3 pb-2">
+                    <p className="text-base font-semibold text-text-primary leading-tight mr-2">
+                      {test.testName || <span className="text-text-muted italic">Unknown test</span>}
                     </p>
-                    {test.status && (
+                    {isAbnormal && (
                       <span
                         className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                         style={{ background: style.bg, color: style.text }}
@@ -128,19 +141,23 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
                       </span>
                     )}
                   </div>
-                  <FieldRow
-                    label="Result"
-                    value={`${test.result}${test.unit ? ' ' + test.unit : ''}`}
-                    confidence={test.confidence}
-                    onChange={(v) => updateTest(i, 'result', v)}
-                    required
-                  />
-                  <FieldRow
-                    label="Reference Range"
-                    value={test.referenceRange}
-                    confidence={test.confidence}
-                    onChange={(v) => updateTest(i, 'referenceRange', v)}
-                  />
+                  {/* Result + range — read-only */}
+                  <div className="flex items-baseline justify-between px-4 pb-3">
+                    <div>
+                      <span className="text-lg font-bold"
+                        style={{ color: isAbnormal ? style.text : 'var(--color-text-primary)' }}>
+                        {test.result}
+                      </span>
+                      {test.unit && (
+                        <span className="text-sm text-text-muted ml-1">{test.unit}</span>
+                      )}
+                    </div>
+                    {test.referenceRange && (
+                      <span className="text-xs text-text-muted">
+                        Ref: <span className="font-medium text-text-secondary">{test.referenceRange}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               )
             })}
@@ -169,15 +186,7 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
             disabled={missingRequired}
             className="min-h-[60px] text-xl rounded-2xl"
           >
-            Yes, This Looks Right →
-          </Button>
-          <Button
-            onClick={onRetry}
-            variant="ghost"
-            size="lg"
-            fullWidth
-          >
-            Upload a different document
+            Confirm &amp; Get AI Analysis →
           </Button>
         </div>
       </div>

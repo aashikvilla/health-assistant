@@ -8,8 +8,13 @@ interface EmptyPrescriptionsProps {
   isSelf:      boolean
 }
 
+function titleCase(s: string) {
+  return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+}
+
 export function EmptyPrescriptions({ profileId, profileName, isSelf }: EmptyPrescriptionsProps) {
-  const label = isSelf ? 'your' : `${profileName.split(' ')[0]}'s`
+  const firstName = titleCase(profileName).split(' ')[0]
+  const label = isSelf ? 'your' : `${firstName}'s`
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center gap-4">
@@ -30,12 +35,12 @@ export function EmptyPrescriptions({ profileId, profileName, isSelf }: EmptyPres
         </svg>
       </div>
       <div>
-        <p className="text-sm font-semibold text-text-primary">No prescriptions yet</p>
+        <p className="text-sm font-semibold text-text-primary">No records yet</p>
         <p className="text-xs text-text-muted mt-1">
-          Upload {label} first prescription to get started.
+          Upload {label} first health record to get started.
         </p>
       </div>
-      <Button size="md" href={`/dashboard/upload/${profileId}`}>Upload a Prescription</Button>
+      <Button size="md" href={`/dashboard/upload/${profileId}`}>Upload a Record</Button>
     </div>
   )
 }

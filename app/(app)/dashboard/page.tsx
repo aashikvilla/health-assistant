@@ -116,7 +116,9 @@ export default async function HubPage({ searchParams }: HubPageProps) {
   ])
 
   const prescriptions = prescriptionsResult.success ? (prescriptionsResult.data ?? []) : []
-  const displayName   = user.email?.split('@')[0] ?? 'there'
+  const selfProfile   = profiles.find((p) => p.is_self)
+  const rawName       = selfProfile?.full_name ?? user.email?.split('@')[0] ?? 'there'
+  const displayName   = rawName.split(' ')[0]
   const isEmpty       = prescriptions.length === 0
 
   const avatarLetter = displayName[0]?.toUpperCase() ?? 'U'

@@ -242,16 +242,17 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
 
   return (
     <>
-      {step === 'pick' && (
-        <div className="text-2xl font-bold text-text-primary px-4 pt-6 pb-3">
-          Upload Prescription
-        </div>
-      )}
-      {step !== 'pick' && (
-        <div className="text-2xl font-bold text-text-primary px-4 pt-6 pb-3">
-          {step === 'explaining' && explanation ? 'Your Prescription' : 'Upload Prescription'}
-        </div>
-      )}
+      <div className="text-2xl font-bold text-text-primary px-4 pt-6 pb-3">
+        {step === 'explaining' && explanation
+          ? 'Your Prescription'
+          : step === 'explaining' && labExplanation
+          ? 'Your Lab Report'
+          : documentType === 'lab_report'
+          ? 'Upload Lab Report'
+          : step === 'pick'
+          ? 'Upload a Record'
+          : 'Upload Prescription'}
+      </div>
 
       {saveError && (
         <div className="mx-4 mt-4 px-4 py-3 rounded-xl bg-error-subtle border border-error/20 text-sm text-error">
@@ -360,23 +361,29 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
             </div>
           </nav>
 
-          <div className="px-5 pt-3 pb-2">
-            <p className="font-body text-sm text-text-muted">
-              {labExplanation.doctorName ? `Referred by ${labExplanation.doctorName} · ` : ''}
-              For {labExplanation.patientName || 'You'}
+          {/* Patient context strip — identity, not provenance */}
+          <div className="mx-5 mt-4 px-4 py-3 rounded-2xl bg-surface-container-lowest border border-border-subtle">
+            <p className="font-body text-sm font-medium text-text-primary">
+              {labExplanation.patientName || 'Your Report'}
+            </p>
+            <p className="font-body text-xs text-text-muted mt-0.5">
+              {[labExplanation.testDate, labExplanation.doctorName ? `Dr. ${labExplanation.doctorName}` : null, labExplanation.labName]
+                .filter(Boolean).join(' · ')}
             </p>
           </div>
 
-          <div className="px-5 pb-4">
-            <DisclaimerBanner doctorName={labExplanation.doctorName || 'your doctor'} />
-          </div>
-
-          <section className="flex-1 px-5 pt-4 pb-28 space-y-4">
+          <section className="flex-1 px-5 pt-5 pb-28 space-y-4">
             {labExplanation.abnormalMarkers.length > 0 ? (
               <>
-                <h2 className="font-display text-lg font-semibold text-text-primary">
-                  Parameters Outside Normal Range ({labExplanation.abnormalMarkers.length})
-                </h2>
+                {/* Summary badge — orientation before detail */}
+                <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-error-subtle border border-error/15">
+                  <svg className="w-4 h-4 text-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  </svg>
+                  <p className="font-body text-sm font-semibold text-error">
+                    {labExplanation.abnormalMarkers.length} of {labReport?.tests.length ?? labExplanation.abnormalMarkers.length} parameters outside normal range
+                  </p>
+                </div>
                 {labExplanation.abnormalMarkers.map((marker) => (
                   <AbnormalMarkerCard key={marker.id} marker={marker} />
                 ))}
@@ -394,6 +401,10 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
                 </div>
               </div>
             )}
+
+            {/* Disclaimer — after results, not before */}
+            <DisclaimerBanner doctorName={labExplanation.doctorName || 'your doctor'} />
+
             <DoctorNotes notes={labExplanation.doctorNotes} title="Things to follow" />
           </section>
 
@@ -403,7 +414,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
               disabled={isPending}
               className="w-full h-14 bg-primary text-primary-foreground font-semibold rounded-2xl hover:opacity-90 disabled:opacity-60 transition-opacity"
             >
-              {isPending ? 'Saving…' : 'Save Lab Report'}
+              {isPending ? 'Saving…' : 'Save & View Full Report →'}
             </button>
           </div>
         </main>
