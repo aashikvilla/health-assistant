@@ -45,21 +45,14 @@ export default function HomePage() {
           <h1 className="hero-h1 fi2">Your health records,<br /><em>finally</em> understood.</h1>
           <p className="hero-p fi3">Upload any prescription or lab report and get a plain-language explanation of every medication, dosage and test result instantly.</p>
           <div className="hero-actions fi4">
-            <Link href="/upload" className="btn-cta"><span className="hp-cta-full">Get Plain-Language Explanation — Free</span><span className="hp-cta-short">Explain My Prescription — Free</span></Link>
-            <a href="#how-it-works" className="btn-outline">See how it works</a>
+            <Link href="/upload" className="btn-cta">Start for Free →</Link>
+            <Link href="/auth" className="btn-outline">Sign up</Link>
           </div>
           <p className="cta-sub fi4">Already have an account? <Link href="/auth">Sign in</Link></p>
-          <div className="trust-row fi5">
-            <div className="avatars">
-              <div className="av">G</div><div className="av">P</div><div className="av">R</div>
-              <div className="av" style={{background:'var(--pink-s)',color:'var(--pink)'}}>+</div>
-            </div>
-            <p className="trust-txt"><strong>14,200+ prescriptions</strong> explained this month</p>
-          </div>
           <div className="badges fi5">
-            <div className="badge"><svg width="13" height="13" fill="none" stroke="#a855f7" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>End-to-end encrypted</div>
-            <div className="badge"><svg width="13" height="13" fill="none" stroke="#a855f7" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>Data never sold</div>
-            <div className="badge"><svg width="13" height="13" fill="none" stroke="#ec4899" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>No credit card needed</div>
+            <div className="badge"><svg width="13" height="13" fill="none" stroke="#1d4ed8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>End-to-end encrypted</div>
+            <div className="badge"><svg width="13" height="13" fill="none" stroke="#1d4ed8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>Data never sold</div>
+            <div className="badge"><svg width="13" height="13" fill="none" stroke="#1d4ed8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>No credit card needed</div>
           </div>
         </div>
 
@@ -108,8 +101,8 @@ export default function HomePage() {
       {/* ── TICKER ── */}
       <div className="ticker-wrap">
         <div className="ticker-track">
-          {['Prescriptions decoded in seconds','Lab reports in plain language','Family health hub','End-to-end encrypted','Handwritten prescriptions supported','No medical jargon · ever',
-            'Prescriptions decoded in seconds','Lab reports in plain language','Family health hub','End-to-end encrypted','Handwritten prescriptions supported','No medical jargon · ever',
+          {['Prescriptions decoded in seconds','Lab reports in plain language','Family health hub','End-to-end encrypted','Handwritten prescriptions supported','No medical jargon · ever','Share records with your doctor','Track health changes over time',
+            'Prescriptions decoded in seconds','Lab reports in plain language','Family health hub','End-to-end encrypted','Handwritten prescriptions supported','No medical jargon · ever','Share records with your doctor','Track health changes over time',
           ].map((t, i) => (
             <div key={i} className="ticker-item"><div className="ticker-dot" />{t}</div>
           ))}
@@ -117,7 +110,10 @@ export default function HomePage() {
       </div>
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{background:'var(--surface)'}}>
+      <section className="feat-section" id="features">
+        <div className="feat-aurora feat-aurora-1" />
+        <div className="feat-aurora feat-aurora-2" />
+        <div className="feat-aurora feat-aurora-3" />
         <div className="wrap">
           <div className="tc">
             <p className="s-eye">Features</p>
@@ -265,16 +261,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
-      <section className="stats-bar">
-        <div className="stats-inner">
-          <div className="stat-item stat-quote-item"><p className="stat-quote">&ldquo;I finally understood my father&apos;s medication after 3 years of confusion.&rdquo;</p><p className="stat-quote-sub">— Rashmi S., Caregiver · Bangalore</p></div>
-          <div className="stat-item"><div className="stat-num">14<span>K+</span></div><div className="stat-lbl">Prescriptions explained this month</div></div>
-          <div className="stat-item"><div className="stat-num">2<span>,400+</span></div><div className="stat-lbl">Families using Vitae</div></div>
-          <div className="stat-item"><div className="stat-num">&lt;<span>60s</span></div><div className="stat-lbl">Average time to plain-language result</div></div>
-        </div>
-      </section>
-
       {/* ── TESTIMONIALS ── */}
       <section className="testi-section" id="testimonials">
         <div className="testi-head">
@@ -303,8 +289,8 @@ export default function HomePage() {
           <h2>Stop Googling your medications.<br />Get the real explanation.</h2>
           <p>No credit card. No commitment.<br />Plain-language explanation in under 60 seconds.</p>
           <div className="cta-btns">
-            <Link href="/upload" className="cta-btn-w">Upload My First Prescription →</Link>
-            <Link href="/auth" className="cta-btn-o">Create Free Account</Link>
+            <Link href="/upload" className="cta-btn-w">Start for Free →</Link>
+            <Link href="/auth" className="cta-btn-o">Create Account</Link>
           </div>
           <p className="cta-fine">No account needed to try · End-to-end encrypted · Takes 60 seconds</p>
         </div>
@@ -323,7 +309,7 @@ export default function HomePage() {
               </span>
               Vitae
             </div>
-            <p className="foot-tag">Built by people who got confused<br />by medical jargon too.</p>
+            <p className="foot-tag">Built by people who got confused by medical jargon too.</p>
           </div>
           <div>
             <div className="foot-newsletter-head">Stay Updated</div>
