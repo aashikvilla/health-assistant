@@ -1,3 +1,5 @@
+"use client"
+
 import Link from 'next/link'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { ContactModal } from '@/components/layout/ContactModal'
