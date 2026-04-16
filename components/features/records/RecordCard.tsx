@@ -20,62 +20,67 @@ const TYPE_LABEL: Record<string, string> = {
 }
  
 export function RecordCard({ record, className }: RecordCardProps) {
-  const { id, document_type, document_date, doctor_name, profile_name, tags, summary } = record
+  const { id, document_type, document_date, doctor_name, profile_name, tags } = record
   const isPrescription = document_type === 'prescription'
-  const label = TYPE_LABEL[document_type] ?? document_type
- 
+
+  const dateObj = document_date ? new Date(document_date) : null
+  const dayNum  = dateObj ? dateObj.toLocaleDateString('en-IN', { day: '2-digit' }) : '—'
+  const monthStr = dateObj ? dateObj.toLocaleDateString('en-IN', { month: 'short' }) : ''
+
   return (
     <Link
       href={`/records/${id}`}
-      className={[
-        'flex items-start gap-3 px-4 py-4 bg-surface-container-lowest rounded-2xl',
-        'transition-all min-h-[44px]',
-        className,
-      ].filter(Boolean).join(' ')}
-      style={{ boxShadow: '0 2px 12px 0 rgba(24,28,33,0.06)' }}
+      className={['flex overflow-hidden rounded-xl transition-all min-h-[44px]', className].filter(Boolean).join(' ')}
+      style={{
+        background: '#fff',
+        border: '1px solid rgba(124,58,237,.12)',
+        boxShadow: '0 2px 12px rgba(29,78,216,.07)',
+      }}
     >
-      {/* Type icon */}
+      {/* Colored left stripe */}
       <div
-        className={[
-          'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
-          isPrescription ? 'bg-primary-subtle' : 'bg-info-subtle',
-        ].join(' ')}
-        aria-hidden="true"
-      >
-        {isPrescription ? (
-          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        ) : (
-          <svg className="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        )}
-      </div>
- 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <Badge variant={isPrescription ? 'primary' : 'info'} size="sm">{label}</Badge>
-          <span className="text-xs text-text-muted truncate">{profile_name}</span>
+        className="w-1 flex-shrink-0"
+        style={{
+          background: isPrescription
+            ? 'linear-gradient(180deg, #1d4ed8, #7c3aed)'
+            : 'linear-gradient(180deg, #0d9488, #0891b2)',
+        }}
+      />
+
+      {/* Icon */}
+      <div className="flex items-center px-3 py-3 flex-shrink-0">
+        <div
+          className="w-9 h-9 rounded-[10px] flex items-center justify-center"
+          style={{ background: isPrescription ? 'rgba(29,78,216,.09)' : 'rgba(13,148,136,.09)' }}
+          aria-hidden="true"
+        >
+          {isPrescription ? (
+            <svg className="w-4.5 h-4.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          ) : (
+            <svg className="w-4.5 h-4.5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2" strokeLinecap="round">
+              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          )}
         </div>
-        <p className="text-sm font-semibold text-text-primary truncate">
-          {doctor_name ?? 'Unknown Doctor'}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0 py-3 pr-3">
+        <p className="font-display text-[13px] font-bold text-text-primary truncate">
+          {doctor_name ?? (isPrescription ? 'Prescription' : 'Lab Report')}
         </p>
-        <p className="text-xs text-text-muted mt-0.5">{formatDate(document_date)}</p>
-        {summary && (
-          <p className="text-xs text-text-secondary mt-1 line-clamp-2 leading-relaxed">
-            {summary}
-          </p>
-        )}
+        <p className="font-body text-[11px] text-text-muted mt-0.5">
+          {isPrescription ? 'Prescription' : 'Lab Report'}{profile_name ? ` · ${profile_name}` : ''}
+        </p>
         {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
+          <div className="flex gap-1 mt-1.5 flex-wrap">
             {tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="text-xs px-2 py-0.5 bg-teal-subtle text-teal rounded-full font-medium"
+                className="font-body text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: 'rgba(13,148,136,.1)', color: '#0d9488' }}
               >
                 {tag}
               </span>
@@ -83,8 +88,17 @@ export function RecordCard({ record, className }: RecordCardProps) {
           </div>
         )}
       </div>
- 
-      <span className="text-text-muted text-base mt-1 shrink-0" aria-hidden="true">›</span>
+
+      {/* Date block */}
+      <div className="flex flex-col items-center justify-center px-3 flex-shrink-0 text-right">
+        <span
+          className="font-display text-[20px] font-extrabold leading-none"
+          style={{ color: isPrescription ? '#1d4ed8' : '#0d9488' }}
+        >
+          {dayNum}
+        </span>
+        <span className="font-body text-[10px] font-semibold text-text-muted uppercase">{monthStr}</span>
+      </div>
     </Link>
   )
 }

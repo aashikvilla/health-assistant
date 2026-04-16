@@ -47,24 +47,47 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 glass-surface pb-safe z-40 sm:hidden"
+      className="fixed bottom-0 inset-x-0 pb-safe z-40 sm:hidden"
+      style={{
+        background: 'rgba(255,255,255,0.94)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderTop: '1px solid rgba(124,58,237,.12)',
+      }}
       aria-label="Main navigation"
     >
-      <div className="flex">
+      <div className="flex items-center h-16 px-2">
         {NAV_ITEMS.map(({ label, href, icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`)
+          const active = pathname === href
           return (
             <Link
               key={href}
               href={href}
-              className={[
-                'flex-1 flex flex-col items-center justify-center gap-1 min-h-[56px] text-xs font-medium transition-colors',
-                active ? 'text-primary' : 'text-text-muted hover:text-text-secondary',
-              ].join(' ')}
+              className="flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] transition-colors"
               aria-current={active ? 'page' : undefined}
             >
-              {icon(active)}
-              {label}
+              {/* Icon container */}
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                style={active ? { background: 'rgba(29,78,216,.09)' } : {}}
+              >
+                <span style={{ color: active ? '#1d4ed8' : '#94a3b8' }}>
+                  {icon(active)}
+                </span>
+              </div>
+              <span
+                className="font-body text-[10px] font-semibold"
+                style={{ color: active ? '#1d4ed8' : '#94a3b8' }}
+              >
+                {label}
+              </span>
+              {/* Active gradient dot */}
+              {active && (
+                <div
+                  className="w-4 h-[3px] rounded-full -mt-0.5"
+                  style={{ background: 'linear-gradient(90deg, #1d4ed8, #7c3aed)' }}
+                />
+              )}
             </Link>
           )
         })}

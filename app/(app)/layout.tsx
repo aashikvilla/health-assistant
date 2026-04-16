@@ -50,12 +50,7 @@ export default async function AppLayout({
 
   return (
     <PageLayout
-      header={
-        <PageHeader
-          variant="brand"
-          rightSlot={<LogoutButton />}
-        />
-      }
+      header={null}
       footer={null}
       className="pb-20 sm:pb-0"
     >

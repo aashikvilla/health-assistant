@@ -8,10 +8,11 @@ import { EmptyPrescriptions }         from '@/components/features/family/EmptyPr
 import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
 import { ActiveMedicationsStrip }     from '@/components/features/hub/ActiveMedicationsStrip'
 import { LabAlertCard }               from '@/components/features/hub/LabAlertCard'
-import { LogoutButton }               from '@/components/layout/LogoutButton'
-import { Button }                     from '@/components/ui'
-import Link                           from 'next/link'
-import type { Medication }            from '@/types/prescription'
+import { Button }    from '@/components/ui'
+import { APP_NAME } from '@/constants'
+import { signOut }  from '@/app/actions'
+import Link         from 'next/link'
+import type { Medication } from '@/types/prescription'
 
 // searchParams is async in Next.js 16
 interface HubPageProps {
@@ -118,92 +119,195 @@ export default async function HubPage({ searchParams }: HubPageProps) {
   const displayName   = user.email?.split('@')[0] ?? 'there'
   const isEmpty       = prescriptions.length === 0
 
+  const avatarLetter = displayName[0]?.toUpperCase() ?? 'U'
+
   return (
     <>
       <PendingUploadBanner />
 
-      <div className="py-5 flex flex-col gap-6">
+      {/* ── Gradient Hero — full bleed, owns its own nav ────────── */}
+      <div
+        className="-mx-4 sm:-mx-6 lg:-mx-8"
+        style={{ background: 'linear-gradient(135deg, #0f0f2d 0%, #1d4ed8 45%, #7c3aed 80%, #c026d3 100%)' }}
+      >
+        <div className="relative overflow-hidden">
+          {/* Decorative radial overlays */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle at 80% 15%, rgba(168,85,247,.45) 0%, transparent 55%), radial-gradient(circle at 5% 85%, rgba(29,78,216,.35) 0%, transparent 50%)',
+            }}
+          />
 
-        {/* ── Welcome ────────────────────────────────────────────── */}
-        <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">
-            Hi {displayName} 👋
-          </h1>
-          <p className="text-sm text-text-secondary mt-1 leading-relaxed">
-            Your family&apos;s health records, all in one place
-          </p>
-        </div>
-
-        {/* ── Profile Wheel ──────────────────────────────────────── */}
-        <ProfileSectionWithEdit
-          profiles={profiles}
-          activeProfile={activeProfile}
-          baseHref="/dashboard"
-        />
-
-        {/* ── Active Medications ─────────────────────────────────── */}
-        <ActiveMedicationsStrip
-          medications={activeMeds}
-          profileName={activeProfile.full_name}
-          isSelf={activeProfile.is_self}
-        />
-
-        {/* ── Lab Alerts ─────────────────────────────────────────── */}
-        <LabAlertCard
-          values={labAlerts.values}
-          reportDate={labAlerts.reportDate}
-          profileName={activeProfile.full_name}
-          isSelf={activeProfile.is_self}
-          documentId={labAlerts.documentId}
-        />
-
-        {/* ── Prescriptions ──────────────────────────────────────── */}
-        <section aria-labelledby="prescriptions-heading">
-          <div className="flex items-center justify-between mb-3">
-            <h2 id="prescriptions-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-              {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Documents
-            </h2>
-            {!isEmpty && (
-              <Link
-                href="/timeline"
-                className="text-xs text-primary font-medium hover:underline"
+          {/* ── Top nav bar ── */}
+          <div className="relative flex items-center justify-between px-5 pt-safe h-14">
+            <span
+              className="font-display text-xl font-extrabold tracking-tight"
+              style={{
+                background: 'linear-gradient(90deg,#fff 0%,rgba(255,255,255,.75) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              {APP_NAME}
+            </span>
+            {/* Inline sign-out — white icon on dark gradient */}
+            <form action={signOut}>
+              <button
+                type="submit"
+                aria-label="Sign out"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-opacity hover:opacity-80"
+                style={{ background: 'rgba(255,255,255,.15)', border: '1px solid rgba(255,255,255,.25)' }}
               >
-                View all
-              </Link>
-            )}
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </button>
+            </form>
           </div>
 
-          {isEmpty ? (
-            <EmptyPrescriptions
-              profileId={activeProfile.id}
-              profileName={activeProfile.full_name}
-              isSelf={activeProfile.is_self}
-            />
-          ) : (
-            <div className="flex flex-col gap-2">
-              {prescriptions.map((rx) => (
-                <div key={rx.id} className="flex items-center gap-2">
-                  <div className="flex-1 min-w-0">
-                    <PrescriptionListItem prescription={rx} />
-                  </div>
-                  <PrescriptionActions prescription={rx} profiles={profiles} />
-                </div>
-              ))}
+          {/* ── Greeting + avatar ── */}
+          <div className="relative flex items-end justify-between px-5 pt-6 pb-0">
+            <div>
+              <p className="font-body text-[13px] font-medium mb-1" style={{ color: 'rgba(255,255,255,.65)' }}>Good day,</p>
+              <h1 className="font-display text-[30px] font-extrabold text-white tracking-tight leading-none">
+                {displayName}
+              </h1>
             </div>
-          )}
-        </section>
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center font-display text-xl font-extrabold text-white flex-shrink-0 mb-1"
+              style={{
+                background: 'linear-gradient(135deg, #c026d3, #7c3aed)',
+                border: '2.5px solid rgba(255,255,255,.35)',
+                boxShadow: '0 4px 20px rgba(0,0,0,.3)',
+              }}
+            >
+              {avatarLetter}
+            </div>
+          </div>
 
-        {/* ── Upload CTA ─────────────────────────────────────────── */}
-        {!isEmpty && (
-          <Button
-            fullWidth
-            size="lg"
-            href={`/dashboard/upload/${activeProfile.id}`}
+          {/* ── Stat pills ── */}
+          {/* pb-10 gives 40px of gradient below the pills before the white sheet overlaps */}
+          <div className="relative flex gap-3 px-5 pt-5 pb-10">
+            {[
+              { num: activeMeds.length,        label: 'Active Meds' },
+              { num: labAlerts.values.length,  label: 'Alerts' },
+              { num: prescriptions.length,     label: 'Records' },
+            ].map(({ num, label }) => (
+              <div
+                key={label}
+                className="flex-1 rounded-xl px-3 py-3"
+                style={{
+                  background: 'rgba(255,255,255,.13)',
+                  border: '1px solid rgba(255,255,255,.2)',
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                <div className="font-display text-[26px] font-extrabold text-white leading-none mb-0.5">{num}</div>
+                <div className="font-body text-[11px] font-medium leading-tight" style={{ color: 'rgba(255,255,255,.65)' }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── White content sheet — overlaps gradient, full-bleed, px-5 matches hero ── */}
+      {/* -mt-6 pulls the sheet up over the gradient's pb-10, creating a smooth overlap */}
+      <div
+        className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 relative z-10"
+        style={{
+          background: '#f7f9ff',
+          borderRadius: '28px 28px 0 0',
+          boxShadow: '0 -4px 24px rgba(29,78,216,.12)',
+        }}
+      >
+        <div className="px-5 pt-5 pb-6 flex flex-col gap-5">
+
+          {/* ── Family profiles ────────────────────────────────────── */}
+          <div
+            className="rounded-2xl bg-white px-4 pt-4 pb-3"
+            style={{
+              border: '1px solid rgba(124,58,237,.12)',
+              boxShadow: '0 2px 16px rgba(29,78,216,.08)',
+            }}
           >
-            + Upload for {activeProfile.is_self ? 'yourself' : activeProfile.full_name.split(' ')[0]}
-          </Button>
-        )}
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-display text-[11px] font-bold text-text-muted uppercase tracking-widest">Family</span>
+            </div>
+            <ProfileSectionWithEdit
+              profiles={profiles}
+              activeProfile={activeProfile}
+              baseHref="/dashboard"
+            />
+          </div>
 
+          {/* ── Lab Alerts ─────────────────────────────────────────── */}
+          <LabAlertCard
+            values={labAlerts.values}
+            reportDate={labAlerts.reportDate}
+            profileName={activeProfile.full_name}
+            isSelf={activeProfile.is_self}
+            documentId={labAlerts.documentId}
+          />
+
+          {/* ── Active Medications ─────────────────────────────────── */}
+          <ActiveMedicationsStrip
+            medications={activeMeds}
+            profileName={activeProfile.full_name}
+            isSelf={activeProfile.is_self}
+          />
+
+          {/* ── Recent Documents ───────────────────────────────────── */}
+          <section aria-labelledby="prescriptions-heading">
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                id="prescriptions-heading"
+                className="font-display text-[11px] font-bold text-text-muted uppercase tracking-widest"
+              >
+                {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Records
+              </h2>
+              {!isEmpty && (
+                <Link href="/timeline" className="text-xs font-semibold text-primary hover:underline">
+                  View all
+                </Link>
+              )}
+            </div>
+
+            {isEmpty ? (
+              <EmptyPrescriptions
+                profileId={activeProfile.id}
+                profileName={activeProfile.full_name}
+                isSelf={activeProfile.is_self}
+              />
+            ) : (
+              <div className="flex flex-col gap-2">
+                {prescriptions.map((rx) => (
+                  <div key={rx.id} className="flex items-center gap-2">
+                    <div className="flex-1 min-w-0">
+                      <PrescriptionListItem prescription={rx} />
+                    </div>
+                    <PrescriptionActions prescription={rx} profiles={profiles} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* ── Upload CTA ─────────────────────────────────────────── */}
+          {!isEmpty && (
+            <Button
+              fullWidth
+              size="lg"
+              href={`/dashboard/upload/${activeProfile.id}`}
+            >
+              + Upload for {activeProfile.is_self ? 'yourself' : activeProfile.full_name.split(' ')[0]}
+            </Button>
+          )}
+
+        </div>
       </div>
     </>
   )

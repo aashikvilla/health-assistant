@@ -23,57 +23,73 @@ export default async function TimelinePage() {
   const documents = docsResult.data ?? [];
   const profiles = profilesResult.data ?? [];
 
+  const count = documents.length
+
   return (
-    <div className="py-5 flex flex-col gap-6">
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">
+    <>
+      {/* ── Gradient Hero — full bleed ─────────────────────────── */}
+      <div
+        className="-mx-4 sm:-mx-6 lg:-mx-8"
+        style={{ background: 'linear-gradient(135deg, #0f0f2d 0%, #1d4ed8 45%, #7c3aed 80%, #c026d3 100%)' }}
+      >
+        <div className="px-5 pt-6 pb-8 relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(circle at 70% 30%, rgba(168,85,247,.4) 0%, transparent 55%)' }}
+          />
+          {/* Nav bar */}
+          <div className="relative flex items-center justify-between pt-safe h-14">
+            <span
+              className="font-display text-xl font-extrabold tracking-tight"
+              style={{
+                background: 'linear-gradient(90deg,#fff 0%,rgba(255,255,255,.75) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Vitae
+            </span>
+          </div>
+          <p className="font-body text-[11px] font-semibold text-white/60 uppercase tracking-widest relative mb-1 pt-2">
+            Health Records
+          </p>
+          <h1 className="font-display text-[28px] font-extrabold text-white tracking-tight leading-none relative mb-4">
             Timeline
           </h1>
-          <p className="text-sm text-text-secondary mt-1">
-            {documents.length > 0
-              ? `${documents.length} record${documents.length === 1 ? "" : "s"} across your family`
-              : "All your family\u2019s health records in one place"}
+          <p className="font-body text-sm text-white/70 relative">
+            {count > 0
+              ? `${count} record${count === 1 ? '' : 's'} across your family`
+              : "All your family's health records in one place"}
           </p>
         </div>
       </div>
 
-      {/* ── Empty — no records at all ───────────────────────── */}
-      {documents.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-5 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface-subtle flex items-center justify-center">
-            <svg
-              className="w-7 h-7 text-text-muted"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+      {/* ── Content ────────────────────────────────────────────── */}
+      <div className="pt-5 pb-4">
+        {documents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-5 text-center">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center"
+              style={{ background: 'rgba(124,58,237,.08)', border: '1px solid rgba(124,58,237,.12)' }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
+              <svg className="w-7 h-7 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-display text-base font-semibold text-text-primary">No records yet</p>
+              <p className="font-body text-sm text-text-muted mt-1 leading-relaxed max-w-xs">
+                Upload a prescription or lab report from the dashboard to see your family&apos;s health history here.
+              </p>
+            </div>
+            <Button href="/dashboard" size="md" variant="secondary">Go to Dashboard</Button>
           </div>
-          <div>
-            <p className="text-base font-semibold text-text-primary">
-              No records yet
-            </p>
-            <p className="text-sm text-text-muted mt-1 leading-relaxed max-w-xs">
-              Upload a prescription or lab report from the dashboard to see your
-              family&apos;s health history here.
-            </p>
-          </div>
-          <Button href="/dashboard" size="md" variant="secondary">
-            Go to Dashboard
-          </Button>
-        </div>
-      ) : (
-        <TimelineView documents={documents} profiles={profiles} />
-      )}
-    </div>
+        ) : (
+          <TimelineView documents={documents} profiles={profiles} />
+        )}
+      </div>
+    </>
   );
 }

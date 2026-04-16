@@ -40,46 +40,75 @@ export function LabAlertCard({ values, reportDate, profileName, isSelf, document
   const critical = values.filter((v) => v.status === 'critical')
   const others   = values.filter((v) => v.status !== 'critical')
 
+  const hasCritical = critical.length > 0
+
   return (
     <section aria-labelledby="lab-alerts-heading">
-      <div className="flex items-center justify-between mb-3">
-        <h2 id="lab-alerts-heading" className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-          {label} Lab Alerts
-        </h2>
-        {reportDate && (
-          <span className="text-xs text-text-muted">{formatDate(reportDate)}</span>
-        )}
-      </div>
+      <h2
+        id="lab-alerts-heading"
+        className="font-display text-[11px] font-bold text-text-muted uppercase tracking-widest mb-3"
+      >
+        {label} Lab Alerts
+      </h2>
 
-      <div className="rounded-2xl bg-surface-subtle border border-border overflow-hidden">
-        {/* Summary banner */}
-        <div className={`px-4 py-3 flex items-center gap-2.5 ${critical.length > 0 ? 'bg-error-subtle border-b border-error/15' : 'bg-warning-subtle border-b border-warning/15'}`}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className={critical.length > 0 ? 'text-error' : 'text-warning'} aria-hidden="true">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-          <p className={`text-xs font-semibold ${critical.length > 0 ? 'text-error' : 'text-warning'}`}>
-            {values.length} value{values.length !== 1 ? 's' : ''} outside reference range
-            {critical.length > 0 && ` — ${critical.length} critical`}
-          </p>
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{
+          border: hasCritical ? '1px solid rgba(190,18,60,.18)' : '1px solid rgba(217,119,6,.2)',
+          boxShadow: hasCritical ? '0 4px 20px rgba(190,18,60,.10)' : '0 4px 20px rgba(217,119,6,.08)',
+        }}
+      >
+        {/* Gradient header */}
+        <div
+          className="px-4 py-3 flex items-center gap-3"
+          style={{
+            background: hasCritical
+              ? 'linear-gradient(135deg, #be123c 0%, #e11d48 100%)'
+              : 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
+          }}
+        >
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'rgba(255,255,255,.2)' }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white"
+              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <div>
+            <p className="font-display text-[13px] font-bold text-white leading-tight">
+              {values.length} value{values.length !== 1 ? 's' : ''} need{values.length === 1 ? 's' : ''} attention
+              {hasCritical && ` — ${critical.length} critical`}
+            </p>
+            {reportDate && (
+              <p className="font-body text-[11px] text-white/70 mt-0.5">
+                Last report · {formatDate(reportDate)}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Value rows */}
-        <div className="divide-y divide-border">
+        <div className="bg-white divide-y" style={{ borderColor: hasCritical ? 'rgba(254,202,202,.6)' : 'rgba(254,243,199,.8)' }}>
           {[...critical, ...others].slice(0, 5).map((v, i) => {
             const cfg = statusConfig(v.status)
+            const isHigh = v.status === 'high' || v.status === 'critical'
             return (
               <div key={`${v.name}-${i}`} className="px-4 py-3 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}`} aria-hidden="true" />
-                  <span className="text-sm text-text-primary truncate">{v.name}</span>
+                <div className="min-w-0">
+                  <span className="font-display text-[13px] font-semibold text-text-primary block truncate">{v.name}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-sm font-medium text-text-primary">{v.result}</span>
-                  <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-md ${cfg.bg} ${cfg.text}`}>
+                  <span
+                    className="font-display text-[13px] font-bold"
+                    style={{ color: hasCritical ? '#be123c' : '#d97706' }}
+                  >
+                    {v.result} {isHigh ? '↑' : '↓'}
+                  </span>
+                  <span className={`font-body text-[10px] font-bold px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.text}`}>
                     {cfg.label}
                   </span>
                 </div>
@@ -87,17 +116,18 @@ export function LabAlertCard({ values, reportDate, profileName, isSelf, document
             )
           })}
           {values.length > 5 && (
-            <div className="px-4 py-2.5 text-xs text-text-muted text-center">
+            <div className="px-4 py-2.5 font-body text-xs text-text-muted text-center">
               +{values.length - 5} more
             </div>
           )}
         </div>
 
-        {/* View full report link */}
+        {/* View full report */}
         {documentId && (
           <Link
             href={`/records/${documentId}`}
-            className="flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-semibold text-primary hover:bg-surface-muted transition-colors border-t border-border"
+            className="flex items-center justify-center gap-1.5 px-4 py-3 font-display text-sm font-semibold text-primary hover:bg-primary-subtle transition-colors bg-white border-t"
+            style={{ borderColor: 'rgba(124,58,237,.12)' }}
           >
             View full report
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
