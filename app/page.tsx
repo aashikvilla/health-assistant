@@ -30,10 +30,10 @@ export default function HomePage() {
           <a href="#features">Features</a>
           <a href="#how-it-works">How it Works</a>
           <a href="#testimonials">Testimonials</a>
+          <a href="#footer">Get in touch</a>
         </div>
         <div className="nav-cta">
-          <Link href="/auth" className="btn-ghost">Sign in</Link>
-          <Link href="/upload" className="btn-nav">Open App</Link>
+          <Link href="/auth" className="btn-nav">Sign in</Link>
         </div>
         <MobileNav />
       </nav>
@@ -47,7 +47,7 @@ export default function HomePage() {
           <h1 className="hero-h1 fi2">Your health records,<br /><em>finally</em> understood.</h1>
           <p className="hero-p fi3">Upload any prescription or lab report and get a plain-language explanation of every medication, dosage and test result instantly.</p>
           <div className="hero-actions fi4">
-            <Link href="/upload" className="btn-cta">Start for Free →</Link>
+            <Link href="/upload" className="btn-cta">Try for Free →</Link>
             <Link href="/auth" className="btn-outline">Sign up</Link>
           </div>
           <p className="cta-sub fi4">Already have an account? <Link href="/auth">Sign in</Link></p>
@@ -291,7 +291,7 @@ export default function HomePage() {
           <h2>Stop Googling your medications.<br />Get the real explanation.</h2>
           <p>No credit card. No commitment.<br />Plain-language explanation in under 60 seconds.</p>
           <div className="cta-btns">
-            <Link href="/upload" className="cta-btn-w">Start for Free →</Link>
+            <Link href="/upload" className="cta-btn-w">Try for Free →</Link>
             <Link href="/auth" className="cta-btn-o">Create Account</Link>
           </div>
           <p className="cta-fine">No account needed to try · End-to-end encrypted · Takes 60 seconds</p>
@@ -299,8 +299,9 @@ export default function HomePage() {
       </div>
 
       {/* ── FOOTER ── */}
-      <footer>
+      <footer id="footer">
         <div className="foot-inner">
+          {/* Col 1: Brand */}
           <div>
             <div className="foot-logo">
               <span className="logo-mark">
@@ -313,6 +314,7 @@ export default function HomePage() {
             </div>
             <p className="foot-tag">Built by people who got confused by medical jargon too.</p>
           </div>
+          {/* Col 2: Newsletter */}
           <div>
             <div className="foot-newsletter-head">Stay Updated</div>
             <div className="foot-newsletter-sub">Health tips + new features. No spam.</div>
@@ -320,7 +322,14 @@ export default function HomePage() {
               <input className="foot-newsletter-input" type="email" placeholder="Your email address" aria-label="Email for newsletter" />
               <button className="foot-newsletter-btn" type="submit">Go</button>
             </form>
-            <ContactModal />
+          </div>
+          {/* Col 3: Get in touch */}
+          <div>
+            <div className="foot-newsletter-head">Get in Touch</div>
+            <div className="foot-touch-row">
+              <div className="foot-newsletter-sub">Have a question, a partnership idea, or just want to say hi? We&apos;d love to hear from you.</div>
+              <ContactModal />
+            </div>
           </div>
         </div>
         <div className="foot-bottom">
