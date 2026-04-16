@@ -57,6 +57,8 @@ export interface TimelineDocument {
     tags: string[] | null
     summary: string | null
     created_at: string | null
+    /** Number of medications in a prescription; null for lab reports or empty prescriptions */
+    medication_count: number | null
 }
 
 // ─── Internal Supabase join shapes ────────────────────────────────────────────
@@ -99,7 +101,7 @@ type DocTimeline = {
     doctor_name: string | null
     tags: string[] | null
     created_at: string | null
-    document_analyses: Array<{ summary: string }>
+    document_analyses: Array<{ summary: string; medications_found: unknown }>
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -411,7 +413,7 @@ export const recordsService = {
             .select(`
         id, profile_id, document_type, document_date,
         doctor_name, tags, created_at,
-        document_analyses ( summary )
+        document_analyses ( summary, medications_found )
       `)
             .order('document_date', { ascending: false, nullsFirst: false })
             .limit(100)
@@ -432,6 +434,12 @@ export const recordsService = {
                 tags: d.tags,
                 summary: d.document_analyses?.[0]?.summary ?? null,
                 created_at: d.created_at,
+                medication_count: (() => {
+                    const medsFound = d.document_analyses?.[0]?.medications_found
+                    return d.document_type === 'prescription' && Array.isArray(medsFound) && medsFound.length > 0
+                        ? medsFound.length
+                        : null
+                })(),
             })),
             error: null,
             success: true,

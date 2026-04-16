@@ -7,13 +7,13 @@ import { Badge } from '@/components/ui'
 import { MedicationCard } from '@/components/features/explanation/MedicationCard'
 import { AbnormalMarkerCard } from '@/components/features/explanation/AbnormalMarkerCard'
 import { DoctorNotes } from '@/components/features/explanation/DoctorNotes'
-import { DisclaimerBanner } from '@/components/features/explanation/DisclaimerBanner'
 import { ShareButton } from '@/components/features/share/ShareButton'
 
 interface DocumentDetailProps {
   record:        RecordDetail
   profileName:   string
   signedFileUrl: string | null
+  isOwnProfile:  boolean
 }
 
 function formatDate(iso: string | null): string {
@@ -58,7 +58,7 @@ function LabTestRow({ test }: { test: LabTest }) {
   )
 }
 
-export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentDetailProps) {
+export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfile }: DocumentDetailProps) {
   const {
     documentType,
     doctorName,
@@ -74,6 +74,10 @@ export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentD
 
   const isPrescription = documentType === 'prescription'
   const docTypeLabel   = isPrescription ? 'Prescription' : 'Lab Report'
+  const displayName    = profileName || 'Family Member'
+  const navTitle       = isOwnProfile
+    ? `Your ${docTypeLabel}`
+    : `${displayName}'s ${docTypeLabel}`
 
   const hasAnyMedications  = medications.length > 0
   const hasRichMedications = medications.some((m) => m.treats)
@@ -100,14 +104,14 @@ export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentD
           </Link>
 
           <h1 className="font-display text-base font-semibold text-text-primary">
-            {docTypeLabel}
+            {navTitle}
           </h1>
 
           {/* WhatsApp share in nav — visible whenever there are medications */}
           {isPrescription && hasAnyMedications ? (
             <ShareButton
               doctorName={doctorName}
-              patientName={profileName}
+              patientName={displayName}
               date={documentDate ? formatDate(documentDate) : null}
               medications={medications}
               doctorNotes={recommendations}
@@ -128,7 +132,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentD
           <h2 className="text-xl font-bold text-text-primary">
             {doctorName ?? (isPrescription ? 'Unknown Doctor' : 'Lab Report')}
           </h2>
-          <p className="text-sm text-text-secondary mt-1">For {profileName}</p>
+          <p className="text-sm text-text-secondary mt-1">For {displayName}</p>
 
           {conditionTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
@@ -139,77 +143,85 @@ export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentD
           )}
         </div>
 
-        {/* ── AI disclaimer ── */}
+        {/* ── AI disclaimer (compact badge — full banner stays in upload flow only) ── */}
         {hasAI && (
-          <DisclaimerBanner
-            doctorName={doctorName ?? 'your doctor'}
-          />
+          <Badge variant="warning" dot>
+            AI-generated summary — consult your doctor
+          </Badge>
         )}
 
         {/* ══════════════ PRESCRIPTION ══════════════ */}
         {isPrescription && (
           <>
-            {/* Medications */}
-            <section>
-              <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-                Medications · {medicationCount ?? medications.length}
-              </h3>
+            {/* Desktop: 2-column grid — medications left, notes+share right */}
+            <div className="md:grid md:grid-cols-[1fr_380px] md:gap-8 md:items-start">
 
-              {medicationsWithId.length === 0 ? (
-                <div className="bg-surface-subtle rounded-2xl p-4 text-center">
-                  <p className="text-sm text-text-secondary">No medication details available.</p>
-                </div>
-              ) : hasRichMedications ? (
-                <div className="space-y-4">
-                  {medicationsWithId.map((med) => (
-                    <MedicationCard key={med.id} medication={med} />
-                  ))}
-                </div>
-              ) : (
-                /* Fallback: plain list when only raw OCR data stored (legacy records) */
-                <ul className="space-y-3">
-                  {medicationsWithId.map((med) => (
-                    <li
-                      key={med.id}
-                      className="bg-surface-container-lowest rounded-2xl p-4"
-                      style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-semibold text-text-primary">{med.name}</p>
-                        {med.dosage && (
-                          <span className="text-xs text-text-muted shrink-0 mt-0.5">{med.dosage}</span>
+              {/* Left column — medications */}
+              <section>
+                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
+                  Medications · {medicationCount ?? medications.length}
+                </h3>
+
+                {medicationsWithId.length === 0 ? (
+                  <div className="bg-surface-subtle rounded-2xl p-4 text-center">
+                    <p className="text-sm text-text-secondary">No medication details available.</p>
+                  </div>
+                ) : hasRichMedications ? (
+                  <div className="space-y-4">
+                    {medicationsWithId.map((med) => (
+                      <MedicationCard key={med.id} medication={med} />
+                    ))}
+                  </div>
+                ) : (
+                  /* Fallback: plain list when only raw OCR data stored (legacy records) */
+                  <ul className="space-y-3">
+                    {medicationsWithId.map((med) => (
+                      <li
+                        key={med.id}
+                        className="bg-surface-container-lowest rounded-2xl p-4"
+                        style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-semibold text-text-primary">{med.name}</p>
+                          {med.dosage && (
+                            <span className="text-xs text-text-muted shrink-0 mt-0.5">{med.dosage}</span>
+                          )}
+                        </div>
+                        {med.frequency && (
+                          <p className="text-xs text-text-secondary mt-1">{med.frequency}</p>
                         )}
-                      </div>
-                      {med.frequency && (
-                        <p className="text-xs text-text-secondary mt-1">{med.frequency}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
 
-            {/* Doctor notes */}
-            {hasRecommendations && (
-              <DoctorNotes notes={recommendations} title="Things to tell your doctor" />
-            )}
+              {/* Right column — doctor notes + doc link + share */}
+              <div className="space-y-5 mt-5 md:mt-0">
+                {/* Doctor notes */}
+                {hasRecommendations && (
+                  <DoctorNotes notes={recommendations} title="Things to tell your doctor" />
+                )}
 
-            {/* Original document link */}
-            {signedFileUrl && (
-              <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} />
-            )}
+                {/* Original document link */}
+                {signedFileUrl && (
+                  <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} documentType={documentType} />
+                )}
 
-            {/* WhatsApp share — full button at bottom, always shown for prescriptions */}
-            {hasAnyMedications && (
-              <ShareButton
-                doctorName={doctorName}
-                patientName={profileName}
-                date={documentDate ? formatDate(documentDate) : null}
-                medications={medications}
-                doctorNotes={recommendations}
-                variant="full"
-              />
-            )}
+                {/* WhatsApp share — full button */}
+                {hasAnyMedications && (
+                  <ShareButton
+                    doctorName={doctorName}
+                    patientName={displayName}
+                    date={documentDate ? formatDate(documentDate) : null}
+                    medications={medications}
+                    doctorNotes={recommendations}
+                    variant="full"
+                  />
+                )}
+              </div>
+
+            </div>
           </>
         )}
 
@@ -268,7 +280,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentD
 
             {/* Original document link */}
             {signedFileUrl && (
-              <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} />
+              <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} documentType={documentType} />
             )}
           </>
         )}
@@ -280,8 +292,11 @@ export function DocumentDetail({ record, profileName, signedFileUrl }: DocumentD
 
 // ── Subcomponent — original document link ────────────────────────────────────
 
-function DocumentLink({ url, fileUrl }: { url: string; fileUrl: string | null }) {
+function DocumentLink({ url, fileUrl, documentType }: { url: string; fileUrl: string | null; documentType: string }) {
   const isPdf = fileUrl?.toLowerCase().endsWith('.pdf')
+  const ctaText = documentType === 'prescription'
+    ? 'View your original prescription →'
+    : 'View your original lab report →'
   return (
     <a
       href={url}
@@ -304,7 +319,7 @@ function DocumentLink({ url, fileUrl }: { url: string; fileUrl: string | null })
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-text-primary">View original document</p>
+        <p className="text-sm font-medium text-text-primary">{ctaText}</p>
         <p className="text-xs text-text-muted mt-0.5">{isPdf ? 'PDF' : 'Image'} · Opens in new tab</p>
       </div>
       <svg className="w-4 h-4 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

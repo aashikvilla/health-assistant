@@ -87,6 +87,13 @@ export function RecordCard({ record, className }: RecordCardProps) {
             ))}
           </div>
         )}
+        {isPrescription && record.medication_count != null && record.medication_count > 0 && (
+          <div className="mt-1.5">
+            <Badge variant="primary" size="sm">
+              {record.medication_count} medication{record.medication_count === 1 ? '' : 's'}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Date block */}

@@ -37,6 +37,13 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
     })
   }
 
+  function removeMedication(index: number) {
+    setPrescription((p) => ({
+      ...p,
+      medications: p.medications.filter((_, i) => i !== index)
+    }))
+  }
+
   const lowCount = [
     prescription.doctorConfidence  === 'low' ? 1 : 0,
     prescription.dateConfidence    === 'low' ? 1 : 0,
@@ -45,6 +52,19 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
   ].reduce((a, b) => a + b, 0)
 
   const missingRequired = prescription.medications.some((m) => !m.name?.trim())
+
+  // Compute duplicate medication names (case-insensitive, trimmed)
+  const duplicateNames = new Set<string>()
+  const seenNames = new Set<string>()
+  prescription.medications.forEach((med) => {
+    const normalizedName = med.name?.toLowerCase().trim() || ''
+    if (normalizedName && seenNames.has(normalizedName)) {
+      duplicateNames.add(normalizedName)
+    }
+    if (normalizedName) {
+      seenNames.add(normalizedName)
+    }
+  })
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
@@ -127,12 +147,40 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
             {prescription.medications.map((med, i) => {
               const accent = MED_ACCENTS[i % MED_ACCENTS.length]
               const medName = med.name?.trim() || `Medicine ${i + 1}`
+              const normalizedName = med.name?.toLowerCase().trim() || ''
+              
+              // Check if this is a duplicate (later occurrence)
+              const isDuplicate = normalizedName && duplicateNames.has(normalizedName)
+              const isFirstOccurrence = isDuplicate && prescription.medications.findIndex(m => 
+                m.name?.toLowerCase().trim() === normalizedName
+              ) === i
+
               return (
-                <div
-                  key={i}
-                  className="bg-surface-container-lowest rounded-2xl overflow-hidden"
-                  style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
-                >
+                <div key={i}>
+                  {/* Duplicate warning banner (only for later occurrences) */}
+                  {isDuplicate && !isFirstOccurrence && (
+                    <div className="flex items-start gap-3 bg-warning-subtle rounded-2xl px-4 py-3 border border-warning/20 mb-3">
+                      <svg className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="text-sm text-text-primary font-medium">
+                          "{medName}" appears more than once — was this prescribed twice?
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => removeMedication(i)}
+                        className="text-xs font-semibold text-warning hover:text-warning-dark px-2 py-1 rounded"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+
+                  <div
+                    className="bg-surface-container-lowest rounded-2xl overflow-hidden"
+                    style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
+                  >
                   {/* Card header — medicine name as title */}
                   <div
                     className="flex items-center gap-3 px-4 py-3"
@@ -151,6 +199,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                     <FieldRow label="Name"     value={med.name}     confidence={med.confidence} onChange={(v) => updateMedication(i, 'name', v)} required />
                     <FieldRow label="Dosage"   value={med.dosage}   confidence={med.confidence} onChange={(v) => updateMedication(i, 'dosage', v)} />
                     <FieldRow label="Duration" value={med.duration} confidence={med.confidence} onChange={(v) => updateMedication(i, 'duration', v)} />
+                  </div>
                   </div>
                 </div>
               )

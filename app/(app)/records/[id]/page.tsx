@@ -32,6 +32,7 @@ export default async function RecordPage({
 
   const profile = profilesResult.data?.find((p) => p.id === record.profileId)
   const profileName = profile?.full_name ?? 'Family Member'
+  const isOwnProfile = profile?.is_self ?? false
 
   // ── On-demand explanation for prescriptions saved without rich AI data ──────
   // This mirrors what the old /explanation/[id] page did. Only fires when:
@@ -80,6 +81,7 @@ export default async function RecordPage({
       record={record}
       profileName={profileName}
       signedFileUrl={signedFileUrl}
+      isOwnProfile={isOwnProfile}
     />
   )
 }

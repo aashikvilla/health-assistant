@@ -116,6 +116,8 @@ export default async function HubPage({ searchParams }: HubPageProps) {
   ])
 
   const prescriptions = prescriptionsResult.success ? (prescriptionsResult.data ?? []) : []
+  const DASHBOARD_RX_LIMIT = 3
+  const displayedPrescriptions = prescriptions.slice(0, DASHBOARD_RX_LIMIT)
   const selfProfile   = profiles.find((p) => p.is_self)
   const rawName       = selfProfile?.full_name ?? user.email?.split('@')[0] ?? 'there'
   const displayName   = rawName.split(' ')[0]
@@ -271,7 +273,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
               >
                 {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Records
               </h2>
-              {!isEmpty && (
+              {!isEmpty && prescriptions.length > DASHBOARD_RX_LIMIT && (
                 <Link href="/timeline" className="text-xs font-semibold text-primary hover:underline">
                   View all
                 </Link>
@@ -286,7 +288,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
               />
             ) : (
               <div className="flex flex-col gap-2">
-                {prescriptions.map((rx) => (
+                {displayedPrescriptions.map((rx) => (
                   <div key={rx.id} className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
                       <PrescriptionListItem prescription={rx} />

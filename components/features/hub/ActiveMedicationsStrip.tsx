@@ -10,6 +10,24 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
   if (medications.length === 0) return null
 
   const label = isSelf ? 'Your' : `${profileName.split(' ')[0]}'s`
+  const MAX_DISPLAY = 4
+  const displayedMeds = medications.slice(0, MAX_DISPLAY)
+
+  // Helper to detect generic frequency strings that add no information
+  function isGenericFrequency(value: string): boolean {
+    if (!value?.trim()) return false
+    const normalized = value.toLowerCase().trim()
+    const genericPatterns = [
+      'as directed',
+      'as advised', 
+      'as prescribed',
+      'per doctor',
+      'as directed by',
+      'as per doctor',
+      'as recommended'
+    ]
+    return genericPatterns.some(pattern => normalized.includes(pattern))
+  }
 
   const DOT_GRADIENTS = [
     'linear-gradient(135deg, #1d4ed8, #7c3aed)',
@@ -52,7 +70,7 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
         </div>
 
         <div className="px-4 pb-3 flex flex-col">
-          {medications.map((med, i) => {
+          {displayedMeds.map((med, i) => {
             const dotGrad = DOT_GRADIENTS[i % DOT_GRADIENTS.length]
             const dotGlow = DOT_GLOW_COLORS[i % DOT_GLOW_COLORS.length]
             const freq = FREQ_COLORS[i % FREQ_COLORS.length]
@@ -60,7 +78,7 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
               <div
                 key={`${med.name}-${i}`}
                 className="flex items-center gap-3 py-2.5"
-                style={{ borderBottom: i < medications.length - 1 ? '1px solid rgba(124,58,237,.07)' : 'none' }}
+                style={{ borderBottom: i < displayedMeds.length - 1 ? '1px solid rgba(124,58,237,.07)' : 'none' }}
               >
                 {/* Dot with glow ring */}
                 <div
@@ -76,7 +94,7 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
                     <p className="font-body text-[11px] text-text-muted mt-0.5">{med.dosage}</p>
                   )}
                 </div>
-                {med.duration && (
+                {med.duration && !isGenericFrequency(med.duration) && (
                   <span
                     className="font-body text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                     style={{ color: freq.color, background: freq.bg }}
@@ -88,6 +106,18 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
             )
           })}
         </div>
+
+        {/* View all link when there are more than MAX_DISPLAY medications */}
+        {medications.length > MAX_DISPLAY && (
+          <div className="px-4 pb-3 pt-1">
+            <a
+              href="/timeline"
+              className="text-xs font-semibold text-primary hover:underline"
+            >
+              View all {medications.length} →
+            </a>
+          </div>
+        )}
       </div>
     </section>
   )

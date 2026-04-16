@@ -8,6 +8,13 @@ import type { ProfileRelationship } from '@/types/family'
 
 type FormState = { error: string | null; success?: boolean }
 
+// Helper function to normalize names to title case while preserving special characters
+function toTitleCase(str: string): string {
+  return str.replace(/\w\S*/g, (txt) => 
+    txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  )
+}
+
 export async function createProfile(
   _prev: FormState,
   formData: FormData
@@ -24,7 +31,10 @@ export async function createProfile(
   if (!name)         return { error: 'Name is required.' }
   if (!relationship) return { error: 'Relationship is required.' }
 
-  const result = await familyService.createProfile(user.id, { name, relationship, dob, email })
+  // Normalize name to title case
+  const normalizedName = toTitleCase(name)
+
+  const result = await familyService.createProfile(user.id, { name: normalizedName, relationship, dob, email })
 
   if (!result.success) return { error: result.error }
 

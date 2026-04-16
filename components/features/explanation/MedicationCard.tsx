@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { MedicationExplanation } from '@/types'
+import { stripMedicationPrefix } from '@/lib/utils/string'
 
 interface MedicationCardProps {
   medication: MedicationExplanation & { id: string }
@@ -94,7 +95,8 @@ function MedicinePacket({ name, dosage }: { name: string; dosage: string }) {
 
 function MedicationCard({ medication, className = '' }: MedicationCardProps) {
   const [open, setOpen] = useState(false)
-  const p = getPalette(medication.name)
+  const displayName = stripMedicationPrefix(medication.name)
+  const p = getPalette(displayName)
 
   return (
     <div
@@ -107,14 +109,14 @@ function MedicationCard({ medication, className = '' }: MedicationCardProps) {
 
         {/* Medicine packet illustration */}
         <div className="flex-shrink-0 w-[88px] h-[100px] rounded-2xl overflow-hidden">
-          <MedicinePacket name={medication.name} dosage={medication.dosage} />
+          <MedicinePacket name={displayName} dosage={medication.dosage} />
         </div>
 
         {/* Info card */}
         <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
           <div>
             <h3 className="font-display text-[15px] font-semibold text-text-primary leading-tight">
-              {medication.name}
+              {displayName}
             </h3>
             <p className="font-body text-sm text-text-muted mt-1">
               {medication.dosage}
