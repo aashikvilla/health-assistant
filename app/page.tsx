@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { MobileNav } from "@/components/layout/MobileNav";
-import { ContactModal } from "@/components/layout/ContactModal";
-import "./homepage.css";
+import Link from 'next/link'
+import { MobileNav } from '@/components/layout/MobileNav'
+import { ContactModal } from '@/components/layout/ContactModal'
+import { NewsletterForm } from '@/components/layout/NewsletterForm'
+import './homepage.css'
 
 /**
  * Homepage — ported from preview-homepage.html (Palette D).
@@ -46,14 +47,10 @@ export default function HomePage() {
           <a href="#features">Features</a>
           <a href="#how-it-works">How it Works</a>
           <a href="#testimonials">Testimonials</a>
+          <a href="#footer">Get in touch</a>
         </div>
         <div className="nav-cta">
-          <Link href="/auth" className="btn-ghost">
-            Sign in
-          </Link>
-          <Link href="/upload" className="btn-nav">
-            Open App
-          </Link>
+          <Link href="/auth" className="btn-nav">Sign in</Link>
         </div>
         <MobileNav />
       </nav>
@@ -79,12 +76,8 @@ export default function HomePage() {
             explanation of every medication, dosage and test result instantly.
           </p>
           <div className="hero-actions fi4">
-            <Link href="/upload" className="btn-cta">
-              Start for Free →
-            </Link>
-            <Link href="/auth" className="btn-outline">
-              Sign up
-            </Link>
+            <Link href="/upload" className="btn-cta">Try for Free →</Link>
+            <Link href="/auth" className="btn-outline">Sign up</Link>
           </div>
           <p className="cta-sub fi4">
             Already have an account? <Link href="/auth">Sign in</Link>
@@ -941,12 +934,8 @@ export default function HomePage() {
             Plain-language explanation in under 60 seconds.
           </p>
           <div className="cta-btns">
-            <Link href="/upload" className="cta-btn-w">
-              Start for Free →
-            </Link>
-            <Link href="/auth" className="cta-btn-o">
-              Create Account
-            </Link>
+            <Link href="/upload" className="cta-btn-w">Try for Free →</Link>
+            <Link href="/auth" className="cta-btn-o">Create Account</Link>
           </div>
           <p className="cta-fine">
             No account needed to try · End-to-end encrypted · Takes 60 seconds
@@ -955,8 +944,9 @@ export default function HomePage() {
       </div>
 
       {/* ── FOOTER ── */}
-      <footer>
+      <footer id="footer">
         <div className="foot-inner">
+          {/* Col 1: Brand */}
           <div>
             <div className="foot-logo">
               <span className="logo-mark">
@@ -980,30 +970,19 @@ export default function HomePage() {
               </span>
               Vitae
             </div>
-            <p className="foot-tag">
-              Built by people who got confused by medical jargon too.
-            </p>
+            <p className="foot-tag">Built by people who got confused by medical jargon too.</p>
           </div>
+          {/* Col 2: Newsletter */}
           <div>
-            <div className="foot-newsletter-head">Stay Updated</div>
-            <div className="foot-newsletter-sub">
-              Health tips + new features. No spam.
+            <NewsletterForm />
+          </div>
+          {/* Col 3: Get in touch */}
+          <div>
+            <div className="foot-newsletter-head">Get in Touch</div>
+            <div className="foot-touch-row">
+              <div className="foot-newsletter-sub">Have a question, a partnership idea, or just want to say hi? We&apos;d love to hear from you.</div>
+              <ContactModal />
             </div>
-            <form
-              className="foot-newsletter-form"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                className="foot-newsletter-input"
-                type="email"
-                placeholder="Your email address"
-                aria-label="Email for newsletter"
-              />
-              <button className="foot-newsletter-btn" type="submit">
-                Go
-              </button>
-            </form>
-            <ContactModal />
           </div>
         </div>
         <div className="foot-bottom">

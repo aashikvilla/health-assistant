@@ -108,10 +108,9 @@ export function AppDrawerNav() {
 
       {/* ── Drawer panel ───────────────────────────────────────────── */}
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 flex-col w-64 transition-transform duration-200 ease-out ${
-          visible ? 'hidden sm:flex' : 'hidden'
-        } ${open ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 bottom-0 z-50 flex-col w-64 transition-transform duration-200 ease-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
         style={{
+          display: isDesktop ? 'flex' : 'none',
           background: '#ffffff',
           boxShadow: '-8px 0 40px rgba(15,15,45,.18)',
         }}
