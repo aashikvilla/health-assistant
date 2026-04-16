@@ -66,27 +66,28 @@ export function AppDrawerNav() {
   }, [open])
 
   const visible = PRIMARY_PATHS.some((p) => pathname === p)
-  if (!visible) return null
 
   return (
     <>
-      {/* ── Hamburger trigger — desktop only ───────────────────────── */}
+      {/* ── Hamburger trigger — desktop only, primary routes only ─── */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Open navigation"
         aria-expanded={open}
-        className="hidden sm:flex fixed top-[10px] right-5 z-40 w-9 h-9 rounded-xl items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80"
-        style={{ background: 'rgba(255,255,255,.15)', border: '1px solid rgba(255,255,255,.25)' }}
+        className={`fixed top-[10px] right-5 z-[100] w-9 h-9 rounded-xl flex items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80 ${
+          visible ? 'hidden sm:flex' : 'hidden'
+        }`}
+        style={{ background: 'rgba(255,255,255,.22)', border: '1px solid rgba(255,255,255,.4)', backdropFilter: 'blur(8px)' }}
       >
-        <span className="w-[14px] h-[1.5px] bg-white rounded-full block" />
-        <span className="w-[14px] h-[1.5px] bg-white rounded-full block" />
-        <span className="w-[14px] h-[1.5px] bg-white rounded-full block" />
+        <span className="w-[14px] h-[2px] bg-white rounded-full block" style={{ boxShadow: '0 0 4px rgba(0,0,0,.3)' }} />
+        <span className="w-[14px] h-[2px] bg-white rounded-full block" style={{ boxShadow: '0 0 4px rgba(0,0,0,.3)' }} />
+        <span className="w-[14px] h-[2px] bg-white rounded-full block" style={{ boxShadow: '0 0 4px rgba(0,0,0,.3)' }} />
       </button>
 
       {/* ── Backdrop ───────────────────────────────────────────────── */}
       <div
-        className={`hidden sm:block fixed inset-0 z-50 transition-opacity duration-200 ${
-          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-50 transition-opacity duration-200 ${
+          visible && open ? 'sm:block opacity-100 pointer-events-auto' : 'hidden opacity-0 pointer-events-none'
         }`}
         style={{ background: 'rgba(15,15,45,.55)', backdropFilter: 'blur(4px)' }}
         onClick={() => setOpen(false)}
@@ -95,9 +96,9 @@ export function AppDrawerNav() {
 
       {/* ── Drawer panel ───────────────────────────────────────────── */}
       <div
-        className={`hidden sm:flex fixed top-0 right-0 bottom-0 z-50 flex-col w-64 transition-transform duration-200 ease-out ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 bottom-0 z-50 flex-col w-64 transition-transform duration-200 ease-out ${
+          visible ? 'hidden sm:flex' : 'hidden'
+        } ${open ? 'translate-x-0' : 'translate-x-full'}`}
         style={{
           background: '#ffffff',
           boxShadow: '-8px 0 40px rgba(15,15,45,.18)',
