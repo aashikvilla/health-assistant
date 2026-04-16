@@ -22,6 +22,7 @@ import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescrip
 import type { LabReportData, LabReportExplanation } from '@/types/lab-report'
 import UploadPicker      from '@/components/features/upload/UploadPicker'
 import ProcessingState   from '@/components/features/upload/ProcessingState'
+import AIExplainState    from '@/components/features/upload/AIExplainState'
 import ReviewScreen      from '@/components/features/upload/ReviewScreen'
 import LabReportReviewScreen from '@/components/features/upload/LabReportReviewScreen'
 import {
@@ -294,17 +295,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         (documentType === 'prescription' && !explanation && !explainError) ||
         (documentType === 'lab_report' && !labExplanation && !labExplainError)
       ) && (
-        <div className="min-h-screen bg-surface flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <div
-              className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin mx-auto"
-              style={{ borderColor: 'var(--nuskha-primary)', borderTopColor: 'transparent' }}
-            />
-            <p className="text-sm font-body" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.5 }}>
-              {documentType === 'lab_report' ? 'Analysing your report...' : 'Generating explanation...'}
-            </p>
-          </div>
-        </div>
+        <AIExplainState documentType={documentType} />
       )}
 
       {step === 'explaining' && documentType === 'prescription' && explainError && (

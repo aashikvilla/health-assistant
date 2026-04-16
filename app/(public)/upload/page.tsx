@@ -18,6 +18,7 @@ import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescrip
 import type { LabReportData, LabReportExplanation }     from '@/types/lab-report'
 import UploadPicker          from '@/components/features/upload/UploadPicker'
 import ProcessingState       from '@/components/features/upload/ProcessingState'
+import AIExplainState        from '@/components/features/upload/AIExplainState'
 import ReviewScreen          from '@/components/features/upload/ReviewScreen'
 import LabReportReviewScreen from '@/components/features/upload/LabReportReviewScreen'
 import {
@@ -219,7 +220,8 @@ export default function PublicUploadPage() {
   return (
     <>
       {step === 'pick' && (
-        <>
+        /* Full-screen overlay — hides marketing nav + footer during upload flow */
+        <div className="fixed inset-0 z-40 bg-surface overflow-auto">
           {error && (
             <div className="mx-4 mt-4 px-4 py-3 rounded-2xl bg-error-subtle border border-error/20 flex items-start gap-3">
               <svg className="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +231,7 @@ export default function PublicUploadPage() {
             </div>
           )}
           <UploadPicker onFileSelected={handleFileSelected} onManualData={handleManualData} />
-        </>
+        </div>
       )}
 
       {step === 'processing' && <ProcessingState documentType={documentType} />}
@@ -243,26 +245,7 @@ export default function PublicUploadPage() {
         (documentType === 'prescription' && !explanation && !explainError) ||
         (documentType === 'lab_report' && !labExplanation && !labExplainError)
       ) && (
-        <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 py-10">
-          <div className="relative mb-8">
-            <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-15 scale-110" />
-            <div className="relative w-20 h-20 rounded-full bg-primary flex items-center justify-center"
-              style={{ boxShadow: '0 8px 32px rgba(0,88,189,0.3)' }}>
-              <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-text-primary text-center">
-            {documentType === 'lab_report' ? 'Analysing your report...' : 'Preparing your explanation...'}
-          </h2>
-          <p className="text-lg text-text-muted mt-2 text-center leading-relaxed max-w-xs">
-            {documentType === 'lab_report'
-              ? 'Our AI is checking your results and writing a plain-language summary'
-              : 'Our AI is writing a plain-language summary of each medicine'}
-          </p>
-        </div>
+        <AIExplainState documentType={documentType} />
       )}
 
       {/* ── Prescription explanation error ── */}
