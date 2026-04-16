@@ -78,7 +78,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
             Add a Health Record
           </h1>
           <p className="text-lg text-text-secondary mt-2 leading-relaxed">
-            Take a photo, upload a file, or enter details manually
+            Upload a photo, upload a file, or enter details manually
           </p>
         </div>
 
@@ -114,7 +114,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xl font-bold text-white leading-tight">Upload a Photo</p>
-                <p className="text-base text-white/80 mt-0.5">Take a photo or pick from your camera roll</p>
+                <p className="text-base text-white/80 mt-0.5">Upload a photo from your gallery</p>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 px-1">
