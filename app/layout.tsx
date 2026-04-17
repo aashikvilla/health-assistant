@@ -42,7 +42,10 @@ export const metadata: Metadata = {
 
   // Icons
   icons: {
-    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
     apple: [
       { url: "/icons/icon-152.png", sizes: "152x152", type: "image/png" },
     ],
@@ -61,6 +64,7 @@ export default function RootLayout({
       style={{ colorScheme: "light" }}
     >
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

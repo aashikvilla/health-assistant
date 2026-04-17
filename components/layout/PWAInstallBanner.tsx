@@ -90,11 +90,10 @@ export function PWAInstallBanner() {
 
         <div className="flex items-start gap-4 mb-5">
           {/* App icon */}
-          <img
-            src="/icons/icon-192.png"
-            alt=""
-            className="w-14 h-14 rounded-2xl flex-shrink-0"
-          />
+          <svg width="56" height="56" viewBox="0 0 30 30" fill="none" className="shrink-0 rounded-2xl" aria-hidden="true">
+            <rect width="30" height="30" rx="8.5" style={{ fill: 'var(--color-primary)' }} />
+            <path d="M4 15 L8.5 15 L10.5 10 L15 21 L19.5 10 L21.5 15 L26 15" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
           <div>
             <p className="font-semibold text-text-primary text-base">
               Install Vitae

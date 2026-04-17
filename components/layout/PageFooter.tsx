@@ -36,10 +36,10 @@ export function PageFooter({ showLinks = true }: PageFooterProps) {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-[7px] mb-2">
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ background: 'var(--hp-grad, var(--color-primary))', boxShadow: '0 0 12px rgba(168,85,247,.5)' }}
-              />
+              <svg width="22" height="22" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+                <rect width="30" height="30" rx="8.5" style={{ fill: 'var(--color-primary)' }} />
+                <path d="M4 15 L8.5 15 L10.5 10 L15 21 L19.5 10 L21.5 15 L26 15" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              </svg>
               <span className="font-display font-extrabold text-[1.1rem]" style={{ color: 'var(--hp-text, var(--color-text-primary))' }}>
                 {APP_NAME}
               </span>
