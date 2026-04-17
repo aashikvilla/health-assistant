@@ -28,27 +28,111 @@ interface OutOfRangeValue {
   status: string
 }
 
+// ── Medication active-status helpers ──────────────────────────────────────────
+
+/**
+ * Extracts a course duration in days from a free-text frequency string.
+ * Returns null for indefinite / unparseable durations (treat as ongoing).
+ */
+function parseDurationDays(frequency: string | null): number | null {
+  if (!frequency) return null
+  const f = frequency.toLowerCase()
+
+  const dayMatch   = f.match(/(\d+)\s*day/)
+  if (dayMatch) return parseInt(dayMatch[1], 10)
+
+  const weekMatch  = f.match(/(\d+)\s*week/)
+  if (weekMatch) return parseInt(weekMatch[1], 10) * 7
+
+  const monthMatch = f.match(/(\d+)\s*month/)
+  if (monthMatch) return parseInt(monthMatch[1], 10) * 30
+
+  if (/\bone\s+week\b/.test(f) || f.includes('a week'))       return 7
+  if (/\btwo\s+weeks?\b/.test(f) || f.includes('fortnight')) return 14
+  if (/\bone\s+month\b/.test(f) || f.includes('a month'))     return 30
+
+  // Ongoing / indefinite indicators → no expiry
+  return null
+}
+
+function isMedicationActive(
+  med: {
+    end_date:   string | null
+    start_date: string | null
+    frequency:  string | null
+    created_at: string | null
+  },
+  today: Date
+): boolean {
+  // Explicit end_date stored — use it directly
+  if (med.end_date) return new Date(med.end_date) >= today
+
+  const startStr = med.start_date ?? med.created_at
+  if (!startStr) return true // no date at all → assume still active
+
+  const durationDays = parseDurationDays(med.frequency)
+  if (durationDays === null) return true // no duration → ongoing → active
+
+  const endDate = new Date(startStr)
+  endDate.setDate(endDate.getDate() + durationDays)
+  return endDate >= today
+}
+
 // ── Data fetching ──────────────────────────────────────────────────────────────
 
 async function fetchActiveMedications(
   supabase: Awaited<ReturnType<typeof createClient>>,
   profileId: string
 ): Promise<Medication[]> {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   const { data } = await supabase
     .from('medications')
-    .select('name, dosage, frequency')
+    .select('name, dosage, frequency, start_date, end_date, created_at, source_document_id')
     .eq('profile_id', profileId)
     .eq('status', 'active')
     .order('created_at', { ascending: false })
 
-  if (!data) return []
+  if (!data || data.length === 0) return []
 
-  return data.map((m) => ({
-    name: m.name,
-    dosage: m.dosage ?? '',
-    duration: m.frequency ?? '',
-    confidence: 'high' as const,
-  }))
+  // Fetch prescription dates from source documents to use as course start date
+  // when start_date is not set on the medication row itself.
+  const docIds = [
+    ...new Set(
+      data.map((m) => m.source_document_id).filter((id): id is string => id !== null)
+    ),
+  ]
+  const docDateMap = new Map<string, string | null>()
+  if (docIds.length > 0) {
+    const { data: docs } = await supabase
+      .from('documents')
+      .select('id, document_date')
+      .in('id', docIds)
+    for (const doc of docs ?? []) docDateMap.set(doc.id, doc.document_date)
+  }
+
+  return data
+    .filter((m) => {
+      const prescriptionDate = m.source_document_id
+        ? (docDateMap.get(m.source_document_id) ?? null)
+        : null
+      return isMedicationActive(
+        {
+          end_date:   m.end_date,
+          start_date: m.start_date ?? prescriptionDate,
+          frequency:  m.frequency,
+          created_at: m.created_at,
+        },
+        today
+      )
+    })
+    .map((m) => ({
+      name:       m.name,
+      dosage:     m.dosage ?? '',
+      duration:   m.frequency ?? '',
+      confidence: 'high' as const,
+    }))
 }
 
 async function fetchLabAlerts(
