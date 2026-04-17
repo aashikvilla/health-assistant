@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions";
+import { familyService } from "@/services/family.service";
 
 export const metadata: Metadata = { title: "Settings | Vitae" };
 
@@ -19,8 +20,17 @@ export default async function SettingsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const avatarLetter = user?.email?.[0]?.toUpperCase() ?? 'U'
   const displayEmail = user?.email ?? ''
+  const emailPrefix  = displayEmail.split('@')[0]
+
+  let displayName = emailPrefix
+  if (user) {
+    const profilesResult = await familyService.getProfiles(user.id)
+    const self = profilesResult.data?.find((p) => p.is_self)
+    if (self?.full_name?.trim()) displayName = self.full_name.trim()
+  }
+
+  const avatarLetter = displayName[0]?.toUpperCase() ?? 'U'
 
   return (
     <>
@@ -55,7 +65,7 @@ export default async function SettingsPage() {
             {avatarLetter}
           </div>
           <h1 className="font-display text-[20px] font-extrabold text-white tracking-tight relative mb-1">
-            {displayEmail.split('@')[0]}
+            {displayName}
           </h1>
           <p className="font-body text-sm text-white/60 relative">{displayEmail}</p>
         </div>

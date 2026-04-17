@@ -14,7 +14,13 @@ export async function GET(request: Request) {
     if (!error && data.user) {
       // Ensure self-profile exists  handles first OAuth login, email confirmation,
       // and the case where a family member was pre-added before they signed up.
-      const metaName = data.user.user_metadata?.full_name as string | undefined
+      const m = (data.user.user_metadata ?? {}) as Record<string, unknown>
+      const metaName =
+        (m.full_name as string | undefined) ||
+        (m.name as string | undefined) ||
+        [m.given_name, m.family_name].filter(Boolean).join(' ').trim() ||
+        undefined
+
       const result = await familyService.ensureSelfProfile(
         data.user.id,
         data.user.email ?? '',
