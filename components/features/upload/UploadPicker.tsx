@@ -313,7 +313,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                     />
                     {/* Frequency M-A-N */}
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-text-muted">Frequency (M – A – N)</p>
+                      <p className="text-xs font-medium text-text-muted">Frequency (Morning – Afternoon – Night)</p>
                       <div className="flex items-end gap-2">
                         {(['M', 'A', 'N'] as const).map((slot, si) => {
                           const parts = (med.frequency || '').split('-')
