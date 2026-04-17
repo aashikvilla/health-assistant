@@ -17,7 +17,7 @@ export async function generateRecordExplanation(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false }
 
-  const apiKey = process.env.OPENROUTER_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY_EXPLAIN
   if (!apiKey) return { success: false }
 
   const explResult = await recordsService.getDocumentWithExplanation(documentId, user.id)
