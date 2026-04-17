@@ -391,6 +391,62 @@ export const recordsService = {
     },
 
     /**
+     * All documents for a single profile, newest first.
+     * Used by the dashboard hub for the "Your Records" section.
+     */
+    async getDocumentsForProfile(
+        profileId: string,
+        limit = 50
+    ): Promise<ApiResponse<TimelineDocument[]>> {
+        const supabase = await createClient()
+
+        const { data: profileRow } = await supabase
+            .from('family_profiles')
+            .select('full_name')
+            .eq('id', profileId)
+            .maybeSingle()
+
+        const profileName = profileRow?.full_name ?? 'Unknown'
+
+        const { data: rawDocs, error } = await supabase
+            .from('documents')
+            .select(`
+        id, profile_id, document_type, document_date,
+        doctor_name, tags, created_at,
+        document_analyses ( summary, medications_found )
+      `)
+            .eq('profile_id', profileId)
+            .order('document_date', { ascending: false, nullsFirst: false })
+            .limit(limit)
+
+        if (error) return { data: null, error: error.message, success: false }
+
+        const docs = (rawDocs ?? []) as unknown as DocTimeline[]
+
+        return {
+            data: docs.map((d) => ({
+                id: d.id,
+                profile_id: d.profile_id,
+                profile_name: profileName,
+                document_type: d.document_type,
+                document_date: d.document_date,
+                doctor_name: d.doctor_name,
+                tags: d.tags,
+                summary: d.document_analyses?.[0]?.summary ?? null,
+                created_at: d.created_at,
+                medication_count: (() => {
+                    const medsFound = d.document_analyses?.[0]?.medications_found
+                    return d.document_type === 'prescription' && Array.isArray(medsFound) && medsFound.length > 0
+                        ? medsFound.length
+                        : null
+                })(),
+            })),
+            error: null,
+            success: true,
+        }
+    },
+
+    /**
      * All documents uploaded by this user, newest first.
      * Used by the /timeline page. Includes a profile_name lookup for display.
      */

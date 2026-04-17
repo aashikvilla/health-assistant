@@ -1,10 +1,11 @@
 import { redirect }                    from 'next/navigation'
 import { createClient }               from '@/lib/supabase/server'
 import { familyService }              from '@/services/family.service'
+import { recordsService }             from '@/services/records.service'
 import { ProfileSectionWithEdit }      from '@/components/features/family/ProfileSectionWithEdit'
-import { PrescriptionListItem }       from '@/components/features/family/PrescriptionListItem'
 import { PrescriptionActions }        from '@/components/features/family/PrescriptionActions'
 import { EmptyPrescriptions }         from '@/components/features/family/EmptyPrescriptions'
+import { RecordCard }                 from '@/components/features/records/RecordCard'
 import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
 import { ActiveMedicationsStrip }     from '@/components/features/hub/ActiveMedicationsStrip'
 import { LabAlertCard }               from '@/components/features/hub/LabAlertCard'
@@ -108,20 +109,20 @@ export default async function HubPage({ searchParams }: HubPageProps) {
     )
   }
 
-  // Parallel fetch: prescriptions + medications + lab alerts
-  const [prescriptionsResult, activeMeds, labAlerts] = await Promise.all([
-    familyService.getProfilePrescriptions(activeProfile.id),
+  // Parallel fetch: documents + medications + lab alerts
+  const [documentsResult, activeMeds, labAlerts] = await Promise.all([
+    recordsService.getDocumentsForProfile(activeProfile.id),
     fetchActiveMedications(supabase, activeProfile.id),
     fetchLabAlerts(supabase, activeProfile.id),
   ])
 
-  const prescriptions = prescriptionsResult.success ? (prescriptionsResult.data ?? []) : []
+  const documents = documentsResult.success ? (documentsResult.data ?? []) : []
   const DASHBOARD_RX_LIMIT = 3
-  const displayedPrescriptions = prescriptions.slice(0, DASHBOARD_RX_LIMIT)
+  const displayedDocuments = documents.slice(0, DASHBOARD_RX_LIMIT)
   const selfProfile   = profiles.find((p) => p.is_self)
   const rawName       = selfProfile?.full_name ?? user.email?.split('@')[0] ?? 'there'
   const displayName   = rawName.split(' ')[0]
-  const isEmpty       = prescriptions.length === 0
+  const isEmpty       = documents.length === 0
 
   const avatarLetter = displayName[0]?.toUpperCase() ?? 'U'
 
@@ -196,7 +197,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             {[
               { num: activeMeds.length,        label: 'Active Meds' },
               { num: labAlerts.values.length,  label: 'Alerts' },
-              { num: prescriptions.length,     label: 'Records' },
+              { num: documents.length,          label: 'Records' },
             ].map(({ num, label }) => (
               <div
                 key={label}
@@ -262,7 +263,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
               >
                 {activeProfile.is_self ? 'Your' : `${activeProfile.full_name.split(' ')[0]}'s`} Records
               </h2>
-              {!isEmpty && prescriptions.length > DASHBOARD_RX_LIMIT && (
+              {!isEmpty && documents.length > DASHBOARD_RX_LIMIT && (
                 <Link href="/timeline" className="text-xs font-semibold text-primary hover:underline">
                   View all
                 </Link>
@@ -277,12 +278,12 @@ export default async function HubPage({ searchParams }: HubPageProps) {
               />
             ) : (
               <div className="flex flex-col gap-2">
-                {displayedPrescriptions.map((rx) => (
-                  <div key={rx.id} className="flex items-center gap-2">
+                {displayedDocuments.map((doc) => (
+                  <div key={doc.id} className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
-                      <PrescriptionListItem prescription={rx} />
+                      <RecordCard record={doc} />
                     </div>
-                    <PrescriptionActions prescription={rx} profiles={profiles} />
+                    <PrescriptionActions document={doc} profiles={profiles} />
                   </div>
                 ))}
               </div>

@@ -2,14 +2,15 @@
 
 import { useState, useRef, useEffect, useActionState } from 'react'
 import { deleteDocument, reassignDocument } from '@/app/(app)/dashboard/actions'
-import type { FamilyProfile, HubPrescription } from '@/types/family'
+import type { FamilyProfile } from '@/types/family'
+import type { TimelineDocument } from '@/services/records.service'
 
 interface Props {
-  prescription: HubPrescription
+  document: TimelineDocument
   profiles: FamilyProfile[]
 }
 
-export function PrescriptionActions({ prescription, profiles }: Props) {
+export function PrescriptionActions({ document: doc, profiles }: Props) {
   const [open, setOpen]           = useState(false)
   const [mode, setMode]           = useState<'menu' | 'reassign'>('menu')
   const menuRef                   = useRef<HTMLDivElement>(null)
@@ -26,11 +27,11 @@ export function PrescriptionActions({ prescription, profiles }: Props) {
         setMode('menu')
       }
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    window.document.addEventListener('mousedown', handler)
+    return () => window.document.removeEventListener('mousedown', handler)
   }, [open])
 
-  const otherProfiles = profiles.filter((p) => p.id !== prescription.profile_id)
+  const otherProfiles = profiles.filter((p) => p.id !== doc.profile_id)
 
   return (
     <div className="relative flex-shrink-0" ref={menuRef}>
@@ -68,8 +69,7 @@ export function PrescriptionActions({ prescription, profiles }: Props) {
 
               {/* Delete */}
               <form action={deleteAction}>
-                <input type="hidden" name="document_id"    value={prescription.document_id ?? ''} />
-                <input type="hidden" name="prescription_id" value={prescription.id} />
+                <input type="hidden" name="document_id" value={doc.id} />
                 <button
                   type="submit"
                   disabled={deletePending}
@@ -101,9 +101,8 @@ export function PrescriptionActions({ prescription, profiles }: Props) {
 
               {otherProfiles.map((profile) => (
                 <form key={profile.id} action={reassignAction}>
-                  <input type="hidden" name="document_id"    value={prescription.document_id ?? ''} />
-                  <input type="hidden" name="prescription_id" value={prescription.id} />
-                  <input type="hidden" name="new_profile_id"  value={profile.id} />
+                  <input type="hidden" name="document_id"   value={doc.id} />
+                  <input type="hidden" name="new_profile_id" value={profile.id} />
                   <button
                     type="submit"
                     disabled={reassignPending}
