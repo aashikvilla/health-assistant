@@ -24,7 +24,7 @@ export function NewsletterForm() {
         .insert({ type: 'newsletter', email: trimmed })
 
       if (error) {
-        // Duplicate email (unique constraint) — treat as success
+        // Duplicate email (unique constraint)  treat as success
         if (error.code === '23505') {
           setStatus('success')
         } else {

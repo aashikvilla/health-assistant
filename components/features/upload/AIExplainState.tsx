@@ -46,14 +46,14 @@ export default function AIExplainState({ documentType }: AIExplainStateProps) {
     ? `About ${Math.max(5, 20 - elapsed)} seconds left`
     : elapsed < 20
     ? 'Almost there…'
-    : 'Taking a little longer — hang tight'
+    : 'Taking a little longer  hang tight'
 
   return (
-    /* Fixed overlay — hides nav and footer during AI call */
+    /* Fixed overlay  hides nav and footer during AI call */
     <div className="fixed inset-0 z-50 bg-surface flex flex-col items-center justify-center px-6 py-10 overflow-auto">
       <div className="w-full max-w-sm flex flex-col items-center">
 
-        {/* ── Animated icon — document transforming to guide ── */}
+        {/* ── Animated icon  document transforming to guide ── */}
         <div className="relative mb-8">
           <div
             className="absolute inset-0 rounded-full animate-ping opacity-10"
@@ -152,7 +152,7 @@ export default function AIExplainState({ documentType }: AIExplainStateProps) {
           })}
         </div>
 
-        {/* ── Skeleton cards — preview of what's coming ────── */}
+        {/* ── Skeleton cards  preview of what's coming ────── */}
         <div className="w-full mt-5 flex flex-col gap-3">
           {[75, 55, 85].map((w, i) => (
             <div

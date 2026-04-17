@@ -40,14 +40,14 @@ import { APP_NAME } from '@/constants'
 
 interface PageHeaderProps {
   variant?: 'brand' | 'page' | 'minimal'
-  /** Page title — required when `variant === 'page'` */
+  /** Page title  required when `variant === 'page'` */
   title?: string
   /** Where the back arrow links to. Defaults to `/dashboard`. */
   backHref?: string
-  /** Optional right-aligned action(s) — e.g. logout, sign in */
+  /** Optional right-aligned action(s)  e.g. logout, sign in */
   rightSlot?: React.ReactNode
   /**
-   * Optional centred content — e.g. nav anchor links on the landing page.
+   * Optional centred content  e.g. nav anchor links on the landing page.
    * Switches the header to a 3-column grid for true centre alignment.
    */
   middleSlot?: React.ReactNode
@@ -66,7 +66,7 @@ export function PageHeader({
         {/*
           3-column grid: [left 1fr] [center auto] [right 1fr]
           When middleSlot is absent the center collapses to 0px and
-          left/right share equal widths — functionally identical to the
+          left/right share equal widths  functionally identical to the
           old justify-between layout.
         */}
         <div

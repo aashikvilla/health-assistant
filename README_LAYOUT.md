@@ -39,11 +39,11 @@ The main header (with logo + logout) stays at the top. Your page content goes be
 
 ## Layout Files
 
-- `app/(public)/layout.tsx` — Wraps public pages
-- `app/(app)/layout.tsx` — Wraps authenticated pages
-- `components/layout/PageLayout.tsx` — Main wrapper (responsive padding)
-- `components/layout/PageHeader.tsx` — Header with logo
-- `components/layout/PageFooter.tsx` — Footer
+- `app/(public)/layout.tsx`  Wraps public pages
+- `app/(app)/layout.tsx`  Wraps authenticated pages
+- `components/layout/PageLayout.tsx`  Main wrapper (responsive padding)
+- `components/layout/PageHeader.tsx`  Header with logo
+- `components/layout/PageFooter.tsx`  Footer
 
 ## Color & Styling
 

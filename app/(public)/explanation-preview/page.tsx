@@ -98,7 +98,7 @@ export default function ExplanationPreviewPage() {
         </p>
       </div>
 
-      {/* Disclaimer — visible without scrolling */}
+      {/* Disclaimer  visible without scrolling */}
       <div className="px-5 pb-4">
         <DisclaimerBanner doctorName={explanation.disclaimerDoctorName} />
       </div>

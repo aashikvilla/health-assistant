@@ -36,6 +36,6 @@ The Add Family Member page (`/dashboard/add-member`) has four UI and data-qualit
 
 3.4 WHEN a user clicks Cancel THEN the system SHALL CONTINUE TO navigate back to `/dashboard` without saving any data.
 
-3.5 WHEN a user views the Add Family Member page THEN the system SHALL CONTINUE TO show the back arrow navigation, profile slot progress bar, and "You manage their records — they don't need to sign up." subtitle unchanged.
+3.5 WHEN a user views the Add Family Member page THEN the system SHALL CONTINUE TO show the back arrow navigation, profile slot progress bar, and "You manage their records  they don't need to sign up." subtitle unchanged.
 
 3.6 WHEN a user submits the form with a name containing a hyphen or apostrophe (e.g. "Mary-Jane" or "O'Brien") THEN the system SHALL CONTINUE TO preserve those characters correctly after title-case normalisation.

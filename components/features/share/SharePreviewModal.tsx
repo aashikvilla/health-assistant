@@ -19,7 +19,7 @@ export function SharePreviewModal({ message, onConfirm, onCancel }: SharePreview
   const containerRef = useRef<HTMLDivElement>(null)
   const titleId = 'share-preview-title'
 
-  // Focus trap — move focus into modal on mount
+  // Focus trap  move focus into modal on mount
   useEffect(() => {
     containerRef.current?.focus()
   }, [])

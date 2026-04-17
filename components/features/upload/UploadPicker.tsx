@@ -95,7 +95,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
         {/* ── Upload options ─────────────────────────────────── */}
         <div className="flex flex-col gap-3">
 
-          {/* PRIMARY — Photo (camera / gallery) */}
+          {/* PRIMARY  Photo (camera / gallery) */}
           <label className="block cursor-pointer active:opacity-90 transition-opacity">
             <input
               type="file"
@@ -121,11 +121,11 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               <svg className="w-3.5 h-3.5 text-text-muted flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-sm text-text-muted">Works best with a steady, well-lit photo — no flash needed</p>
+              <p className="text-sm text-text-muted">Works best with a steady, well-lit photo  no flash needed</p>
             </div>
           </label>
 
-          {/* SECONDARY — PDF */}
+          {/* SECONDARY  PDF */}
           <label className="block cursor-pointer active:opacity-80 transition-opacity">
             <input
               type="file"
@@ -148,7 +148,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
             </div>
           </label>
 
-          {/* TERTIARY — Type manually */}
+          {/* TERTIARY  Type manually */}
           <button
             onClick={() => setShowManual((v) => !v)}
             className="flex items-center gap-4 w-full bg-surface-container-lowest px-5 py-4 rounded-2xl min-h-[64px] border border-border active:opacity-80 transition-opacity text-left"
@@ -162,7 +162,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-lg font-semibold text-text-primary">Enter details manually</p>
-              <p className="text-base text-text-muted mt-0.5">Type in your prescription — takes about 2 minutes</p>
+              <p className="text-base text-text-muted mt-0.5">Type in your prescription  takes about 2 minutes</p>
             </div>
             <svg
               className="w-5 h-5 text-text-muted flex-shrink-0 transition-transform"

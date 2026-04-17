@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 /**
- * /explanation/[id] — redirects to the unified /records/[id] page.
+ * /explanation/[id]  redirects to the unified /records/[id] page.
  *
  * The AI explanation is now shown inline on the record page, so this route
  * exists only to preserve any bookmarked or shared links.

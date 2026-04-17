@@ -7,7 +7,7 @@ import { NewsletterForm } from '@/components/layout/NewsletterForm'
 import './homepage.css'
 
 /**
- * Homepage — ported from preview-homepage.html (Palette D).
+ * Homepage  ported from preview-homepage.html (Palette D).
  * Uses dedicated homepage.css with all animations/styles scoped under .hp
  * Self-contained nav + footer (does not use the layout's PageHeader/PageFooter).
  */
@@ -15,9 +15,7 @@ import './homepage.css'
 export default function HomePage() {
   return (
     <div className="hp">
-      <div className="preview-banner">
-        <strong>Preview only</strong> — design iteration. App not modified.
-      </div>
+     
 
       {/* ── NAV ── */}
       <nav className="nav">
@@ -332,7 +330,7 @@ export default function HomePage() {
               use your <em className="hl">health records</em>
             </h2>
             <p className="s-sub" style={{ maxWidth: 480, margin: "0 auto" }}>
-              Not just extraction — understanding. Every feature is designed
+              Not just extraction. Every feature is designed
               around a real moment of confusion.
             </p>
           </div>
@@ -359,8 +357,8 @@ export default function HomePage() {
                 </div>
                 <div className="fc-title">Plain-Language Explanations</div>
                 <div className="fc-desc">
-                  Every medication explained — dosage, purpose and side effects
-                  — in under 30 seconds.
+                  Every medication explained : dosage, purpose and side effects
+                  all in under 30 seconds.
                 </div>
               </div>
               <div className="fc-vis">
@@ -822,14 +820,14 @@ export default function HomePage() {
               <div className="step-title">Take a photo or upload</div>
               <div className="step-p">
                 Any prescription or lab report. Messy handwriting included.
-                Photos, PDFs, scans — all work.
+                Photos, PDFs, scans all work.
               </div>
             </div>
             <div className="step-card">
               <div className="step-num">2</div>
               <div className="step-title">We read it for you</div>
               <div className="step-p">
-                Our AI extracts every medication, dosage, and test result — even
+                Our AI extracts every medication, dosage, and test result even
                 from unclear handwriting.
               </div>
             </div>
@@ -866,7 +864,7 @@ export default function HomePage() {
             <p className="tcard-text">
               &ldquo;My father was on 7 medications after his surgery and nobody
               explained what they were for. I uploaded his prescription and
-              finally understood everything — in under 2 minutes. I cried a
+              finally understood everything in under 2 minutes. I cried a
               little.&rdquo;
             </p>
             <div className="tcard-author">
@@ -881,7 +879,7 @@ export default function HomePage() {
             <p className="tcard-text">
               &ldquo;I was newly diagnosed with Type 2 diabetes and given 3
               prescriptions I&apos;d never heard of. Vitae explained each one in
-              plain English — what it does, how to take it, what to avoid. I
+              plain English what it does, how to take it, what to avoid. I
               felt in control for the first time.&rdquo;
             </p>
             <div className="tcard-author">

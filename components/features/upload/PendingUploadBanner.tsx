@@ -7,7 +7,7 @@
  * Reads localStorage for a pending upload, auto-saves it immediately, then
  * redirects the user to the saved record's detail page.
  *
- * No manual click required — the save is transparent and the user lands
+ * No manual click required  the save is transparent and the user lands
  * directly in the read-only document view.
  */
 

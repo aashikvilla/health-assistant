@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useActionState } from 'react'
 import { Button, Input }  from '@/components/ui'
 import { createProfile }  from '@/app/(app)/dashboard/actions'
@@ -93,12 +94,12 @@ export function AddMemberForm() {
           Date of Birth
           <span className="ml-1 text-text-muted font-normal">(optional)</span>
         </label>
-        <input
+        <Input
           id="dob"
           name="dob"
           type="date"
           max={new Date().toISOString().split('T')[0]}
-          className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary focus:outline-none focus:ring-1 focus:ring-border-strong focus:bg-surface-container-lowest transition-colors"
+          className="text-base"
         />
         <p className="text-xs text-text-muted">Helps with age-appropriate lab test reference ranges.</p>
       </div>
@@ -108,13 +109,13 @@ export function AddMemberForm() {
           Their Email
           <span className="ml-1 text-text-muted font-normal">(optional)</span>
         </label>
-        <input
+        <Input
           id="member-email"
           name="email"
           type="email"
           placeholder="e.g. ramesh@gmail.com"
           autoComplete="off"
-          className="w-full rounded-xl bg-surface-subtle px-3 py-2.5 text-base text-text-primary focus:outline-none focus:ring-1 focus:ring-border-strong focus:bg-surface-container-lowest transition-colors"
+          className="text-base"
         />
         <p className="text-xs text-text-muted">
           If they create an account with this email, they&apos;ll automatically get access to their profile.

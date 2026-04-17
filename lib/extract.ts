@@ -4,7 +4,7 @@ import type { LabReportData } from '@/types/lab-report'
 type ImageInput = { type: 'image'; base64: string; mimeType: string }
 type TextInput = { type: 'text'; content: string }
 
-const PROMPT = `You are a medical data extraction assistant. Extract structured prescription data and return ONLY valid JSON — no markdown, no explanation, no code fences.
+const PROMPT = `You are a medical data extraction assistant. Extract structured prescription data and return ONLY valid JSON  no markdown, no explanation, no code fences.
 
 Return this exact shape:
 {
@@ -31,7 +31,7 @@ Rules:
 - List every distinct medication as a separate entry.
 - Never invent data. If something is not in the text, leave it empty with confidence "low".`
 
-const LAB_REPORT_PROMPT = `You are a medical data extraction assistant. Extract structured lab report data and return ONLY valid JSON — no markdown, no explanation, no code fences.
+const LAB_REPORT_PROMPT = `You are a medical data extraction assistant. Extract structured lab report data and return ONLY valid JSON  no markdown, no explanation, no code fences.
 
 Return this exact shape:
 {
@@ -60,7 +60,7 @@ Rules:
 - If a field is missing, illegible, or uncertain, use an empty string and set confidence "low".
 - Format testDate as DD MMM YYYY if possible (e.g., "10 Apr 2026").
 - List every distinct test as a separate entry.
-- For status: compare result against referenceRange if available — "normal" if within range, "low" if below, "high" if above, "critical" if flagged as critical, "" if undeterminable.
+- For status: compare result against referenceRange if available  "normal" if within range, "low" if below, "high" if above, "critical" if flagged as critical, "" if undeterminable.
 - Never invent data. If something is not in the text, leave it empty with confidence "low".`
 
 function stripJsonFences(text: string): string {

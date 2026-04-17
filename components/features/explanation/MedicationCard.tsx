@@ -17,12 +17,12 @@ const DETAIL_ROWS = [
 ] as const satisfies ReadonlyArray<{ key: keyof MedicationExplanation; label: string; warning: boolean }>
 
 const PALETTES = [
-  { bg: '#dbeafe', accent: '#2563eb', light: '#93c5fd', label: '#1e40af' },
-  { bg: '#dcfce7', accent: '#16a34a', light: '#86efac', label: '#166534' },
-  { bg: '#fef3c7', accent: '#d97706', light: '#fcd34d', label: '#92400e' },
-  { bg: '#fce7f3', accent: '#db2777', light: '#f9a8d4', label: '#9d174d' },
-  { bg: '#ede9fe', accent: '#7c3aed', light: '#c4b5fd', label: '#5b21b6' },
-  { bg: '#cffafe', accent: '#0891b2', light: '#67e8f9', label: '#155e75' },
+  { bg: 'var(--color-primary-subtle)',  accent: 'var(--color-primary)',       light: '#93c5fd',                      label: 'var(--color-primary-hover)' },
+  { bg: 'var(--color-success-subtle)',  accent: 'var(--color-success)',       light: '#86efac',                      label: 'var(--color-success)' },
+  { bg: 'var(--color-warning-subtle)',  accent: 'var(--color-warning)',       light: '#fcd34d',                      label: 'var(--color-warning)' },
+  { bg: 'var(--color-pink-subtle)',     accent: 'var(--color-pink)',          light: 'var(--color-pink-subtle)',     label: 'var(--color-tertiary)' },
+  { bg: 'var(--color-accent-subtle)',   accent: 'var(--color-accent-hover)',  light: '#c4b5fd',                      label: 'var(--color-accent-hover)' },
+  { bg: 'var(--color-teal-subtle)',     accent: 'var(--color-teal)',          light: '#67e8f9',                      label: 'var(--color-teal)' },
 ]
 
 function getPalette(name: string) {
@@ -44,7 +44,7 @@ function extractDosageFromName(name: string): string | null {
   return match ? match[1] : null
 }
 
-/** Medicine packet box illustration — looks like actual product packaging */
+/** Medicine packet box illustration  looks like actual product packaging */
 function MedicinePacket({ name, dosage }: { name: string; dosage: string }) {
   const p = getPalette(name)
   const genericName = extractGenericName(name)
@@ -55,7 +55,7 @@ function MedicinePacket({ name, dosage }: { name: string; dosage: string }) {
       className="w-full h-full rounded-2xl relative overflow-hidden flex flex-col justify-between p-3"
       style={{ background: p.bg }}
     >
-      {/* Top — brand stripe */}
+      {/* Top  brand stripe */}
       <div
         className="absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl"
         style={{ background: p.accent }}
@@ -71,7 +71,7 @@ function MedicinePacket({ name, dosage }: { name: string; dosage: string }) {
         </p>
       </div>
 
-      {/* Bottom — dosage + tablet icon */}
+      {/* Bottom  dosage + tablet icon */}
       <div className="flex items-end justify-between">
         <span
           className="font-body text-[10px] font-semibold"
@@ -104,11 +104,11 @@ function MedicationCard({ medication, className = '' }: MedicationCardProps) {
         .filter(Boolean)
         .join(' ')}
     >
-      {/* Top row — medicine packet + info card */}
+      {/* Top row  medicine packet + info card */}
       <div className="flex gap-4 p-4">
 
         {/* Medicine packet illustration */}
-        <div className="flex-shrink-0 w-[88px] h-[100px] rounded-2xl overflow-hidden">
+        <div className="shrink-0 w-[88px] h-[100px] rounded-2xl overflow-hidden">
           <MedicinePacket name={displayName} dosage={medication.dosage} />
         </div>
 
@@ -161,7 +161,7 @@ function MedicationCard({ medication, className = '' }: MedicationCardProps) {
               <div
                 key={key}
                 className="rounded-2xl p-3"
-                style={{ background: warning ? 'rgba(245,158,11,0.08)' : 'var(--color-surface-container-low)' }}
+                style={{ background: warning ? 'rgba(245,158,11,0.08)' : 'var(--color-surface-subtle)' }}
               >
                 <p className="font-body text-xs font-medium uppercase tracking-wider text-text-muted mb-1">
                   {label}

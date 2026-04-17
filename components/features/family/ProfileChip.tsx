@@ -25,20 +25,11 @@ export function ProfileChip({ profile, isActive, href }: ProfileChipProps) {
     >
       {/* Gradient ring on active, plain on inactive */}
       <div
-        className="w-16 h-16 rounded-full transition-all"
-        style={
-          isActive
-            ? { padding: '3px', background: 'linear-gradient(135deg, #1d4ed8, #7c3aed, #c026d3)', boxShadow: '0 4px 20px rgba(124,58,237,.35)' }
-            : { padding: '2px', background: 'rgba(124,58,237,.15)' }
-        }
+        className={`w-16 h-16 rounded-full transition-all ${isActive ? 'gradient-brand shadow-[0_4px_20px_rgba(124,58,237,.35)]' : 'bg-accent-subtle'}`}
+        style={{ padding: isActive ? '3px' : '2px' }}
       >
         <div
-          className="w-full h-full rounded-full flex items-center justify-center font-display text-base font-bold overflow-hidden"
-          style={
-            isActive
-              ? { background: '#fff', color: '#1d4ed8' }
-              : { background: '#f1f4fb', color: '#64748b' }
-          }
+          className={`w-full h-full rounded-full flex items-center justify-center font-display text-base font-bold overflow-hidden ${isActive ? 'bg-surface-container-lowest text-primary' : 'bg-surface-subtle text-text-muted'}`}
         >
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -53,8 +44,7 @@ export function ProfileChip({ profile, isActive, href }: ProfileChipProps) {
         </div>
       </div>
       <span
-        className="font-body text-[11px] max-w-[64px] truncate text-center"
-        style={{ fontWeight: isActive ? 700 : 500, color: isActive ? '#1d4ed8' : '#64748b' }}
+        className={`font-body text-[11px] max-w-[64px] truncate text-center ${isActive ? 'font-bold text-primary' : 'font-medium text-text-muted'}`}
       >
         {profile.is_self ? 'Me' : profile.full_name.split(' ')[0]}
       </span>

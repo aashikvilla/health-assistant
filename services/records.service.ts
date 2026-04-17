@@ -1,4 +1,4 @@
-// Records service — Stage 6
+// Records service  Stage 6
 // Fetches document detail and timeline data.
 // Accepts either a documents.id (primary, from timeline) or prescriptions.id
 // (legacy fallback, from hub PrescriptionListItem links that have no document).
@@ -23,7 +23,7 @@ export interface DocumentExplanationData {
     doctorNotes: string[]
     /** true = rich explanation is already in DB; false = only raw OCR data stored */
     hasExplanation: boolean
-    /** Present only when hasExplanation is false — use to call generateExplanation() */
+    /** Present only when hasExplanation is false  use to call generateExplanation() */
     rawPrescriptionData: PrescriptionData | null
 }
 
@@ -62,7 +62,7 @@ export interface TimelineDocument {
 }
 
 // ─── Internal Supabase join shapes ────────────────────────────────────────────
-// Supabase returns nested arrays for joined rows — typed here so we can cast
+// Supabase returns nested arrays for joined rows  typed here so we can cast
 // from `unknown` without using `any`.
 
 type DocWithAnalysis = {

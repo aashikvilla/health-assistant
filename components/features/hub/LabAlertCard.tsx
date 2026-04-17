@@ -68,7 +68,7 @@ export function LabAlertCard({ values, reportDate, profileName, isSelf, document
           }}
         >
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: 'rgba(255,255,255,.2)' }}
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white"
@@ -81,7 +81,7 @@ export function LabAlertCard({ values, reportDate, profileName, isSelf, document
           <div>
             <p className="font-display text-[13px] font-bold text-white leading-tight">
               {values.length} value{values.length !== 1 ? 's' : ''} need{values.length === 1 ? 's' : ''} attention
-              {hasCritical && ` — ${critical.length} critical`}
+              {hasCritical && `  ${critical.length} critical`}
             </p>
             {reportDate && (
               <p className="font-body text-[11px] text-white/70 mt-0.5">
@@ -101,10 +101,9 @@ export function LabAlertCard({ values, reportDate, profileName, isSelf, document
                 <div className="min-w-0">
                   <span className="font-display text-[13px] font-semibold text-text-primary block truncate">{v.name}</span>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <span
-                    className="font-display text-[13px] font-bold"
-                    style={{ color: hasCritical ? '#be123c' : '#d97706' }}
+                    className={`font-display text-[13px] font-bold ${hasCritical ? 'text-error' : 'text-warning'}`}
                   >
                     {v.result} {isHigh ? '↑' : '↓'}
                   </span>

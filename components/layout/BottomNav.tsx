@@ -35,13 +35,13 @@ const NAV_ITEMS: NavItem[] = [
 
 // Show BottomNav only on primary (top-level) screens.
 // Sub-routes (add-member, upload, explanation) are focused flows and should
-// feel separate from the global nav — they have their own back buttons.
+// feel separate from the global nav  they have their own back buttons.
 const PRIMARY_PATHS = ['/dashboard', '/timeline', '/settings']
 
 export function BottomNav() {
   const pathname = usePathname()
 
-  // Exact match only — /hub shows nav, /dashboard/add-member does not
+  // Exact match only  /hub shows nav, /dashboard/add-member does not
   const visible = PRIMARY_PATHS.some((p) => pathname === p)
   if (!visible) return null
 
@@ -71,21 +71,19 @@ export function BottomNav() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
                 style={active ? { background: 'rgba(29,78,216,.09)' } : {}}
               >
-                <span style={{ color: active ? '#1d4ed8' : '#94a3b8' }}>
+                <span className={active ? 'text-primary' : 'text-text-muted'}>
                   {icon(active)}
                 </span>
               </div>
               <span
-                className="font-body text-[10px] font-semibold"
-                style={{ color: active ? '#1d4ed8' : '#94a3b8' }}
+                className={`font-body text-[10px] font-semibold ${active ? 'text-primary' : 'text-text-muted'}`}
               >
                 {label}
               </span>
               {/* Active gradient dot */}
               {active && (
                 <div
-                  className="w-4 h-[3px] rounded-full -mt-0.5"
-                  style={{ background: 'linear-gradient(90deg, #1d4ed8, #7c3aed)' }}
+                  className="w-4 h-[3px] rounded-full -mt-0.5 gradient-brand"
                 />
               )}
             </Link>

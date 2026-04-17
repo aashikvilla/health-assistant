@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      // Ensure self-profile exists — handles first OAuth login, email confirmation,
+      // Ensure self-profile exists  handles first OAuth login, email confirmation,
       // and the case where a family member was pre-added before they signed up.
       const metaName = data.user.user_metadata?.full_name as string | undefined
       await familyService.ensureSelfProfile(

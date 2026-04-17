@@ -47,12 +47,12 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   if (error) return { error: error.message }
 
   if (data.user && data.session) {
-    // Email confirmation disabled — session available immediately
+    // Email confirmation disabled  session available immediately
     await familyService.ensureSelfProfile(data.user.id, data.user.email ?? email, fullName)
     redirect(returnTo ?? '/dashboard')
   }
 
-  // Email confirmation required — tell the user to check their inbox
+  // Email confirmation required  tell the user to check their inbox
   return { info: 'Check your email! We sent you a confirmation link to finish signing up.' }
 }
 

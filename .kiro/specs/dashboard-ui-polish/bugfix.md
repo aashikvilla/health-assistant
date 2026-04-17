@@ -10,19 +10,19 @@ The dashboard screen (`/dashboard`) has four distinct UI polish bugs that degrad
 
 ### Current Behavior (Defect)
 
-**Bug 1 — Generic frequency strings in ActiveMedicationsStrip**
+**Bug 1  Generic frequency strings in ActiveMedicationsStrip**
 
 1.1 WHEN a medication's `frequency` field in the database contains a generic instruction string (e.g. "as directed by your doctor", "as advised", "as prescribed") THEN the system displays that string verbatim as the duration/frequency badge on every matching medication row in `ActiveMedicationsStrip`, adding no useful information and cluttering the UI.
 
-**Bug 2 — Medication list not capped in ActiveMedicationsStrip**
+**Bug 2  Medication list not capped in ActiveMedicationsStrip**
 
 1.2 WHEN a profile has more than 4 active medications THEN the system renders all of them in `ActiveMedicationsStrip` with no truncation, causing the strip to grow arbitrarily long and defeating its purpose as a quick-glance summary.
 
-**Bug 3 — Duplicate medications shown without warning in ReviewScreen**
+**Bug 3  Duplicate medications shown without warning in ReviewScreen**
 
 1.3 WHEN OCR extracts the same medication name more than once from a prescription THEN the system displays all duplicate entries in `ReviewScreen` without any warning, allowing the user to confirm and save duplicate medication records to the database.
 
-**Bug 4 — Prescriptions section renders all records with no limit**
+**Bug 4  Prescriptions section renders all records with no limit**
 
 1.4 WHEN a profile has more than 3 prescription records THEN the system renders every record in the prescriptions section of `dashboard/page.tsx` with no cap, making the dashboard page excessively long.
 
@@ -30,23 +30,23 @@ The dashboard screen (`/dashboard`) has four distinct UI polish bugs that degrad
 
 ### Expected Behavior (Correct)
 
-**Bug 1 — Generic frequency strings filtered out**
+**Bug 1  Generic frequency strings filtered out**
 
 2.1 WHEN a medication's `frequency` value matches a generic instruction pattern (case-insensitive match against strings such as "as directed by your doctor", "as advised", "as prescribed", and similar variants) THEN the system SHALL omit the duration/frequency badge entirely for that medication row in `ActiveMedicationsStrip`, showing nothing in its place.
 
-**Bug 2 — Medication list capped at 4**
+**Bug 2  Medication list capped at 4**
 
 2.2 WHEN a profile has more than 4 active medications THEN the system SHALL display only the first 4 items in `ActiveMedicationsStrip` and SHALL render a "View all N →" link below the list (where N is the total active medication count), allowing the user to navigate to the full list.
 
 2.3 WHEN a profile has 4 or fewer active medications THEN the system SHALL display all items in `ActiveMedicationsStrip` with no "View all" link.
 
-**Bug 3 — Duplicate medications flagged in ReviewScreen**
+**Bug 3  Duplicate medications flagged in ReviewScreen**
 
 2.4 WHEN two or more medications in the OCR-extracted list share the same name (compared case-insensitively, ignoring leading/trailing whitespace) THEN the system SHALL display an inline warning banner immediately above the duplicate medication card(s) in `ReviewScreen` identifying the duplicated name and asking the user whether it was prescribed twice, with a "Remove duplicate" action that removes the later occurrence.
 
 2.5 WHEN the user clicks "Remove duplicate" in the warning banner THEN the system SHALL remove the duplicate medication entry from the list and dismiss the banner for that medication name.
 
-**Bug 4 — Prescriptions section capped at 3**
+**Bug 4  Prescriptions section capped at 3**
 
 2.6 WHEN a profile has more than 3 prescription records THEN the system SHALL display only the 3 most recent records in the prescriptions section of the dashboard and SHALL render a "View all →" link that navigates to the full records list.
 

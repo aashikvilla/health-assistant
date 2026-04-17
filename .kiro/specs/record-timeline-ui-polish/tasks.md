@@ -8,12 +8,12 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
 
 - [x] 1. Create shared string utility module
   - Create `lib/utils/string.ts` with two exported functions:
-    - `toTitleCase(s: string | null | undefined): string` — uppercases the first character of each whitespace-delimited word and lowercases the rest; returns `''` for null, undefined, or empty input
-    - `stripMedicationPrefix(name: string): string` — removes a leading `Tab.`, `Cap.`, `Syr.`, or `Inj.` prefix (case-insensitive, followed by optional space) using `name.replace(/^(tab|cap|syr|inj)\.\s*/i, '')`
+    - `toTitleCase(s: string | null | undefined): string`  uppercases the first character of each whitespace-delimited word and lowercases the rest; returns `''` for null, undefined, or empty input
+    - `stripMedicationPrefix(name: string): string`  removes a leading `Tab.`, `Cap.`, `Syr.`, or `Inj.` prefix (case-insensitive, followed by optional space) using `name.replace(/^(tab|cap|syr|inj)\.\s*/i, '')`
   - Both functions must be pure and handle all edge cases without throwing (empty string, whitespace-only, null/undefined)
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 10.2, 10.3, 10.4_
 
-- [x] 2. Add `medication_count` to `TimelineDocument` — service and type together
+- [x] 2. Add `medication_count` to `TimelineDocument`  service and type together
   - In `services/records.service.ts`:
     - Add `medication_count: number | null` to the `TimelineDocument` interface
     - Add `medications_found: unknown` to the `DocTimeline` internal type
@@ -29,7 +29,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
   - `medication_count` must be `null` for lab reports and for prescriptions where `medications_found` is absent, null, or empty
   - _Requirements: 13.1, 13.2_
 
-- [x] 3. Record Detail — `isOwnProfile` prop flow (`page.tsx` → `DocumentDetail`)
+- [x] 3. Record Detail  `isOwnProfile` prop flow (`page.tsx` → `DocumentDetail`)
   - In `app/(app)/records/[id]/page.tsx`:
     - After the existing `profile` lookup, add: `const isOwnProfile = profile?.is_self ?? false`
     - Pass `isOwnProfile={isOwnProfile}` to `<DocumentDetail>`
@@ -46,14 +46,14 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - Use `displayName` (not the raw `profileName` prop) in the "For …" line
   - _Requirements: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3_
 
-- [x] 4. Record Detail — compact disclaimer badge
+- [x] 4. Record Detail  compact disclaimer badge
   - In `components/features/records/DocumentDetail.tsx`:
-    - Replace the `<DisclaimerBanner>` block with a `<Badge variant="warning" dot>` displaying "AI-generated summary — consult your doctor"
+    - Replace the `<DisclaimerBanner>` block with a `<Badge variant="warning" dot>` displaying "AI-generated summary  consult your doctor"
     - Keep the `{hasAI && ...}` condition unchanged
-    - Do not modify `DisclaimerBanner.tsx` itself — it continues to be used in `ReviewScreen` and `LabReportReviewScreen`
+    - Do not modify `DisclaimerBanner.tsx` itself  it continues to be used in `ReviewScreen` and `LabReportReviewScreen`
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [x] 5. Record Detail — strip medication name prefixes in `MedicationCard`
+- [x] 5. Record Detail  strip medication name prefixes in `MedicationCard`
   - In `components/features/explanation/MedicationCard.tsx`:
     - Import `stripMedicationPrefix` from `@/lib/utils/string`
     - At the top of the `MedicationCard` render function, derive: `const displayName = stripMedicationPrefix(medication.name)`
@@ -61,7 +61,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - Leave `medication.dosage` and `medication.frequency` untouched
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [x] 6. Record Detail — upgrade `DocumentLink` CTA text
+- [x] 6. Record Detail  upgrade `DocumentLink` CTA text
   - In `components/features/records/DocumentDetail.tsx`:
     - Add a `documentType: string` prop to the `DocumentLink` sub-component
     - Derive `ctaText`:
@@ -75,13 +75,13 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - Preserve the existing `{signedFileUrl && <DocumentLink ... />}` null guard
   - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [x] 7. Verify Req 5 — no upload-flow progress dots on Record Detail (inspection only)
+- [x] 7. Verify Req 5  no upload-flow progress dots on Record Detail (inspection only)
   - Open `app/(app)/layout.tsx` and `app/(app)/dashboard/layout.tsx` and confirm neither file renders a stepper, progress dots, or step indicator component
   - Confirm the upload-flow progress UI lives entirely within `app/(app)/dashboard/upload/[profileId]/page.tsx` as local state
   - No code change is required if confirmed
   - _Requirements: 5.1, 5.2_
 
-- [x] 8. Timeline — name casing and labelled filter chip rows
+- [x] 8. Timeline  name casing and labelled filter chip rows
   - In `components/features/records/TimelineView.tsx`:
     - Import `toTitleCase` from `@/lib/utils/string`
     - Apply `toTitleCase(p.full_name)` to every profile name before rendering it in filter chips and any other display location within the component
@@ -90,7 +90,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - Align labels with the first chip using `flex items-center gap-2`
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 11.1, 11.2, 11.3, 11.4_
 
-- [x] 9. Timeline — first-name-only chips on mobile
+- [x] 9. Timeline  first-name-only chips on mobile
   - In `components/features/records/TimelineView.tsx`:
     - For each profile chip button, replace the single text node with two `<span>` elements:
       ```tsx
@@ -100,7 +100,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - Leave the "All" label unchanged
   - _Requirements: 12.1, 12.2, 12.3_
 
-- [x] 10. Timeline — medication count badge on `RecordCard`
+- [x] 10. Timeline  medication count badge on `RecordCard`
   - In `components/features/records/RecordCard.tsx`:
     - Inside the content area, below the existing tags row, add:
       ```tsx
@@ -113,16 +113,16 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
   - Badge must not render for lab reports or when `medication_count` is null or 0
   - _Requirements: 13.1, 13.2, 13.3_
 
-- [x] 11. Timeline — year-prominent date grouping
+- [x] 11. Timeline  year-prominent date grouping
   - In `components/features/records/TimelineView.tsx`:
-    - Replace the existing `groupByMonth` function with a new `groupByYearMonth` function that returns `{ multiYear: boolean, groups: [string, [string, TimelineDocument[]][]][] }` — a year → month → docs structure
+    - Replace the existing `groupByMonth` function with a new `groupByYearMonth` function that returns `{ multiYear: boolean, groups: [string, [string, TimelineDocument[]][]][] }`  a year → month → docs structure
     - `multiYear` is `true` when the document set spans more than one distinct calendar year
     - When `multiYear === false`: render flat month groups with "Month Year" headers (existing behaviour)
-    - When `multiYear === true`: render year headers (four-digit year, visually prominent — `font-bold text-base`) with nested month sub-group headers showing month name only (e.g. "March")
+    - When `multiYear === true`: render year headers (four-digit year, visually prominent  `font-bold text-base`) with nested month sub-group headers showing month name only (e.g. "March")
     - Preserve descending sort order (newest first by default)
   - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5_
 
-- [x] 12. Timeline — "Add another record" CTA
+- [x] 12. Timeline  "Add another record" CTA
   - In `components/features/records/TimelineView.tsx`:
     - Import `Button` from `@/components/ui`
     - After the grouped records list (inside the `filtered.length > 0` branch), add:
@@ -136,7 +136,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - CTA must not render when `filtered.length === 0`
   - _Requirements: 15.1, 15.2, 15.3_
 
-- [x] 13. Timeline — client-side search
+- [x] 13. Timeline  client-side search
   - In `components/features/records/TimelineView.tsx`:
     - Add `const [searchQuery, setSearchQuery] = useState('')` state
     - Import `Input` from `@/components/ui`
@@ -164,7 +164,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
     - Feed `searchFiltered` into the existing profile and type filters (all filters ANDed)
   - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 16.6_
 
-- [x] 14. Timeline — sort control
+- [x] 14. Timeline  sort control
   - In `components/features/records/TimelineView.tsx`:
     - Add `const [sortOrder, setSortOrder] = useState<'newest_first' | 'oldest_first' | 'by_type'>('newest_first')` state
     - Implement `applySort(docs, order)` (newest_first, oldest_first, by_type as per design doc)
@@ -188,7 +188,7 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
   - Buttons: "Cancel" (`<Button variant="secondary">`) and "Share on WhatsApp" (`bg-[#25D366]` green button)
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-- [x] 16. Update `ShareButton` — preview modal + viral attribution
+- [x] 16. Update `ShareButton`  preview modal + viral attribution
   - In `components/features/share/ShareButton.tsx`:
     - Import `SharePreviewModal` from `./SharePreviewModal`
     - Add `const [showPreview, setShowPreview] = useState(false)` state
@@ -196,14 +196,14 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
       ```ts
       lines.push('⚠️ AI-generated summary. Consult your doctor before making any changes.')
       lines.push('')
-      lines.push('Shared via Vitae — upload yours at vitae.health')
+      lines.push('Shared via Vitae  upload yours at vitae.health')
       ```
     - Change `handleShare` to set `showPreview(true)` instead of opening WhatsApp directly
     - Add `handleConfirm` that opens WhatsApp then sets `showPreview(false)`
     - Render `{showPreview && <SharePreviewModal ... />}` in the return
   - _Requirements: 7.1, 7.4, 7.5, 8.1, 8.2, 8.3_
 
-- [x] 17. Record Detail — two-column desktop layout for prescriptions
+- [x] 17. Record Detail  two-column desktop layout for prescriptions
   - In `components/features/records/DocumentDetail.tsx`:
     - Wrap the prescription section content in a two-column grid at the `md:` breakpoint:
       ```tsx
@@ -223,4 +223,4 @@ Incremental polish pass across the Record Detail (`/records/[id]`) and Timeline 
 - The `medication_count` service change (task 2) must be done before the `RecordCard` badge (task 10)
 - `isOwnProfile` prop flow (task 3) must be done as a single atomic change across `page.tsx` and `DocumentDetail.tsx`
 - `SharePreviewModal` (task 15) must be created before modifying `ShareButton` (task 16)
-- Task 7 is inspection-only — the upload stepper is local state in the upload page, not in any shared layout
+- Task 7 is inspection-only  the upload stepper is local state in the upload page, not in any shared layout

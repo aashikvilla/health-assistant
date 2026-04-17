@@ -3,10 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { familyService } from "@/services/family.service";
 import { AddMemberForm } from "@/components/features/family/AddMemberForm";
 import { FAMILY_LIMITS } from "@/constants";
+import { Button } from "@/components/ui";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Add Family Member — Vitae",
+  title: "Add Family Member | Vitae",
 };
 
 const MAX_PROFILES = FAMILY_LIMITS.maxProfiles;
@@ -29,10 +30,7 @@ export default async function AddMemberPage() {
   return (
     <>
       {/* ── Gradient Hero ───────────────────────────────────────── */}
-      <div
-        className="-mx-4 sm:-mx-6 lg:-mx-8"
-        style={{ background: 'linear-gradient(135deg, #0f0f2d 0%, #1d4ed8 45%, #7c3aed 80%, #c026d3 100%)' }}
-      >
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 gradient-hero">
         <div className="px-4 pb-10 relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none"
@@ -42,8 +40,7 @@ export default async function AddMemberPage() {
           <div className="relative flex items-center gap-2 pt-safe h-14">
             <Link
               href="/dashboard"
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(255,255,255,.18)', border: '1px solid rgba(255,255,255,.25)' }}
+              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-white/18 border border-white/25"
               aria-label="Back to dashboard"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
@@ -56,15 +53,13 @@ export default async function AddMemberPage() {
             Who&apos;s this<br />profile for?
           </h1>
           <p className="font-body text-sm text-white/65 relative">
-            You manage their records — they don&apos;t need to sign up.
+            You manage their records  they don&apos;t need to sign up.
           </p>
         </div>
       </div>
 
       {/* ── Body ────────────────────────────────────────────────── */}
-      <div
-        className="-mt-6 rounded-t-[28px] -mx-4 sm:-mx-6 lg:-mx-8 bg-[#f7f9ff] px-4 sm:px-6 lg:px-8 pb-10 relative z-10"
-      >
+      <div className="-mt-6 rounded-t-[28px] -mx-4 sm:-mx-6 lg:-mx-8 bg-surface px-4 sm:px-6 lg:px-8 pb-10 relative z-10">
         <div className="pt-6 max-w-md mx-auto">
 
           {atLimit ? (
@@ -86,9 +81,9 @@ export default async function AddMemberPage() {
                 </p>
               </div>
               <div className="w-full flex flex-col gap-3">
-                <button disabled className="w-full h-12 rounded-xl bg-surface-muted text-text-muted text-sm font-medium border border-border cursor-not-allowed">
+                <Button variant="secondary" fullWidth disabled className="cursor-not-allowed">
                   Unlimited Profiles — Pro <span className="ml-1.5 text-[10px] font-bold bg-border text-text-secondary px-1.5 py-0.5 rounded">SOON</span>
-                </button>
+                </Button>
                 <Link href="/dashboard" className="w-full h-12 rounded-xl border text-sm font-semibold text-text-primary text-center flex items-center justify-center hover:bg-surface-subtle transition-colors" style={{ borderColor: 'rgba(124,58,237,.2)' }}>
                   Back to Hub
                 </Link>
@@ -99,18 +94,15 @@ export default async function AddMemberPage() {
             <div className="flex flex-col gap-5">
 
               {/* Slot progress */}
-              <div
-                className="rounded-2xl bg-white px-4 py-3.5"
-                style={{ border: '1px solid rgba(124,58,237,.12)', boxShadow: '0 2px 12px rgba(29,78,216,.07)' }}
-              >
+              <div className="rounded-2xl bg-white px-4 py-3.5 border border-border shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-body text-sm font-medium text-text-primary">Profile slots</span>
                   <span className="font-display text-sm font-bold text-primary">{profileCount} / {MAX_PROFILES} used</span>
                 </div>
                 <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${slotPct}%`, background: 'linear-gradient(90deg, #1d4ed8, #7c3aed)' }}
+                    className="h-full rounded-full transition-all gradient-brand"
+                    style={{ width: `${slotPct}%` }}
                   />
                 </div>
               </div>
@@ -118,14 +110,11 @@ export default async function AddMemberPage() {
               {/* Photo placeholder */}
               <div className="flex flex-col items-center gap-2">
                 <div
-                  className="w-[88px] h-[88px] rounded-full p-[3px]"
-                  style={{ background: 'linear-gradient(135deg, #1d4ed8, #7c3aed, #c026d3)', boxShadow: '0 4px 24px rgba(124,58,237,.25)' }}
+                  className="w-[88px] h-[88px] rounded-full p-[3px] gradient-brand"
+                  style={{ boxShadow: '0 4px 24px rgba(124,58,237,.25)' }}
                 >
-                  <div
-                    className="w-full h-full rounded-full flex flex-col items-center justify-center gap-0.5 cursor-pointer"
-                    style={{ background: '#f1f4fb', border: '2px solid white' }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <div className="w-full h-full rounded-full flex flex-col items-center justify-center gap-0.5 cursor-pointer bg-surface-subtle border-2 border-white">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className="text-text-muted">
                       <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                     <span className="font-body text-[9px] font-600 text-text-muted">Add photo</span>

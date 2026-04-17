@@ -78,7 +78,7 @@ export function ContactModal() {
             {!submitted ? (
               <>
                 <div className="modal-title" id="modal-title">Get in touch</div>
-                <div className="modal-sub">We&apos;d love to hear from you — questions, feedback, or just a hello. We reply within 24 hours.</div>
+                <div className="modal-sub">We&apos;d love to hear from you  questions, feedback, or just a hello. We reply within 24 hours.</div>
                 <div className="modal-field">
                   <label className="modal-label" htmlFor="m-name">Your name</label>
                   <input

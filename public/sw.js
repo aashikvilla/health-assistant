@@ -1,5 +1,5 @@
 /**
- * Vitae — Service Worker
+ * Vitae  Service Worker
  *
  * Strategy:
  *   - Static assets (JS, CSS, fonts, images) → Cache-first
@@ -99,7 +99,7 @@ async function networkFirst(request, cacheName) {
     return response
   } catch {
     const cached = await caches.match(request)
-    return cached ?? new Response('Offline — please reconnect.', {
+    return cached ?? new Response('Offline  please reconnect.', {
       status: 503,
       headers: { 'Content-Type': 'text/plain' },
     })

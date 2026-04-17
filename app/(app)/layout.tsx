@@ -1,5 +1,5 @@
 /**
- * (app) Route Group Layout — authenticated pages
+ * (app) Route Group Layout  authenticated pages
  *
  * Provides for all pages under /app:
  * - Authentication guard (redirects to /auth if not logged in)
@@ -13,7 +13,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { familyService } from '@/services/family.service'
-import { PageLayout, PageHeader, BottomNav, AppDrawerNav, LogoutButton } from '@/components/layout'
+import { PageLayout, BottomNav, AppDrawerNav } from '@/components/layout'
 
 export default async function AppLayout({
   children,
@@ -26,16 +26,16 @@ export default async function AppLayout({
   if (!user) redirect('/auth')
 
   // Ensure self-profile + family group exist for this user.
-  // Idempotent — one fast DB lookup and early-return if already set up.
+  // Idempotent  one fast DB lookup and early-return if already set up.
   // This is the safety net for every sign-in path (email, OAuth, confirmation link).
   const setupResult = await familyService.ensureSelfProfile(user.id, user.email ?? '')
   if (!setupResult.success) {
-    // Surface the error rather than silently proceeding — a missing family group
+    // Surface the error rather than silently proceeding  a missing family group
     // breaks all profile and document operations downstream.
     throw new Error(`Profile setup failed: ${setupResult.error}`)
   }
 
-  // Onboarding gate — redirect new users to collect their full name.
+  // Onboarding gate  redirect new users to collect their full name.
   // Safe to do unconditionally here: /onboarding lives outside this (app) route group,
   // so this layout never runs when the user is already on /onboarding.
   const { data: userProfile } = await supabase

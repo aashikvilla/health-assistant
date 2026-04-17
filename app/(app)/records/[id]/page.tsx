@@ -8,7 +8,7 @@ import { generateExplanation }   from '@/lib/explain'
 import { DocumentDetail }        from '@/components/features/records/DocumentDetail'
 import type { RecordDetail }     from '@/services/records.service'
 
-export const metadata: Metadata = { title: 'Record — Vitae' }
+export const metadata: Metadata = { title: 'Record  Vitae' }
 
 export default async function RecordPage({
   params,
@@ -56,7 +56,7 @@ export default async function RecordPage({
             medications: generated.medications,
             recommendations: generated.doctorNotes,
           }
-          // Persist back so next view is instant (best-effort — non-fatal)
+          // Persist back so next view is instant (best-effort  non-fatal)
           documentsService.saveExplanationToAnalysis(
             record.documentId!,
             generated.medications.map(({ id: _id, ...m }) => m),

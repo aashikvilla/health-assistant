@@ -11,15 +11,15 @@ interface Props {
   onRetry:   () => void
 }
 
-// Accent colours for medicine cards — cycles through a warm palette
+// Accent colours for medicine cards  cycles through a warm palette
 const MED_ACCENTS = [
-  'var(--color-primary, #0058bd)',
-  'var(--color-teal, #0d9488)',
-  '#7c3aed',
-  '#d97706',
-  '#db2777',
-  '#059669',
-  '#dc2626',
+  'var(--color-primary)',
+  'var(--color-teal)',
+  'var(--color-accent-hover)',
+  'var(--color-warning)',
+  'var(--color-tertiary)',
+  'var(--color-success)',
+  'var(--color-error)',
 ]
 
 export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
@@ -128,13 +128,13 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
           </div>
         </section>
 
-        {/* ── Disclaimer — before medicines ─────────────────── */}
+        {/* ── Disclaimer  before medicines ─────────────────── */}
         <div className="flex items-start gap-2.5 px-1">
           <svg className="w-4 h-4 text-text-muted flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <p className="text-sm text-text-muted leading-relaxed">
-            AI-extracted — these details may contain errors. Always confirm with your doctor before taking any medication.
+            AI-extracted  these details may contain errors. Always confirm with your doctor before taking any medication.
           </p>
         </div>
 
@@ -165,7 +165,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                       </svg>
                       <div className="flex-1">
                         <p className="text-sm text-text-primary font-medium">
-                          "{medName}" appears more than once — was this prescribed twice?
+                          "{medName}" appears more than once  was this prescribed twice?
                         </p>
                       </div>
                       <button
@@ -181,7 +181,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                     className="bg-surface-container-lowest rounded-2xl overflow-hidden"
                     style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
                   >
-                  {/* Card header — medicine name as title */}
+                  {/* Card header  medicine name as title */}
                   <div
                     className="flex items-center gap-3 px-4 py-3"
                     style={{ borderLeft: `3px solid ${accent}` }}

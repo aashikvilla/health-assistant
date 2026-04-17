@@ -9,7 +9,7 @@ Four UI polish bugs degrade the dashboard experience. Two live in `ActiveMedicat
 ## Glossary
 
 - **Bug_Condition (C)**: The set of inputs or render states that trigger one of the four defects.
-- **Property (P)**: The desired output or UI state when the bug condition holds — what the fixed code must produce.
+- **Property (P)**: The desired output or UI state when the bug condition holds  what the fixed code must produce.
 - **Preservation**: Existing correct behaviour that must remain byte-for-byte identical after the fix.
 - **`isGenericFrequency(value)`**: New helper in `ActiveMedicationsStrip.tsx` that returns `true` when a frequency string carries no useful clinical information.
 - **`MAX_DISPLAY`**: Constant (`4`) capping the number of medication rows rendered in `ActiveMedicationsStrip`.
@@ -21,7 +21,7 @@ Four UI polish bugs degrade the dashboard experience. Two live in `ActiveMedicat
 
 ## Bug Details
 
-### Bug 1 — Generic frequency strings in ActiveMedicationsStrip
+### Bug 1  Generic frequency strings in ActiveMedicationsStrip
 
 The bug manifests when `med.duration` (mapped from the `frequency` column in the DB) holds a generic instruction string. The component renders it verbatim as a coloured badge, adding visual noise with no clinical value.
 
@@ -42,11 +42,11 @@ END FUNCTION
 - `med.duration = "As Prescribed"` → badge rendered (bug) / badge omitted (fixed)
 - `med.duration = "per doctor"` → badge rendered (bug) / badge omitted (fixed)
 - `med.duration = "twice daily"` → badge rendered correctly (not a bug case)
-- `med.duration = ""` → no badge rendered (not a bug case — already handled)
+- `med.duration = ""` → no badge rendered (not a bug case  already handled)
 
 ---
 
-### Bug 2 — Medication list not capped in ActiveMedicationsStrip
+### Bug 2  Medication list not capped in ActiveMedicationsStrip
 
 The bug manifests when `medications.length > 4`. All items are rendered, making the strip arbitrarily long.
 
@@ -67,7 +67,7 @@ END FUNCTION
 
 ---
 
-### Bug 3 — Duplicate medications shown without warning in ReviewScreen
+### Bug 3  Duplicate medications shown without warning in ReviewScreen
 
 The bug manifests when OCR extracts the same medication name more than once. All entries are shown without any indication of the duplication.
 
@@ -91,7 +91,7 @@ END FUNCTION
 
 ---
 
-### Bug 4 — Prescriptions section renders all records with no limit
+### Bug 4  Prescriptions section renders all records with no limit
 
 The bug manifests when `prescriptions.length > 3`. All records are rendered in the dashboard, making the page excessively long.
 
@@ -126,7 +126,7 @@ END FUNCTION
 - Clicking "Yes, This Looks Right →" in `ReviewScreen` MUST continue to call `onConfirm` with the current prescription data.
 - When `prescriptions.length <= 3`, all records MUST continue to render with no "View all →" link.
 - When `prescriptions.length === 0`, the `EmptyPrescriptions` component MUST continue to render.
-- The existing "View all" link in `dashboard/page.tsx` (currently shown whenever `!isEmpty`) MUST be replaced by the capped logic — it should only appear when `prescriptions.length > DASHBOARD_RX_LIMIT`.
+- The existing "View all" link in `dashboard/page.tsx` (currently shown whenever `!isEmpty`) MUST be replaced by the capped logic  it should only appear when `prescriptions.length > DASHBOARD_RX_LIMIT`.
 
 **Scope:**
 All inputs that do NOT satisfy any of the four bug conditions above are completely unaffected by these fixes. This includes:
@@ -156,43 +156,43 @@ The component maps over the full `medications` array with no slice. The fix adds
 
 ## Correctness Properties
 
-Property 1: Bug Condition — Generic Frequency Badge Suppression
+Property 1: Bug Condition  Generic Frequency Badge Suppression
 
 _For any_ `Medication` where `med.duration` is a non-empty string and `isGenericFrequency(med.duration)` returns `true`, the fixed `ActiveMedicationsStrip` SHALL omit the frequency badge entirely for that medication row, rendering nothing in its place.
 
 **Validates: Requirements 2.1**
 
-Property 2: Bug Condition — Medication List Capped at 4
+Property 2: Bug Condition  Medication List Capped at 4
 
 _For any_ `medications` array where `medications.length > 4`, the fixed `ActiveMedicationsStrip` SHALL render exactly 4 medication rows and SHALL render a "View all N →" link below the list (where N equals `medications.length`), while the "N active" header badge SHALL reflect the full total.
 
 **Validates: Requirements 2.2**
 
-Property 3: Bug Condition — Duplicate Medication Warning
+Property 3: Bug Condition  Duplicate Medication Warning
 
 _For any_ `medications` array in `ReviewScreen` where a name appears more than once (case-insensitive, trimmed), the fixed component SHALL render an inline warning banner immediately above every card that is a later occurrence of that name, and the banner SHALL include a "Remove" button that removes that entry from the list.
 
 **Validates: Requirements 2.4, 2.5**
 
-Property 4: Bug Condition — Prescriptions Section Capped at 3
+Property 4: Bug Condition  Prescriptions Section Capped at 3
 
 _For any_ `prescriptions` array where `prescriptions.length > 3`, the fixed `dashboard/page.tsx` SHALL render exactly 3 prescription list items and SHALL render a "View all →" link.
 
 **Validates: Requirements 2.6**
 
-Property 5: Preservation — Informative Frequency Badges Unchanged
+Property 5: Preservation  Informative Frequency Badges Unchanged
 
 _For any_ `Medication` where `isGenericFrequency(med.duration)` returns `false` and `med.duration` is non-empty, the fixed `ActiveMedicationsStrip` SHALL produce the same badge output as the original component.
 
 **Validates: Requirements 3.1, 3.2**
 
-Property 6: Preservation — ReviewScreen Edit and Confirm Flow Unchanged
+Property 6: Preservation  ReviewScreen Edit and Confirm Flow Unchanged
 
 _For any_ `PrescriptionData` where all medication names are unique, the fixed `ReviewScreen` SHALL produce identical rendered output and identical `onConfirm` payload as the original component.
 
 **Validates: Requirements 3.4, 3.7, 3.8**
 
-Property 7: Preservation — Dashboard Empty and Exact-Limit States Unchanged
+Property 7: Preservation  Dashboard Empty and Exact-Limit States Unchanged
 
 _For any_ `prescriptions` array where `prescriptions.length <= 3`, the fixed `dashboard/page.tsx` SHALL render all records with no "View all →" link; when `prescriptions.length === 0` it SHALL render `EmptyPrescriptions`.
 
@@ -202,7 +202,7 @@ _For any_ `prescriptions` array where `prescriptions.length <= 3`, the fixed `da
 
 ## Fix Implementation
 
-### Bug 1 — `components/features/hub/ActiveMedicationsStrip.tsx`
+### Bug 1  `components/features/hub/ActiveMedicationsStrip.tsx`
 
 **Specific Changes:**
 
@@ -228,13 +228,13 @@ _For any_ `prescriptions` array where `prescriptions.length <= 3`, the fixed `da
 
 ---
 
-### Bug 2 — `components/features/hub/ActiveMedicationsStrip.tsx`
+### Bug 2  `components/features/hub/ActiveMedicationsStrip.tsx`
 
 **Specific Changes:**
 
 1. **Add constant**: `const MAX_DISPLAY = 4` (module-level).
 2. **Slice before mapping**: `const displayedMeds = medications.slice(0, MAX_DISPLAY)` inside the component, then map over `displayedMeds` instead of `medications`.
-3. **Keep total count in header**: the `{medications.length} active` badge already uses the prop directly — no change needed there.
+3. **Keep total count in header**: the `{medications.length} active` badge already uses the prop directly  no change needed there.
 4. **Adjust divider logic**: the `borderBottom` condition uses `i < medications.length - 1`; update to `i < displayedMeds.length - 1`.
 5. **Add "View all" link** below the `<div className="px-4 pb-3 ...">` block:
    ```tsx
@@ -250,7 +250,7 @@ _For any_ `prescriptions` array where `prescriptions.length <= 3`, the fixed `da
 
 ---
 
-### Bug 3 — `components/features/upload/ReviewScreen.tsx`
+### Bug 3  `components/features/upload/ReviewScreen.tsx`
 
 **Specific Changes:**
 
@@ -297,7 +297,7 @@ _For any_ `prescriptions` array where `prescriptions.length <= 3`, the fixed `da
            d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
        </svg>
        <p className="flex-1 text-sm text-text-secondary">
-         <strong className="text-text-primary">"{med.name}"</strong> appears more than once — was this prescribed twice?
+         <strong className="text-text-primary">"{med.name}"</strong> appears more than once  was this prescribed twice?
        </p>
        <button
          onClick={() => removeMedication(i)}
@@ -311,7 +311,7 @@ _For any_ `prescriptions` array where `prescriptions.length <= 3`, the fixed `da
 
 ---
 
-### Bug 4 — `app/(app)/dashboard/page.tsx`
+### Bug 4  `app/(app)/dashboard/page.tsx`
 
 **Specific Changes:**
 
@@ -341,7 +341,7 @@ The testing strategy follows a two-phase approach: first, surface counterexample
 
 **Test Cases:**
 
-1. **Generic badge rendered** (Bug 1): Render `ActiveMedicationsStrip` with `medications=[{name:"Aspirin", duration:"as directed"}]`; assert the badge element with text "as directed" is present in the DOM. (Will fail on fixed code — badge should be absent.)
+1. **Generic badge rendered** (Bug 1): Render `ActiveMedicationsStrip` with `medications=[{name:"Aspirin", duration:"as directed"}]`; assert the badge element with text "as directed" is present in the DOM. (Will fail on fixed code  badge should be absent.)
 
 2. **List not capped** (Bug 2): Render `ActiveMedicationsStrip` with 6 medications; assert 6 rows are rendered and no "View all" link is present. (Will fail on fixed code.)
 
@@ -421,12 +421,12 @@ END FOR
 
 **Preservation Test Cases:**
 
-1. **Informative badge preserved**: Render with `duration="twice daily"` — badge must appear with correct text and colour.
-2. **Empty duration preserved**: Render with `duration=""` — no badge, no crash.
-3. **Exact-4 list preserved**: Render with exactly 4 medications — all 4 rows, no "View all" link.
-4. **Unique medications in ReviewScreen**: Render with 3 unique medications — no banners, confirm flow unchanged.
-5. **Exact-3 prescriptions preserved**: Render dashboard with exactly 3 prescriptions — all 3 shown, no "View all" link.
-6. **Empty prescriptions preserved**: Render dashboard with 0 prescriptions — `EmptyPrescriptions` shown.
+1. **Informative badge preserved**: Render with `duration="twice daily"`  badge must appear with correct text and colour.
+2. **Empty duration preserved**: Render with `duration=""`  no badge, no crash.
+3. **Exact-4 list preserved**: Render with exactly 4 medications  all 4 rows, no "View all" link.
+4. **Unique medications in ReviewScreen**: Render with 3 unique medications  no banners, confirm flow unchanged.
+5. **Exact-3 prescriptions preserved**: Render dashboard with exactly 3 prescriptions  all 3 shown, no "View all" link.
+6. **Empty prescriptions preserved**: Render dashboard with 0 prescriptions  `EmptyPrescriptions` shown.
 
 ---
 
@@ -434,7 +434,7 @@ END FOR
 
 - `isGenericFrequency`: test each pattern in the list, mixed case, leading/trailing whitespace, and strings that should return `false`.
 - `removeMedication`: verify it removes the correct index and leaves other entries intact.
-- `ActiveMedicationsStrip` with 0, 1, 4, 5, and 10 medications — assert row count and link presence.
+- `ActiveMedicationsStrip` with 0, 1, 4, 5, and 10 medications  assert row count and link presence.
 - `ReviewScreen` with no duplicates, one duplicate pair, two duplicate pairs, and a triplicate.
 - Dashboard prescriptions section with 0, 1, 3, 4, and 10 prescriptions.
 
@@ -448,5 +448,5 @@ END FOR
 ### Integration Tests
 
 - Full dashboard render with a profile that has 6 active medications and 5 prescriptions: assert strip shows 4 rows + "View all 6 →", prescriptions section shows 3 items + "View all →".
-- Upload flow: scan a prescription image that produces duplicate medication names; assert warning banners appear in `ReviewScreen`, remove one duplicate, confirm — assert `onConfirm` receives the deduplicated list.
+- Upload flow: scan a prescription image that produces duplicate medication names; assert warning banners appear in `ReviewScreen`, remove one duplicate, confirm  assert `onConfirm` receives the deduplicated list.
 - Verify "View all N →" in `ActiveMedicationsStrip` navigates to `/timeline`.

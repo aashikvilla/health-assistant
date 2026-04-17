@@ -58,7 +58,7 @@ function AbnormalMarkerCard({ marker, className = '' }: AbnormalMarkerCardProps)
       <div className="h-1.5 rounded-t-3xl" style={{ background: config.border }} />
 
       <div className="p-4 space-y-3">
-        {/* Header — name + status badge */}
+        {/* Header  name + status badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div
@@ -94,7 +94,7 @@ function AbnormalMarkerCard({ marker, className = '' }: AbnormalMarkerCardProps)
           </div>
         </div>
 
-        {/* Explanation — only rendered when AI text is available */}
+        {/* Explanation  only rendered when AI text is available */}
         {marker.explanation && (
           <div
             className="rounded-2xl p-3"

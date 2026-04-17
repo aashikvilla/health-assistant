@@ -2,7 +2,7 @@
 
 ---
 
-## 0. Mobile-First — Non-Negotiable
+## 0. Mobile-First  Non-Negotiable
 
 **Every component, every layout, every screen is built mobile-first.** No exceptions.
 
@@ -14,11 +14,11 @@ Write base styles for mobile (320px+), then add responsive modifiers for larger 
 // ✅ Mobile-first
 <div className="flex flex-col gap-4 p-4 sm:flex-row sm:gap-6 sm:p-6 md:p-8">
 
-// ❌ Desktop-first (reversed logic — breaks on small screens)
+// ❌ Desktop-first (reversed logic  breaks on small screens)
 <div className="flex flex-row gap-6 p-8 max-sm:flex-col max-sm:gap-4 max-sm:p-4">
 ```
 
-### Breakpoints (Tailwind defaults — mobile-first)
+### Breakpoints (Tailwind defaults  mobile-first)
 
 | Prefix | Min-width | Target |
 |--------|-----------|--------|
@@ -33,7 +33,7 @@ Write base styles for mobile (320px+), then add responsive modifiers for larger 
 Every interactive element must be at least **44×44px** (Apple HIG + WCAG 2.5.5).
 
 ```tsx
-// ✅ Use the Button component — already handles this
+// ✅ Use the Button component  already handles this
 <Button size="md">Save</Button>   // h-10 = 40px + padding → ≥44px
 
 // ✅ Icon-only buttons need explicit sizing
@@ -41,13 +41,13 @@ Every interactive element must be at least **44×44px** (Apple HIG + WCAG 2.5.5)
   <svg ... />
 </button>
 
-// ❌ Too small — impossible to tap accurately on mobile
+// ❌ Too small  impossible to tap accurately on mobile
 <button className="h-6 w-6"><svg ... /></button>
 ```
 
 ### Safe Areas (Notched phones)
 
-Use CSS env() classes for fixed bars — never hardcode bottom/top padding.
+Use CSS env() classes for fixed bars  never hardcode bottom/top padding.
 
 ```tsx
 // ✅ Fixed bottom nav
@@ -56,20 +56,20 @@ Use CSS env() classes for fixed bars — never hardcode bottom/top padding.
 // ✅ Fixed header
 <header className="fixed top-0 left-0 right-0 bg-surface border-b border-border pt-safe">
 
-// ❌ Hardcoded — breaks on iPhone with home indicator
+// ❌ Hardcoded  breaks on iPhone with home indicator
 <nav className="fixed bottom-0 pb-8">
 ```
 
 ### Text & Font Sizes
 
 ```tsx
-// ✅ Never smaller than 16px on inputs — prevents iOS zoom
+// ✅ Never smaller than 16px on inputs  prevents iOS zoom
 <input className="text-base ..." />   // text-base = 16px
 
 // ✅ Body text minimum 14px
-<p className="text-sm ...">           // text-sm = 14px — OK for secondary text
+<p className="text-sm ...">           // text-sm = 14px  OK for secondary text
 
-// ❌ Too small — causes accessibility and legibility issues
+// ❌ Too small  causes accessibility and legibility issues
 <p className="text-xs ...">primary content</p>
 ```
 
@@ -83,7 +83,7 @@ Comfortable touch spacing. Minimum 8px between interactive elements.
   <li className="flex items-center px-4 py-3 min-h-[44px]">...</li>
 </ul>
 
-// ✅ Form fields — generous spacing
+// ✅ Form fields  generous spacing
 <div className="space-y-5">
   <Input label="Email" ... />
   <Input label="Password" ... />
@@ -93,7 +93,7 @@ Comfortable touch spacing. Minimum 8px between interactive elements.
 ### Forms on Mobile
 
 ```tsx
-// ✅ Correct input types — mobile keyboard selection
+// ✅ Correct input types  mobile keyboard selection
 <input type="email"    inputMode="email"   />   // email keyboard
 <input type="tel"      inputMode="tel"     />   // number pad
 <input type="number"   inputMode="numeric" />   // numeric keyboard
@@ -108,7 +108,7 @@ Comfortable touch spacing. Minimum 8px between interactive elements.
 ### Responsive Layouts
 
 ```tsx
-// ✅ Card grid — 1 col on mobile, 2 on tablet, 3 on desktop
+// ✅ Card grid  1 col on mobile, 2 on tablet, 3 on desktop
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
 // ✅ Stack → row on larger screens
@@ -127,7 +127,7 @@ Comfortable touch spacing. Minimum 8px between interactive elements.
 For mobile: bottom navigation or hamburger menu. For desktop: sidebar or top nav.
 
 ```tsx
-// ✅ Bottom nav (mobile) — always use pb-safe
+// ✅ Bottom nav (mobile)  always use pb-safe
 <nav className="fixed bottom-0 inset-x-0 flex justify-around bg-surface border-t border-border pb-safe sm:hidden">
   {/* Mobile nav items */}
 </nav>
@@ -149,7 +149,7 @@ Purely presentational. Receive data via props. Zero dependencies on services or 
 // ✅ Correct
 function Button({ onClick, children, variant = 'primary' }) { ... }
 
-// ❌ Wrong — UI components don't fetch or call services
+// ❌ Wrong  UI components don't fetch or call services
 function Button() {
   const data = useQuery(...)  // NO
 }
@@ -159,7 +159,7 @@ function Button() {
 Receive data from the page (server component) or call hooks. Do not call services directly.
 
 ```tsx
-// ✅ Correct — page fetches, component renders
+// ✅ Correct  page fetches, component renders
 // app/dashboard/page.tsx (Server Component)
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -286,7 +286,7 @@ export async function updateProfile(_prev: unknown, formData: FormData) {
 
 ## 6. Using UI Components
 
-Always import from the barrel. Use semantic tokens — never raw Tailwind colour values.
+Always import from the barrel. Use semantic tokens  never raw Tailwind colour values.
 
 ```tsx
 // ✅
@@ -295,7 +295,7 @@ import { Button, Card, Heading } from '@/components/ui'
 <Button variant="primary">Save</Button>
 <Card variant="elevated">...</Card>
 
-// ❌ — bypasses theming
+// ❌  bypasses theming
 <button className="bg-emerald-600 text-white">Save</button>
 ```
 
@@ -319,7 +319,7 @@ import { Button, Card, Heading } from '@/components/ui'
 
 - All props typed with explicit interfaces (no `any`)
 - Service return types use `ApiResponse<T>` wrapper
-- No `as any` casts — use type guards or proper generics
+- No `as any` casts  use type guards or proper generics
 - Prefer `type` over `interface` for unions; `interface` for object shapes
 
 ---
@@ -334,12 +334,12 @@ import { redirect } from 'next/navigation'
 // 2. Third-party
 import { createBrowserClient } from '@supabase/ssr'
 
-// 3. Internal — absolute (@/)
+// 3. Internal  absolute (@/)
 import { Button } from '@/components/ui'
 import { healthService } from '@/services/health.service'
 import type { Metric } from '@/types'
 
-// 4. Relative (avoid in most cases — prefer absolute)
+// 4. Relative (avoid in most cases  prefer absolute)
 import { formatDate } from './utils'
 ```
 

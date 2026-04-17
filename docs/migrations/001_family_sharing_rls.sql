@@ -9,7 +9,7 @@
 -- any user in the same family group can view, but only the owner can mutate.
 --
 -- Tables changed: documents, document_analyses, medications, lab_values
--- (timeline_events is intentionally excluded — writes removed in app code,
+-- (timeline_events is intentionally excluded  writes removed in app code,
 --  table kept for future use; no reads need to change)
 
 -- ── documents ────────────────────────────────────────────────────────────────

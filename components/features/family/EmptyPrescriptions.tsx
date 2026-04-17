@@ -1,4 +1,4 @@
-// Server component — empty state for a profile with no prescriptions
+// Server component  empty state for a profile with no prescriptions
 
 import { Button } from '@/components/ui'
 

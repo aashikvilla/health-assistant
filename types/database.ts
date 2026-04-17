@@ -1,4 +1,4 @@
-// Auto-generated from Supabase schema — do not edit by hand.
+// Auto-generated from Supabase schema  do not edit by hand.
 // Regenerate with: supabase gen types typescript --project-id lvtfgpujbyionrinapmr
 // Or via Supabase MCP: mcp__supabase__generate_typescript_types
 

@@ -30,17 +30,17 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
   }
 
   const DOT_GRADIENTS = [
-    'linear-gradient(135deg, #1d4ed8, #7c3aed)',
-    'linear-gradient(135deg, #0d9488, #0891b2)',
-    'linear-gradient(135deg, #7c3aed, #c026d3)',
-    'linear-gradient(135deg, #d97706, #f59e0b)',
+    'linear-gradient(135deg, var(--color-primary), var(--color-violet))',
+    'linear-gradient(135deg, var(--color-teal), #0891b2)',
+    'linear-gradient(135deg, var(--color-violet), #c026d3)',
+    'linear-gradient(135deg, var(--color-warning), #f59e0b)',
   ]
   const DOT_GLOW_COLORS = ['rgba(124,58,237,.2)', 'rgba(13,148,136,.2)', 'rgba(192,38,211,.2)', 'rgba(217,119,6,.2)']
   const FREQ_COLORS = [
-    { color: '#7c3aed', bg: 'rgba(124,58,237,.1)' },
-    { color: '#0d9488', bg: 'rgba(13,148,136,.1)' },
-    { color: '#c026d3', bg: 'rgba(192,38,211,.1)' },
-    { color: '#d97706', bg: 'rgba(217,119,6,.1)' },
+    { color: 'var(--color-accent-hover)', bg: 'var(--color-accent-subtle)' },
+    { color: 'var(--color-teal)',         bg: 'var(--color-teal-subtle)' },
+    { color: '#c026d3',                   bg: 'rgba(192,38,211,.1)' },
+    { color: 'var(--color-warning)',      bg: 'var(--color-warning-subtle)' },
   ]
 
   return (
@@ -55,16 +55,11 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
       </div>
 
       <div
-        className="rounded-2xl bg-white overflow-hidden"
-        style={{ border: '1px solid rgba(124,58,237,.12)', boxShadow: '0 2px 12px rgba(29,78,216,.07)' }}
-      >
+        className="rounded-2xl bg-white overflow-hidden border border-border shadow-sm">
         {/* Card header strip */}
         <div className="px-4 pt-3 pb-1 flex items-center justify-between">
           <span className="font-display text-[13px] font-bold text-text-primary">This week</span>
-          <span
-            className="font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
-            style={{ background: 'rgba(29,78,216,.08)', color: '#1d4ed8' }}
-          >
+          <span className="font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-primary-subtle text-primary">
             {medications.length} active
           </span>
         </div>
@@ -82,7 +77,7 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
               >
                 {/* Dot with glow ring */}
                 <div
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{
                     background: dotGrad,
                     boxShadow: `0 0 0 4px ${dotGlow}`,
@@ -96,7 +91,7 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
                 </div>
                 {med.duration && !isGenericFrequency(med.duration) && (
                   <span
-                    className="font-body text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
+                    className="font-body text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0"
                     style={{ color: freq.color, background: freq.bg }}
                   >
                     {med.duration}

@@ -1,4 +1,4 @@
-# Design System — Clinical Curator Palette
+# Design System  Clinical Curator Palette
 
 > **Status: LIVE** (April 2026)
 > **Source:** Defined in `app/globals.css` `:root` block
@@ -56,7 +56,7 @@ Used for warnings, side effects, critical flags, and urgent actions. In a family
 
 #### Surface Hierarchy
 
-Stacked "sheets of paper" — multiple levels of depth using subtle tint shifts.
+Stacked "sheets of paper"  multiple levels of depth using subtle tint shifts.
 
 | Token                              | Value     | CSS Var                   | Usage                                                      |
 | ---------------------------------- | --------- | ------------------------- | ---------------------------------------------------------- |
@@ -66,7 +66,7 @@ Stacked "sheets of paper" — multiple levels of depth using subtle tint shifts.
 | `--color-surface-container-lowest` | `#ffffff` | Pure white                | Highest interactive layer (buttons, form fields, top card) |
 | `--color-surface-inverse`          | `#181c21` | Dark mode stub (not used) | For future dark mode                                       |
 
-#### Borders & Dividers (Ghost rule — no lines)
+#### Borders & Dividers (Ghost rule  no lines)
 
 Per design brief, no hard borders. Use subtle tints at 12–20% opacity only.
 
@@ -119,7 +119,7 @@ Using Tailwind's 4px default grid.
 
 ## Radius
 
-Consistent rounded corners — no sharp angles.
+Consistent rounded corners  no sharp angles.
 
 | Token           | Value          | Usage                  |
 | --------------- | -------------- | ---------------------- |
@@ -166,7 +166,7 @@ Loaded in `app/layout.tsx` via Next.js Google Fonts:
 
 ### Scale
 
-No custom scale defined — inherits Tailwind defaults. Use semantic size classes:
+No custom scale defined  inherits Tailwind defaults. Use semantic size classes:
 
 - `text-xs`: 12px (labels, small UI)
 - `text-sm`: 14px (supporting text)
@@ -198,10 +198,10 @@ Applied to sticky headers and floating surfaces. See `app/globals.css` `.glass-s
 
 For notched phones (iPhone X+) and Android with cutouts. Applied to fixed bars:
 
-- `pb-safe` — bottom padding (home indicator)
-- `pt-safe` — top padding (notch)
-- `pl-safe` — left padding
-- `pr-safe` — right padding
+- `pb-safe`  bottom padding (home indicator)
+- `pt-safe`  top padding (notch)
+- `pl-safe`  left padding
+- `pr-safe`  right padding
 
 ---
 
@@ -210,10 +210,10 @@ For notched phones (iPhone X+) and Android with cutouts. Applied to fixed bars:
 All tokens are CSS variables in `:root` (light mode only). They're registered to Tailwind via `@theme inline` in `globals.css`, so components use semantic utility classes:
 
 ```jsx
-// ✅ Correct — auto-updates when token changes
+// ✅ Correct  auto-updates when token changes
 <div className="bg-surface text-text-primary border border-border">
 
-// ❌ Wrong — hardcoded, bypasses theme
+// ❌ Wrong  hardcoded, bypasses theme
 <div className="bg-white text-gray-900 border-gray-200">
 ```
 
@@ -237,7 +237,7 @@ These should be phased out as Stage 2 migrates to Tailwind classes. See `docs/cu
 ## When Colors Change
 
 1. Open `app/globals.css`
-2. Update only the **hex values** in the `:root` block — **never rename variables**
+2. Update only the **hex values** in the `:root` block  **never rename variables**
 3. Update values in **both** the `:root` block AND the `@theme inline` block if they're both listed
 4. Restart dev server so Tailwind picks up the change
 5. No component code changes needed if semantic tokens are used correctly
@@ -248,7 +248,7 @@ These should be phased out as Stage 2 migrates to Tailwind classes. See `docs/cu
 ## Accessibility
 
 - **Contrast ratios:** All text meets WCAG AA (4.5:1 minimum)
-- **Color-only:** Never convey status via color alone — always pair with icons or labels
+- **Color-only:** Never convey status via color alone  always pair with icons or labels
 - **Reduced motion:** Transitions respect `prefers-reduced-motion` via Tailwind defaults
 
 ---

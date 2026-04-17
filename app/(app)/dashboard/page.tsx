@@ -129,11 +129,8 @@ export default async function HubPage({ searchParams }: HubPageProps) {
     <>
       <PendingUploadBanner />
 
-      {/* ── Gradient Hero — full bleed, owns its own nav ────────── */}
-      <div
-        className="-mx-4 sm:-mx-6 lg:-mx-8"
-        style={{ background: 'linear-gradient(135deg, #0f0f2d 0%, #1d4ed8 45%, #7c3aed 80%, #c026d3 100%)' }}
-      >
+      {/* ── Gradient Hero  full bleed, owns its own nav ────────── */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 gradient-hero">
         <div className="relative overflow-hidden">
           {/* Decorative radial overlays */}
           <div
@@ -142,6 +139,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
               background: 'radial-gradient(circle at 80% 15%, rgba(168,85,247,.45) 0%, transparent 55%), radial-gradient(circle at 5% 85%, rgba(29,78,216,.35) 0%, transparent 50%)',
             }}
           />
+
 
           {/* ── Top nav bar ── */}
           <div className="relative flex items-center justify-between px-5 pt-safe h-14">
@@ -156,7 +154,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
             >
               {APP_NAME}
             </span>
-            {/* Sign-out — hidden on desktop where AppDrawerNav's hamburger takes over */}
+            {/* Sign-out  hidden on desktop where AppDrawerNav's hamburger takes over */}
             <form action={signOut} className="sm:hidden">
               <button
                 type="submit"
@@ -182,9 +180,8 @@ export default async function HubPage({ searchParams }: HubPageProps) {
               </h1>
             </div>
             <div
-              className="w-14 h-14 rounded-full flex items-center justify-center font-display text-xl font-extrabold text-white flex-shrink-0 mb-1"
+              className="w-14 h-14 rounded-full flex items-center justify-center font-display text-xl font-extrabold text-white shrink-0 mb-1 gradient-brand"
               style={{
-                background: 'linear-gradient(135deg, #c026d3, #7c3aed)',
                 border: '2.5px solid rgba(255,255,255,.35)',
                 boxShadow: '0 4px 20px rgba(0,0,0,.3)',
               }}
@@ -218,26 +215,18 @@ export default async function HubPage({ searchParams }: HubPageProps) {
         </div>
       </div>
 
-      {/* ── White content sheet — overlaps gradient, full-bleed, px-5 matches hero ── */}
+      {/* ── White content sheet  overlaps gradient, full-bleed, px-5 matches hero ── */}
       {/* -mt-6 pulls the sheet up over the gradient's pb-10, creating a smooth overlap */}
       <div
-        className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 relative z-10"
+        className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 relative z-10 bg-surface rounded-[28px_28px_0_0]"
         style={{
-          background: '#f7f9ff',
-          borderRadius: '28px 28px 0 0',
           boxShadow: '0 -4px 24px rgba(29,78,216,.12)',
         }}
       >
         <div className="px-5 pt-5 pb-6 flex flex-col gap-5">
 
           {/* ── Family profiles ────────────────────────────────────── */}
-          <div
-            className="rounded-2xl bg-white px-4 pt-4 pb-3"
-            style={{
-              border: '1px solid rgba(124,58,237,.12)',
-              boxShadow: '0 2px 16px rgba(29,78,216,.08)',
-            }}
-          >
+          <div className="rounded-2xl bg-white px-4 pt-4 pb-3 border border-border shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <span className="font-display text-[11px] font-bold text-text-muted uppercase tracking-widest">Family</span>
             </div>

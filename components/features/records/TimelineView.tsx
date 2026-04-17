@@ -100,7 +100,7 @@ export function TimelineView({ documents, profiles }: TimelineViewProps) {
 
   const chipStyle = (active: boolean) =>
     active
-      ? { background: 'linear-gradient(135deg, #1d4ed8, #7c3aed)', border: '1px solid transparent', boxShadow: '0 2px 10px rgba(124,58,237,.3)' }
+      ? { background: 'linear-gradient(135deg, var(--color-primary), var(--color-violet))', border: '1px solid transparent', boxShadow: '0 2px 10px rgba(124,58,237,.3)' }
       : { border: '1px solid rgba(124,58,237,.15)', background: '#fff' }
 
   const SORT_OPTIONS: { key: 'newest_first' | 'oldest_first' | 'by_type'; label: string }[] = [
@@ -173,9 +173,7 @@ export function TimelineView({ documents, profiles }: TimelineViewProps) {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
           <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center"
-            style={{ background: 'rgba(124,58,237,.08)', border: '1px solid rgba(124,58,237,.12)' }}
-          >
+            className="w-16 h-16 rounded-2xl flex items-center justify-center bg-accent-subtle border border-border">
             <svg className="w-6 h-6 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

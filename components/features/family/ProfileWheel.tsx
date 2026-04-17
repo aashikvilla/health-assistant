@@ -1,4 +1,4 @@
-// Server component — receives data as props, no fetching
+// Server component  receives data as props, no fetching
 
 import { ProfileChip }    from '@/components/features/family/ProfileChip'
 import { AddProfileChip } from '@/components/features/family/AddProfileChip'
@@ -9,7 +9,7 @@ const MAX_PROFILES = 5
 interface ProfileWheelProps {
   profiles:        FamilyProfile[]
   activeProfileId: string
-  baseHref:        string   // e.g. '/dashboard' — ?profile=id appended per chip
+  baseHref:        string   // e.g. '/dashboard'  ?profile=id appended per chip
 }
 
 export function ProfileWheel({ profiles, activeProfileId, baseHref }: ProfileWheelProps) {

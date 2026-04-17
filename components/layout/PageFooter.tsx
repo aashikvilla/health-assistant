@@ -8,7 +8,7 @@ import { APP_NAME } from '@/constants'
  *
  * Mobile: stacked 1-col → sm: 2-col → lg: full 5-col grid.
  *
- * NOT used inside authenticated routes — BottomNav handles navigation there.
+ * NOT used inside authenticated routes  BottomNav handles navigation there.
  */
 
 interface PageFooterProps {
@@ -23,7 +23,7 @@ export function PageFooter({ showLinks = true }: PageFooterProps) {
     return (
       <footer className="mt-auto border-t border-border-subtle bg-surface">
         <div className="px-4 sm:px-6 lg:px-8 py-6 text-center text-xs text-text-muted">
-          <p>&copy; {year} {APP_NAME} — Family prescription manager</p>
+          <p>&copy; {year} {APP_NAME}  Family prescription manager</p>
         </div>
       </footer>
     )

@@ -1,5 +1,5 @@
 /**
- * (auth) Route Group Layout — isolated authentication pages
+ * (auth) Route Group Layout  isolated authentication pages
  *
  * Provides minimal layout for authentication flows:
  * - Only Vitae logo (linking to homepage)

@@ -1,8 +1,8 @@
 /**
  * Rate limiting configuration.
  *
- * RATE_LIMIT_MAX     — max requests per window per IP (default: 200)
- * RATE_LIMIT_WINDOW  — window duration in seconds (default: 3600 = 1 hour)
+ * RATE_LIMIT_MAX      max requests per window per IP (default: 200)
+ * RATE_LIMIT_WINDOW   window duration in seconds (default: 3600 = 1 hour)
  *
  * Override in environment:
  *   RATE_LIMIT_MAX=500

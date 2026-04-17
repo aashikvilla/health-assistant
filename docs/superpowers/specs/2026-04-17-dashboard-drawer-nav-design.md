@@ -1,4 +1,4 @@
-# Dashboard Drawer Nav — Design Spec
+# Dashboard Drawer Nav  Design Spec
 **Date:** 2026-04-17
 **Status:** Approved
 
@@ -16,7 +16,7 @@ Add desktop navigation that mirrors the mobile tab bar's scope, without disrupti
 
 ## Solution: Hamburger Drawer (Option A)
 
-The drawer is available on **all primary app pages** (dashboard, timeline, settings) — not just dashboard.
+The drawer is available on **all primary app pages** (dashboard, timeline, settings)  not just dashboard.
 
 ### Breakpoint split
 
@@ -28,7 +28,7 @@ The drawer is available on **all primary app pages** (dashboard, timeline, setti
 ### Hamburger button (desktop only)
 
 - Rendered by `AppDrawerNav` in `(app)/layout.tsx` as a **fixed** element: `hidden sm:flex fixed top-3 right-5 z-50`
-- Same visual style as the current sign-out button: `rgba(255,255,255,.15)` bg, white border, `w-9 h-9` rounded — looks native inside any gradient hero
+- Same visual style as the current sign-out button: `rgba(255,255,255,.15)` bg, white border, `w-9 h-9` rounded  looks native inside any gradient hero
 - Three white lines (standard hamburger)
 - Each page's existing sign-out button gets `sm:hidden` so only one appears at a time
 
@@ -44,25 +44,25 @@ The drawer is available on **all primary app pages** (dashboard, timeline, setti
 
 ### Drawer contents (top to bottom)
 
-1. **Header strip** — "Menu" label in muted uppercase, close `×` button top-right
-2. **Nav items** — same 3 as BottomNav, in order:
+1. **Header strip**  "Menu" label in muted uppercase, close `×` button top-right
+2. **Nav items**  same 3 as BottomNav, in order:
    - Home → `/dashboard`
    - Timeline → `/timeline`
    - Profile → `/settings`
    - Each item: icon (matching BottomNav icons) + label, active state uses `text-primary bg-primary-subtle border-l-2 border-primary`
 3. **Divider**
-4. **Sign out** — red text, sign-out icon, triggers existing `signOut` server action
+4. **Sign out**  red text, sign-out icon, triggers existing `signOut` server action
 
 ### Active state detection
 
-Uses `usePathname()` (already used in BottomNav) — exact match on `/dashboard`, `/timeline`, `/settings`.
+Uses `usePathname()` (already used in BottomNav)  exact match on `/dashboard`, `/timeline`, `/settings`.
 
 ---
 
 ## Component
 
 **File:** `components/layout/AppDrawerNav.tsx`
-- `'use client'` — needs `useState`, `usePathname`, `useEffect` (Escape listener)
+- `'use client'`  needs `useState`, `usePathname`, `useEffect` (Escape listener)
 - Props: none (self-contained; calls `signOut` action directly)
 - Renders both the fixed hamburger button AND the drawer panel/backdrop
 - Exports: `AppDrawerNav` (named)
@@ -82,26 +82,26 @@ Add `<AppDrawerNav />` alongside `<BottomNav />` inside `PageLayout`. It renders
 
 All three primary pages have a sign-out button in their gradient hero top-right. Each gets wrapped in `sm:hidden`:
 
-- `app/(app)/dashboard/page.tsx` — wrap sign-out `<form>` in `<div className="sm:hidden">`
-- `app/(app)/timeline/page.tsx` — wrap sign-out element in `<div className="sm:hidden">`
-- `app/(app)/settings/page.tsx` — wrap sign-out element in `<div className="sm:hidden">`
+- `app/(app)/dashboard/page.tsx`  wrap sign-out `<form>` in `<div className="sm:hidden">`
+- `app/(app)/timeline/page.tsx`  wrap sign-out element in `<div className="sm:hidden">`
+- `app/(app)/settings/page.tsx`  wrap sign-out element in `<div className="sm:hidden">`
 
-No other changes to any page. Family section, content sheets — all untouched.
+No other changes to any page. Family section, content sheets  all untouched.
 
 ---
 
 ## What is NOT changing
 
-- `BottomNav` component — zero changes
+- `BottomNav` component  zero changes
 - Family section in the dashboard content sheet
 - Mobile layout and behaviour
-- Sub-routes (upload, add-member, records, etc.) — no nav shown there by design
+- Sub-routes (upload, add-member, records, etc.)  no nav shown there by design
 
 ---
 
 ## Verification
 
-1. At `< 640px`: sign-out icon visible in each hero, hamburger absent, bottom tab bar present — all unchanged
+1. At `< 640px`: sign-out icon visible in each hero, hamburger absent, bottom tab bar present  all unchanged
 2. At `≥ 640px` on `/dashboard`, `/timeline`, `/settings`: fixed hamburger visible top-right, sign-out icon hidden, bottom tab bar hidden
 3. Click hamburger → drawer slides in from right with blurred backdrop
 4. Click backdrop or press Escape → drawer closes

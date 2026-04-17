@@ -25,7 +25,7 @@ function buildPrompt(report: LabReportData): string {
 Lab Report:
 ${JSON.stringify(report, null, 2)}
 
-Return ONLY valid JSON — no markdown, no code fences:
+Return ONLY valid JSON  no markdown, no code fences:
 {
   "patientName": string,
   "labName": string,
@@ -47,8 +47,8 @@ Return ONLY valid JSON — no markdown, no code fences:
 
 Rules:
 - ONLY include markers where status is "low", "high", or "critical". Do NOT include normal markers.
-- If ALL markers are normal, return an empty abnormalMarkers array and a single doctorNote saying "All your results are within normal range — great news!"
-- Never diagnose. Say "this may suggest..." or "this marker is linked to..." — never "you have..."
+- If ALL markers are normal, return an empty abnormalMarkers array and a single doctorNote saying "All your results are within normal range  great news!"
+- Never diagnose. Say "this may suggest..." or "this marker is linked to..."  never "you have..."
 - Be reassuring in tone. Most abnormal values are mildly off and manageable.
 - Give India-relevant context in doctorNotes where useful (e.g., dietary tips with Indian foods, sunlight advice).
 - doctorNotes should be specific to the abnormal findings, not generic.`

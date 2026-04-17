@@ -1,7 +1,7 @@
 # Design System Document
  
 ## 1. Overview & Creative North Star: "The Clinical Curator"
-The objective of this design system is to transcend the generic "medical app" aesthetic. We are building **The Clinical Curator**—a visual identity that combines the rigorous precision of a laboratory with the warm, approachable high-touch experience of a premium boutique. 
+The objective of this design system is to transcend the generic "medical app" aesthetic. We are building **The Clinical Curator**a visual identity that combines the rigorous precision of a laboratory with the warm, approachable high-touch experience of a premium boutique. 
  
 We break the "template" look through **Intentional Asymmetry**. By utilizing overlapping elements (e.g., product illustrations breaking the boundaries of their background containers) and high-contrast typography scales, we create a layout that feels editorial rather than industrial. This system prioritizes breathing room, allowing complex medical data to feel organized, manageable, and sophisticated.
  
@@ -21,7 +21,7 @@ Our palette leverages vibrant healthcare tones balanced against a sophisticated 
 **Designers are prohibited from using 1px solid borders for sectioning.** Boundaries must be defined solely through background color shifts or subtle tonal transitions. For example, a `surface-container-low` section should sit directly on a `surface` background to define its territory. 
  
 ### Surface Hierarchy & Nesting
-Treat the UI as a series of physical layers—like stacked sheets of fine paper. 
+Treat the UI as a series of physical layerslike stacked sheets of fine paper. 
 *   **Base:** `surface` (`#f7f9ff`)
 *   **Secondary Level:** `surface-container-low` (`#f1f4fa`) for grouping related content.
 *   **Action Level:** `surface-container-lowest` (`#ffffff`) for interactive cards that need to "pop" against the background.
@@ -68,7 +68,7 @@ Traditional drop shadows are often too "muddy" for clean healthcare UI. We use *
  
 ### Custom Health Illustrations
 *   **Style:** Minimalist line art with "floating" spot colors (Teal for humans, Pink for pets).
-*   **Context:** Illustrations for Lab Tests, Prescriptions, and Reminders should use the "breaking the container" technique—letting parts of the graphic bleed outside the rounded card boundaries to emphasize the asymmetrical, high-end look.
+*   **Context:** Illustrations for Lab Tests, Prescriptions, and Reminders should use the "breaking the container" techniqueletting parts of the graphic bleed outside the rounded card boundaries to emphasize the asymmetrical, high-end look.
  
 ### Input Fields
 *   Use `surface-container-low` for the input track.

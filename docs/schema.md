@@ -1,4 +1,4 @@
-# Vitae — Database Schema Reference
+# Vitae  Database Schema Reference
 
 > **Last updated:** 2026-04-12
 > Source of truth for all Supabase tables, column shapes, and RLS policies.
@@ -64,14 +64,14 @@ Boundary of "who sees what". All profiles in a group are visible to all accounts
 
 ### `family_profiles`
 
-One row per family member. Health-focused — not an auth user.
+One row per family member. Health-focused  not an auth user.
 
 | Column                      | Type          | Notes                                |
 | --------------------------- | ------------- | ------------------------------------ |
 | `id`                        | uuid PK       |                                      |
 | `family_group_id`           | uuid NOT NULL | FK → family_groups                   |
 | `full_name`                 | text NOT NULL |                                      |
-| `email`                     | text          | Optional — used for account claiming |
+| `email`                     | text          | Optional  used for account claiming |
 | `date_of_birth`             | date          |                                      |
 | `gender`                    | text          |                                      |
 | `blood_group`               | text          |                                      |
@@ -88,7 +88,7 @@ One row per family member. Health-focused — not an auth user.
 **RLS** (SELECT extra): also visible if `email = auth.jwt()->>'email'` (for claiming before membership exists)
 **RLS** (INSERT): any authenticated user
 
-**Trigger**: `trg_auto_add_family_memberships` — after INSERT, creates `'other'` memberships for all existing group members.
+**Trigger**: `trg_auto_add_family_memberships`  after INSERT, creates `'other'` memberships for all existing group members.
 
 ---
 
@@ -181,7 +181,7 @@ Denormalized summary index used by hub list views. Created alongside a `document
 | `created_at`        | timestamptz   |                      |
 
 > ⚠ **Gap**: `documentsService.createFromExtraction` does NOT write to this table.
-> The hub's `getProfilePrescriptions()` queries this table — it will always return empty
+> The hub's `getProfilePrescriptions()` queries this table  it will always return empty
 > until the write path is fixed. See Feature 4 (Records) in `docs/plan.md`.
 
 **RLS**: EXISTS check via `family_profiles` → `profile_memberships`
@@ -211,7 +211,7 @@ Active medication records, enriched from prescription analyses. Enables reminder
 | `source_document_id`        | uuid          | FK → documents                                      |
 | `created_at` / `updated_at` | timestamptz   |                                                     |
 
-**RLS**: ⚠ Currently `user_id = auth.uid()` — needs updating to family membership. See plan.
+**RLS**: ⚠ Currently `user_id = auth.uid()`  needs updating to family membership. See plan.
 
 ---
 
@@ -230,7 +230,7 @@ Taken / skipped / snoozed events per medication dose.
 | `notes`          | text                 |                                   |
 | `created_at`     | timestamptz          |                                   |
 
-**RLS**: `user_id = auth.uid()` (personal action log — correct, not family-scoped)
+**RLS**: `user_id = auth.uid()` (personal action log  correct, not family-scoped)
 
 ---
 
@@ -254,7 +254,7 @@ Normalised numeric lab results. One row per test per report.
 | `test_date`            | date NOT NULL    |                                    |
 | `created_at`           | timestamptz      |                                    |
 
-**RLS**: ⚠ `user_id = auth.uid()` — needs updating to family membership. See plan.
+**RLS**: ⚠ `user_id = auth.uid()`  needs updating to family membership. See plan.
 
 ---
 
@@ -277,7 +277,7 @@ Ordered stream of health events (document uploads, medications, reminders).
 | `metadata`             | jsonb         | Arbitrary event payload                                      |
 | `created_at`           | timestamptz   |                                                              |
 
-**RLS**: ⚠ `user_id = auth.uid()` — needs updating to family membership. See plan.
+**RLS**: ⚠ `user_id = auth.uid()`  needs updating to family membership. See plan.
 
 ---
 
@@ -289,7 +289,7 @@ In-app and push notification queue.
 | --------------- | ------------- | ------------------------------------------------- |
 | `id`            | uuid PK       |                                                   |
 | `user_id`       | uuid NOT NULL | Recipient account                                 |
-| `profile_id`    | uuid          | Optional — which profile this is about            |
+| `profile_id`    | uuid          | Optional  which profile this is about            |
 | `type`          | text NOT NULL | `'medication_reminder'│'lab_alert'│'refill_due'`… |
 | `title`         | text NOT NULL |                                                   |
 | `body`          | text NOT NULL |                                                   |
@@ -300,7 +300,7 @@ In-app and push notification queue.
 | `channel`       | text          | `'push'│'in_app'` Default: `'push'`               |
 | `created_at`    | timestamptz   |                                                   |
 
-**RLS**: `user_id = auth.uid()` (correct — per-account)
+**RLS**: `user_id = auth.uid()` (correct  per-account)
 
 ---
 
@@ -342,7 +342,7 @@ Scheduled checkup / vaccination / screening reminders.
 | `linked_document_id` | uuid          | FK → documents                         |
 | `created_at`         | timestamptz   |                                        |
 
-**RLS**: ⚠ `user_id = auth.uid()` — needs updating to family membership. See plan.
+**RLS**: ⚠ `user_id = auth.uid()`  needs updating to family membership. See plan.
 
 ---
 

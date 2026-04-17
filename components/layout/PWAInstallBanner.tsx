@@ -46,7 +46,7 @@ export function PWAInstallBanner() {
       return () => window.removeEventListener("beforeinstallprompt", handler);
     }
 
-    // iOS — no beforeinstallprompt, show manual instructions
+    // iOS  no beforeinstallprompt, show manual instructions
     if (detected === "ios") {
       const timer = setTimeout(() => setShow(true), 3000);
       return () => clearTimeout(timer);
@@ -100,7 +100,7 @@ export function PWAInstallBanner() {
               Install Vitae
             </p>
             <p className="text-sm text-text-secondary mt-0.5">
-              Add to your home screen for the best experience — works offline
+              Add to your home screen for the best experience  works offline
               too.
             </p>
           </div>

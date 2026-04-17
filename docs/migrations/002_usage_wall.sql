@@ -1,5 +1,5 @@
 -- ============================================================
--- 002 — Usage Wall
+-- 002  Usage Wall
 -- Tracks per-user upload counts and blocks abusive accounts.
 -- Increments are handled via SECURITY DEFINER functions to
 -- prevent clients from directly manipulating counters.

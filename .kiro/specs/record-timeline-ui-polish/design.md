@@ -1,14 +1,14 @@
-# Design Document — `record-timeline-ui-polish`
+# Design Document  `record-timeline-ui-polish`
 
 ## Overview
 
 This feature delivers a focused UI/UX polish pass across two pages in the Vitae Next.js health assistant app:
 
-1. **`/records/[id]` — Record Detail page**: Correct profile name display, dynamic nav titles, compact AI disclaimer badge, medication name normalisation, removal of upload-flow artefacts, an upgraded document link, a WhatsApp share preview modal with viral attribution, and a two-column desktop layout for prescriptions.
+1. **`/records/[id]`  Record Detail page**: Correct profile name display, dynamic nav titles, compact AI disclaimer badge, medication name normalisation, removal of upload-flow artefacts, an upgraded document link, a WhatsApp share preview modal with viral attribution, and a two-column desktop layout for prescriptions.
 
-2. **`/timeline` — Timeline page**: Name casing normalisation, labelled filter chip rows, first-name-only chips on mobile, medication count badges, year-prominent date grouping, a non-empty-state CTA, client-side search, and a sort control.
+2. **`/timeline`  Timeline page**: Name casing normalisation, labelled filter chip rows, first-name-only chips on mobile, medication count badges, year-prominent date grouping, a non-empty-state CTA, client-side search, and a sort control.
 
-All changes are confined to the component and service layers. No database schema changes are required — `medication_count` is derived from the `medications_found` JSONB array already fetched via join.
+All changes are confined to the component and service layers. No database schema changes are required  `medication_count` is derived from the `medications_found` JSONB array already fetched via join.
 
 ---
 
@@ -21,24 +21,24 @@ The app uses Next.js 14 App Router with a clear server/client component split:
 - **Services** (`services/records.service.ts`) encapsulate Supabase queries.
 - **Utilities** (`lib/utils/string.ts`) provide pure, reusable string transformations.
 
-The changes in this feature follow the existing patterns exactly — no new architectural patterns are introduced.
+The changes in this feature follow the existing patterns exactly  no new architectural patterns are introduced.
 
 ```
-app/(app)/records/[id]/page.tsx   (server — adds isOwnProfile derivation)
+app/(app)/records/[id]/page.tsx   (server  adds isOwnProfile derivation)
         │
-        └─► DocumentDetail.tsx    (server — dynamic nav title, compact badge, 2-col layout)
+        └─► DocumentDetail.tsx    (server  dynamic nav title, compact badge, 2-col layout)
                 │
-                ├─► MedicationCard.tsx   (client — strips prefixes via stripMedicationPrefix)
-                └─► ShareButton.tsx      (client — preview modal, viral attribution)
-                        └─► SharePreviewModal.tsx  (client — new component)
+                ├─► MedicationCard.tsx   (client  strips prefixes via stripMedicationPrefix)
+                └─► ShareButton.tsx      (client  preview modal, viral attribution)
+                        └─► SharePreviewModal.tsx  (client  new component)
 
 app/(app)/timeline/page.tsx
         │
-        └─► TimelineView.tsx      (client — search, sort, year grouping, labelled chips, CTA)
-                └─► RecordCard.tsx  (client — medication count badge)
+        └─► TimelineView.tsx      (client  search, sort, year grouping, labelled chips, CTA)
+                └─► RecordCard.tsx  (client  medication count badge)
 
 services/records.service.ts       (adds medication_count to TimelineDocument)
-lib/utils/string.ts               (new — toTitleCase, stripMedicationPrefix)
+lib/utils/string.ts               (new  toTitleCase, stripMedicationPrefix)
 ```
 
 ---
@@ -66,7 +66,7 @@ export function stripMedicationPrefix(name: string): string
 // Implementation: name.replace(/^(tab|cap|syr|inj)\.\s*/i, '')
 ```
 
-### `services/records.service.ts` — `TimelineDocument` interface change
+### `services/records.service.ts`  `TimelineDocument` interface change
 
 Add `medication_count: number | null` to the existing interface:
 
@@ -101,9 +101,9 @@ medication_count: (() => {
 })(),
 ```
 
-No new DB query is needed — `medications_found` is already in the joined `document_analyses` row.
+No new DB query is needed  `medications_found` is already in the joined `document_analyses` row.
 
-### `app/(app)/records/[id]/page.tsx` — `isOwnProfile` derivation
+### `app/(app)/records/[id]/page.tsx`  `isOwnProfile` derivation
 
 Add one line after the existing `profile` lookup:
 
@@ -122,7 +122,7 @@ Pass it to `DocumentDetail`:
 />
 ```
 
-### `components/features/records/DocumentDetail.tsx` — prop changes
+### `components/features/records/DocumentDetail.tsx`  prop changes
 
 Updated `DocumentDetailProps`:
 
@@ -143,19 +143,19 @@ const navTitle = isOwnProfile
   : `${profileName || 'Family Member'}'s ${docTypeLabel}`
 ```
 
-**CompactDisclaimerBadge** — replaces `<DisclaimerBanner>` inside `DocumentDetail` only:
+**CompactDisclaimerBadge**  replaces `<DisclaimerBanner>` inside `DocumentDetail` only:
 
 ```tsx
 {hasAI && (
   <Badge variant="warning" dot>
-    AI-generated summary — consult your doctor
+    AI-generated summary  consult your doctor
   </Badge>
 )}
 ```
 
 `DisclaimerBanner` itself is unchanged and continues to be used in `ReviewScreen` and `LabReportReviewScreen`.
 
-**DocumentLink** — receives `documentType` prop and renders type-specific CTA text:
+**DocumentLink**  receives `documentType` prop and renders type-specific CTA text:
 
 ```tsx
 function DocumentLink({
@@ -187,7 +187,7 @@ function DocumentLink({
 
 Lab reports remain single-column at all widths.
 
-### `components/features/explanation/MedicationCard.tsx` — prefix stripping
+### `components/features/explanation/MedicationCard.tsx`  prefix stripping
 
 Import `stripMedicationPrefix` from `lib/utils/string` and apply it before rendering:
 
@@ -225,10 +225,10 @@ interface SharePreviewModalProps {
 - Focus trap: focus moves to the modal container on mount via `useEffect` + `ref.current?.focus()`
 
 **Buttons:**
-- "Cancel" — `<Button variant="secondary">` calls `onCancel`
-- "Share on WhatsApp" — `<button className="... bg-[#25D366] text-white ...">` calls `onConfirm`
+- "Cancel"  `<Button variant="secondary">` calls `onCancel`
+- "Share on WhatsApp"  `<button className="... bg-[#25D366] text-white ...">` calls `onConfirm`
 
-### `components/features/share/ShareButton.tsx` — preview modal + viral attribution
+### `components/features/share/ShareButton.tsx`  preview modal + viral attribution
 
 **State addition:**
 
@@ -236,15 +236,15 @@ interface SharePreviewModalProps {
 const [showPreview, setShowPreview] = useState(false)
 ```
 
-**`buildSummaryText` change** — append viral attribution after the disclaimer line:
+**`buildSummaryText` change**  append viral attribution after the disclaimer line:
 
 ```ts
 lines.push('⚠️ AI-generated summary. Consult your doctor before making any changes.')
 lines.push('')
-lines.push('Shared via Vitae — upload yours at vitae.health')  // ← new
+lines.push('Shared via Vitae  upload yours at vitae.health')  // ← new
 ```
 
-**`handleShare` change** — sets `showPreview = true` instead of opening WhatsApp directly:
+**`handleShare` change**  sets `showPreview = true` instead of opening WhatsApp directly:
 
 ```ts
 function handleShare() {
@@ -258,7 +258,7 @@ function handleConfirm() {
 }
 ```
 
-**Render** — conditionally render `SharePreviewModal`:
+**Render**  conditionally render `SharePreviewModal`:
 
 ```tsx
 {showPreview && (
@@ -270,7 +270,7 @@ function handleConfirm() {
 )}
 ```
 
-### `components/features/records/TimelineView.tsx` — search, sort, year grouping, labelled chips, CTA
+### `components/features/records/TimelineView.tsx`  search, sort, year grouping, labelled chips, CTA
 
 **New state:**
 
@@ -348,7 +348,7 @@ Rendering logic:
 </div>
 ```
 
-**First-name-only on mobile** — use responsive Tailwind classes on chip text:
+**First-name-only on mobile**  use responsive Tailwind classes on chip text:
 
 ```tsx
 <button ...>
@@ -357,7 +357,7 @@ Rendering logic:
 </button>
 ```
 
-**Sort control** — segmented control using the existing `CHIP_BASE` pattern:
+**Sort control**  segmented control using the existing `CHIP_BASE` pattern:
 
 ```tsx
 <div className="flex items-center gap-2" aria-label="Sort records">
@@ -397,7 +397,7 @@ Rendering logic:
 )}
 ```
 
-### `components/features/records/RecordCard.tsx` — medication count badge
+### `components/features/records/RecordCard.tsx`  medication count badge
 
 ```tsx
 {isPrescription && record.medication_count != null && record.medication_count > 0 && (
@@ -477,7 +477,7 @@ interface SharePreviewModalProps {
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system — essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+*A property is a characteristic or behavior that should hold true across all valid executions of a system  essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
 ### Property 1: `toTitleCase` produces title-cased words
 
@@ -505,7 +505,7 @@ interface SharePreviewModalProps {
 
 ### Property 4: `buildSummaryText` always ends with the viral attribution line
 
-*For any* valid combination of `doctorName`, `patientName`, `date`, `medications`, and `doctorNotes`, the output of `buildSummaryText` must end with the line `"Shared via Vitae — upload yours at vitae.health"`.
+*For any* valid combination of `doctorName`, `patientName`, `date`, `medications`, and `doctorNotes`, the output of `buildSummaryText` must end with the line `"Shared via Vitae  upload yours at vitae.health"`.
 
 **Validates: Requirements 8.1**
 
@@ -513,7 +513,7 @@ interface SharePreviewModalProps {
 
 ### Property 5: Viral attribution line appears after the disclaimer line
 
-*For any* valid share inputs, the index of `"Shared via Vitae — upload yours at vitae.health"` in the `buildSummaryText` output must be greater than the index of the disclaimer line `"⚠️ AI-generated summary"`.
+*For any* valid share inputs, the index of `"Shared via Vitae  upload yours at vitae.health"` in the `buildSummaryText` output must be greater than the index of the disclaimer line `"⚠️ AI-generated summary"`.
 
 **Validates: Requirements 8.2**
 
@@ -619,7 +619,7 @@ interface SharePreviewModalProps {
 
 ### `toTitleCase` and `stripMedicationPrefix`
 
-Both functions are pure and total — they handle all inputs without throwing:
+Both functions are pure and total  they handle all inputs without throwing:
 - `toTitleCase(null)` and `toTitleCase(undefined)` return `''`
 - `toTitleCase('')` returns `''`
 - `stripMedicationPrefix('')` returns `''`
@@ -637,7 +637,7 @@ const medication_count =
     : null
 ```
 
-### `SharePreviewModal` — Escape key listener cleanup
+### `SharePreviewModal`  Escape key listener cleanup
 
 The `useEffect` that registers the Escape key listener must return a cleanup function to remove the listener when the component unmounts, preventing memory leaks:
 
@@ -729,7 +729,7 @@ Unit tests cover specific examples, edge cases, and error conditions. They are t
 
 Property-based tests use [fast-check](https://github.com/dubzzz/fast-check) (TypeScript-native, no additional setup required in a Next.js project). Each test runs a minimum of 100 iterations.
 
-**`lib/utils/string.ts` — `toTitleCase`**
+**`lib/utils/string.ts`  `toTitleCase`**
 
 ```
 // Feature: record-timeline-ui-polish, Property 1: toTitleCase produces title-cased words
@@ -742,14 +742,14 @@ fc.property(fc.string(), (s) => {
 })
 ```
 
-**`lib/utils/string.ts` — `stripMedicationPrefix`**
+**`lib/utils/string.ts`  `stripMedicationPrefix`**
 
 ```
 // Feature: record-timeline-ui-polish, Property 2: stripMedicationPrefix removes known prefixes
 // Feature: record-timeline-ui-polish, Property 3: stripMedicationPrefix is identity for names without prefixes
 ```
 
-**`components/features/share/ShareButton.tsx` — `buildSummaryText`**
+**`components/features/share/ShareButton.tsx`  `buildSummaryText`**
 
 ```
 // Feature: record-timeline-ui-polish, Property 4: buildSummaryText always ends with viral attribution
@@ -757,7 +757,7 @@ fc.property(fc.string(), (s) => {
 // Feature: record-timeline-ui-polish, Property 6: Opening line contains patient name
 ```
 
-**`components/features/records/TimelineView.tsx` — filter and sort logic**
+**`components/features/records/TimelineView.tsx`  filter and sort logic**
 
 ```
 // Feature: record-timeline-ui-polish, Property 8: Search filter returns only matching documents
@@ -784,6 +784,6 @@ fc.property(fc.string(), (s) => {
 
 ### Integration / Smoke Tests
 
-- **Req 5 (progress dots)**: Code review confirms `app/(app)/layout.tsx` and `app/(app)/dashboard/layout.tsx` contain no stepper or progress component. The upload-flow progress UI lives entirely within `app/(app)/dashboard/upload/[profileId]/page.tsx` as local state — it is not in any shared layout. No code change is needed; this is verified by inspection.
+- **Req 5 (progress dots)**: Code review confirms `app/(app)/layout.tsx` and `app/(app)/dashboard/layout.tsx` contain no stepper or progress component. The upload-flow progress UI lives entirely within `app/(app)/dashboard/upload/[profileId]/page.tsx` as local state  it is not in any shared layout. No code change is needed; this is verified by inspection.
 - **Responsive layout**: Manual visual review at 375 px (mobile) and 1280 px (desktop) for the two-column prescription layout, bottom-sheet modal, and first-name chip truncation.
 - **`medication_count` derivation**: Integration test against a seeded Supabase test database verifying that `getAllDocumentsForUser` returns the correct `medication_count` for prescriptions with known `medications_found` arrays.

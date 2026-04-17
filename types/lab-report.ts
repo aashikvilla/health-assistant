@@ -21,7 +21,7 @@ export interface LabReportData {
   tests: LabTest[]
 }
 
-/** A single out-of-range marker with AI explanation — returned by /api/analyse */
+/** A single out-of-range marker with AI explanation  returned by /api/analyse */
 export interface AbnormalMarker {
   id: string
   name: string
@@ -32,7 +32,7 @@ export interface AbnormalMarker {
   explanation: string
 }
 
-/** AI analysis of a lab report — only out-of-range markers + doctor notes */
+/** AI analysis of a lab report  only out-of-range markers + doctor notes */
 export interface LabReportExplanation {
   patientName: string
   labName: string

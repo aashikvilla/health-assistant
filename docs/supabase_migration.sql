@@ -1,5 +1,5 @@
 -- ============================================================
--- MEDASSIST AI — Complete Database Migration
+-- MEDASSIST AI  Complete Database Migration
 -- ============================================================
 
 -- Enable necessary extensions
@@ -253,10 +253,10 @@ ALTER TABLE shared_links ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage own shared links" ON shared_links
   FOR ALL USING (auth.uid() = user_id);
 
--- Public token lookup via RPC only — no direct table SELECT for anonymous users.
+-- Public token lookup via RPC only  no direct table SELECT for anonymous users.
 -- Use get_shared_link(token) function below instead of exposing table rows.
 
--- RPC: safe public lookup by token — returns nothing if expired/revoked
+-- RPC: safe public lookup by token  returns nothing if expired/revoked
 CREATE OR REPLACE FUNCTION get_shared_link(token text)
 RETURNS SETOF shared_links
 LANGUAGE sql STABLE SECURITY DEFINER

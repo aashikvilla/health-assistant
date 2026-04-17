@@ -42,7 +42,7 @@ function buildSummaryText({
     lines.push('*Medications:*')
     lines.push('')
     for (const med of medications) {
-      lines.push(`💊 *${med.name}* — ${med.dosage}`)
+      lines.push(`💊 *${med.name}*  ${med.dosage}`)
       if (med.frequency)   lines.push(`   Frequency: ${med.frequency}`)
       if (med.treats)      lines.push(`   Treats: ${med.treats}`)
       if (med.how_to_take) lines.push(`   How to take: ${med.how_to_take}`)
@@ -62,7 +62,7 @@ function buildSummaryText({
 
   lines.push('⚠️ AI-generated summary. Consult your doctor before making any changes.')
   lines.push('')
-  lines.push('Shared via Vitae — upload yours at vitae.health')
+  lines.push('Shared via Vitae  upload yours at vitae.health')
 
   return lines.join('\n')
 }

@@ -2,9 +2,9 @@
 
 ## Introduction
 
-The `/auth` route currently inherits `PublicLayout` from `app/(public)/layout.tsx`, which renders a sticky branded header (with "How it works", "For Families", "Privacy", and "Sign in" nav links) and a full `PageFooter`. On the authentication page, these elements are distractions — they present 12+ exit paths at the moment of highest user commitment. No major product (Google, Notion, Stripe, GitHub) shows a marketing nav or footer on their auth page.
+The `/auth` route currently inherits `PublicLayout` from `app/(public)/layout.tsx`, which renders a sticky branded header (with "How it works", "For Families", "Privacy", and "Sign in" nav links) and a full `PageFooter`. On the authentication page, these elements are distractions  they present 12+ exit paths at the moment of highest user commitment. No major product (Google, Notion, Stripe, GitHub) shows a marketing nav or footer on their auth page.
 
-The fix moves `/auth` into its own route group (`(auth)`) with an isolated layout that renders only the Vitae logo, the auth card, and a minimal copyright line. The auth page component (`page.tsx`) and its styles (`auth.css`) are not changed — only the layout wrapping changes.
+The fix moves `/auth` into its own route group (`(auth)`) with an isolated layout that renders only the Vitae logo, the auth card, and a minimal copyright line. The auth page component (`page.tsx`) and its styles (`auth.css`) are not changed  only the layout wrapping changes.
 
 Additionally, `auth.css` currently compensates for the marketing header and footer with hardcoded `min-height` offsets (`calc(100dvh - 64px - 60px)`) and negative horizontal margins to counteract `PageLayout`'s padding. These hacks become incorrect once the page is no longer wrapped by `PublicLayout`.
 
@@ -24,11 +24,11 @@ Additionally, `auth.css` currently compensates for the marketing header and foot
 
 2.1 WHEN a user navigates to `/auth` THEN the system SHALL render only the Vitae logo (linking to `/`) at the top of the page, with no navigation links and no "Sign in" CTA
 
-2.2 WHEN a user navigates to `/auth` THEN the system SHALL render no `PageFooter` below the auth card — only a minimal `© 2025 Vitae` copyright line
+2.2 WHEN a user navigates to `/auth` THEN the system SHALL render no `PageFooter` below the auth card  only a minimal `© 2025 Vitae` copyright line
 
 2.3 WHEN the auth page is rendered inside the new isolated layout THEN the system SHALL size the auth container to fill the full viewport height without hardcoded header/footer offsets
 
-2.4 WHEN the auth page is rendered inside the new isolated layout THEN the system SHALL NOT require negative horizontal margin hacks to achieve full-bleed background — the layout itself SHALL provide the correct padding context
+2.4 WHEN the auth page is rendered inside the new isolated layout THEN the system SHALL NOT require negative horizontal margin hacks to achieve full-bleed background  the layout itself SHALL provide the correct padding context
 
 ### Unchanged Behavior (Regression Prevention)
 

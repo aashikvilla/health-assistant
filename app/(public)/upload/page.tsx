@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Public Upload Page — /upload
+ * Public Upload Page  /upload
  *
  * Unauthenticated "try before signup" flow. Users upload a prescription and
  * see the AI extraction + plain-language explanation without an account.
@@ -83,7 +83,7 @@ export default function PublicUploadPage() {
         setLabReport(labData)
         setLabExplainError(null)
         setLabExplanation(null)
-        // Stay on 'processing' — documentType is now 'lab_report' so
+        // Stay on 'processing'  documentType is now 'lab_report' so
         // ProcessingState will show "Reading your report..." with lab steps
 
         try {
@@ -201,7 +201,7 @@ export default function PublicUploadPage() {
     router.push('/auth?mode=signup&return=/dashboard')
   }
 
-  // ── Save from explanation — include explanation in pending ─────────────────
+  // ── Save from explanation  include explanation in pending ─────────────────
 
   function handleSaveFromExplanation() {
     if (!prescription) return
@@ -220,7 +220,7 @@ export default function PublicUploadPage() {
   return (
     <>
       {step === 'pick' && (
-        /* Full-screen overlay — hides marketing nav + footer during upload flow */
+        /* Full-screen overlay  hides marketing nav + footer during upload flow */
         <div className="fixed inset-0 z-40 bg-surface overflow-auto">
           {error && (
             <div className="mx-4 mt-4 px-4 py-3 rounded-2xl bg-error-subtle border border-error/20 flex items-start gap-3">
@@ -320,7 +320,7 @@ export default function PublicUploadPage() {
         </div>
       )}
 
-      {/* ── AI Explanation screen — Prescription (Step 3) ── */}
+      {/* ── AI Explanation screen  Prescription (Step 3) ── */}
       {step === 'explaining' && documentType === 'prescription' && explanation && (
         <div className="min-h-screen bg-surface flex flex-col">
 
@@ -394,7 +394,7 @@ export default function PublicUploadPage() {
                 fullWidth
                 className="min-h-[60px] text-xl rounded-2xl"
               >
-                Save to My Account — Free
+                Save to My Account  Free
               </Button>
               <p className="text-sm text-text-muted text-center mt-2">
                 Create a free account in 30 seconds · No credit card needed
@@ -509,7 +509,7 @@ export default function PublicUploadPage() {
                 fullWidth
                 className="min-h-[60px] text-xl rounded-2xl"
               >
-                Save to My Account — Free
+                Save to My Account  Free
               </Button>
               <p className="text-sm text-text-muted text-center mt-2">
                 Create a free account in 30 seconds · No credit card needed

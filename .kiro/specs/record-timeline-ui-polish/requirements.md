@@ -4,9 +4,9 @@
 
 This feature covers UI/UX polish across two pages in the Vitae Next.js health assistant app:
 
-1. **`/records/[id]` — Record Detail page**: Fixes and enhancements to how prescriptions and lab reports are displayed, including correct profile name rendering, dynamic navigation titles, a compact disclaimer badge for saved records, medication name normalisation, removal of upload-flow artefacts, an upgraded original-document link, a WhatsApp share preview modal, and a two-column desktop layout.
+1. **`/records/[id]`  Record Detail page**: Fixes and enhancements to how prescriptions and lab reports are displayed, including correct profile name rendering, dynamic navigation titles, a compact disclaimer badge for saved records, medication name normalisation, removal of upload-flow artefacts, an upgraded original-document link, a WhatsApp share preview modal, and a two-column desktop layout.
 
-2. **`/timeline` — Timeline page**: Fixes and enhancements including name casing normalisation, labelled filter chip rows, first-name-only chips on mobile, medication count badges on record cards, year-prominent date grouping, a non-empty-state CTA, client-side search, and a sort control.
+2. **`/timeline`  Timeline page**: Fixes and enhancements including name casing normalisation, labelled filter chip rows, first-name-only chips on mobile, medication count badges on record cards, year-prominent date grouping, a non-empty-state CTA, client-side search, and a sort control.
 
 All changes are confined to the client/server component layer; no database schema changes are required.
 
@@ -27,14 +27,14 @@ All changes are confined to the client/server component layer; no database schem
 - **RecordDetail**: The `RecordDetail` type from `services/records.service.ts`.
 - **MedicationPrefix**: A leading token in a medication name matching the pattern `Tab\.` or `Cap\.` (case-insensitive), e.g. "Tab. Pantoprazole 40 mg".
 - **SharePreviewModal**: A modal or bottom sheet shown before opening WhatsApp that displays the exact message text and offers Confirm / Cancel actions.
-- **ViralAttributionLine**: The footer line appended to every WhatsApp share message: "Shared via Vitae — upload yours at vitae.health".
+- **ViralAttributionLine**: The footer line appended to every WhatsApp share message: "Shared via Vitae  upload yours at vitae.health".
 - **TitleCase**: A string transformation where the first letter of each word is uppercased and the rest are lowercased, e.g. "LAvanya" → "Lavanya".
 - **CompactDisclaimerBadge**: A single-line inline badge (using the existing `Badge` component with `variant="warning"`) that replaces the full `DisclaimerBanner` on saved records.
 - **UploadFlow**: The multi-step upload wizard at `/dashboard/upload/[profileId]` that includes progress step dots.
 - **DesktopLayout**: A CSS grid layout applied at `md` breakpoint (≥ 768 px) that places the medication list in the left column and doctor notes + share button in the right column.
 - **YearGroup**: A top-level date group header showing only the year (e.g. "2024") when records span more than one calendar year.
 - **MonthGroup**: A sub-group header showing the month (e.g. "March") nested under a YearGroup.
-- **SortOrder**: One of three values — `newest_first`, `oldest_first`, or `by_type` — controlling the order of records in TimelineView.
+- **SortOrder**: One of three values  `newest_first`, `oldest_first`, or `by_type`  controlling the order of records in TimelineView.
 - **SearchQuery**: A user-entered string used to filter TimelineDocument records client-side against `doctor_name`, `tags`, and medication names.
 
 ---
@@ -72,7 +72,7 @@ All changes are confined to the client/server component layer; no database schem
 #### Acceptance Criteria
 
 1. WHEN `DocumentDetail` renders a saved record (i.e. outside the upload flow), THE `DocumentDetail` SHALL render a CompactDisclaimerBadge in place of the full `DisclaimerBanner`.
-2. THE CompactDisclaimerBadge SHALL use the existing `Badge` component with `variant="warning"` and display the text "AI-generated summary — consult your doctor".
+2. THE CompactDisclaimerBadge SHALL use the existing `Badge` component with `variant="warning"` and display the text "AI-generated summary  consult your doctor".
 3. THE full `DisclaimerBanner` SHALL continue to render during the upload flow review screens (`ReviewScreen`, `LabReportReviewScreen`) and SHALL NOT be changed by this requirement.
 4. THE CompactDisclaimerBadge SHALL be visible and readable at all viewport widths supported by the app.
 
@@ -138,7 +138,7 @@ All changes are confined to the client/server component layer; no database schem
 
 #### Acceptance Criteria
 
-1. THE `buildSummaryText` function in `ShareButton` SHALL append the ViralAttributionLine "Shared via Vitae — upload yours at vitae.health" as the final line of every generated message.
+1. THE `buildSummaryText` function in `ShareButton` SHALL append the ViralAttributionLine "Shared via Vitae  upload yours at vitae.health" as the final line of every generated message.
 2. THE ViralAttributionLine SHALL appear after the existing "⚠️ AI-generated summary" disclaimer line.
 3. THE share message SHALL include the patient name (from the `patientName` prop) in the opening line.
 

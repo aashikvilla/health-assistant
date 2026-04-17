@@ -28,7 +28,7 @@ export function buildExplainPrompt(prescription: PrescriptionData): string {
 Prescription:
 ${JSON.stringify(prescription, null, 2)}
 
-Return ONLY valid JSON — no markdown, no code fences:
+Return ONLY valid JSON  no markdown, no code fences:
 {
   "id": "preview",
   "doctorName": string,
@@ -41,10 +41,10 @@ Return ONLY valid JSON — no markdown, no code fences:
       "name": string,
       "dosage": string,
       "frequency": string,
-      "treats": string (1 sentence — what condition this addresses),
-      "how_to_take": string (1-2 sentences — timing, food, water),
-      "side_effects": string (1-2 sentences — common effects only, plain language),
-      "avoid": string (1-2 sentences — food/drink/activity interactions)
+      "treats": string (1 sentence  what condition this addresses),
+      "how_to_take": string (1-2 sentences  timing, food, water),
+      "side_effects": string (1-2 sentences  common effects only, plain language),
+      "avoid": string (1-2 sentences  food/drink/activity interactions)
     }
   ],
   "doctorNotes": string[] (3-5 follow-up points the patient should raise at next visit)
@@ -94,7 +94,7 @@ export async function generateExplanation(
       try {
         return JSON.parse(stripJsonFences(raw)) as PrescriptionExplanation
       } catch {
-        continue // malformed JSON — try next model
+        continue // malformed JSON  try next model
       }
     } catch (err) {
       const e = err as Error & { status?: number }

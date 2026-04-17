@@ -6,7 +6,7 @@ import { familyService } from "@/services/family.service";
 import { TimelineView } from "@/components/features/records/TimelineView";
 import { Button } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Timeline — Vitae" };
+export const metadata: Metadata = { title: "Timeline | Vitae" };
 
 export default async function TimelinePage() {
   const supabase = await createClient();
@@ -27,11 +27,8 @@ export default async function TimelinePage() {
 
   return (
     <>
-      {/* ── Gradient Hero — full bleed ─────────────────────────── */}
-      <div
-        className="-mx-4 sm:-mx-6 lg:-mx-8"
-        style={{ background: 'linear-gradient(135deg, #0f0f2d 0%, #1d4ed8 45%, #7c3aed 80%, #c026d3 100%)' }}
-      >
+      {/* ── Gradient Hero  full bleed ─────────────────────────── */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 gradient-hero">
         <div className="px-5 pt-6 pb-8 relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none"
@@ -70,9 +67,7 @@ export default async function TimelinePage() {
         {documents.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-5 text-center">
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ background: 'rgba(124,58,237,.08)', border: '1px solid rgba(124,58,237,.12)' }}
-            >
+              className="w-16 h-16 rounded-2xl flex items-center justify-center bg-accent-subtle border border-border">
               <svg className="w-7 h-7 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

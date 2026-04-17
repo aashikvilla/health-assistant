@@ -80,10 +80,10 @@ Sign Out
 
 ## Security Model
 
-- **proxy.ts** — Blocks unauthenticated requests to `/dashboard/*` before they reach the page
-- **Server Actions** — Always call `supabase.auth.getUser()` before any mutation
-- **RLS** — Supabase Row Level Security must be enabled on all tables. Never rely on frontend filtering alone.
-- **Env vars** — `NEXT_PUBLIC_` prefix only for values safe to expose. Service role key never in client code.
+- **proxy.ts**  Blocks unauthenticated requests to `/dashboard/*` before they reach the page
+- **Server Actions**  Always call `supabase.auth.getUser()` before any mutation
+- **RLS**  Supabase Row Level Security must be enabled on all tables. Never rely on frontend filtering alone.
+- **Env vars**  `NEXT_PUBLIC_` prefix only for values safe to expose. Service role key never in client code.
 
 ## Environments
 
@@ -91,7 +91,7 @@ Sign Out
 |---|---|---|
 | Production | `master` | https://health-assistant-snowy.vercel.app |
 | Preview | `develop` | Vercel preview URL (per push) |
-| Local | — | http://localhost:3000 |
+| Local |  | http://localhost:3000 |
 
 ## Technology Decisions
 

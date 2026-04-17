@@ -17,7 +17,7 @@ const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> 
   low:      { bg: 'var(--color-warning-subtle)',  text: 'var(--color-warning)', label: 'Low'      },
   high:     { bg: 'var(--color-error-subtle)',    text: 'var(--color-error)',   label: 'High'     },
   critical: { bg: 'var(--color-error-subtle)',    text: 'var(--color-error)',   label: 'Critical' },
-  '':       { bg: 'var(--color-surface-muted)',   text: 'var(--color-text-muted)', label: '—'    },
+  '':       { bg: 'var(--color-surface-muted)',   text: 'var(--color-text-muted)', label: ''    },
 }
 
 export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Props) {
@@ -141,7 +141,7 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
                       </span>
                     )}
                   </div>
-                  {/* Result + range — read-only */}
+                  {/* Result + range  read-only */}
                   <div className="flex items-baseline justify-between px-4 pb-3">
                     <div>
                       <span className="text-lg font-bold"
@@ -165,7 +165,7 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
         </section>
 
         <p className="text-sm text-text-muted text-center leading-relaxed px-2">
-          AI-generated — always consult your doctor before making any medical decisions.
+          AI-generated  always consult your doctor before making any medical decisions.
         </p>
 
       </div>

@@ -1,4 +1,4 @@
-// Server component — renders client sub-components (MedicationCard, AbnormalMarkerCard, ShareButton)
+// Server component  renders client sub-components (MedicationCard, AbnormalMarkerCard, ShareButton)
 
 import Link from 'next/link'
 import type { RecordDetail } from '@/services/records.service'
@@ -17,7 +17,7 @@ interface DocumentDetailProps {
 }
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—'
+  if (!iso) return ''
   const d = new Date(iso)
   if (isNaN(d.getTime())) return iso
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -107,7 +107,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
             {navTitle}
           </h1>
 
-          {/* WhatsApp share in nav — visible whenever there are medications */}
+          {/* WhatsApp share in nav  visible whenever there are medications */}
           {isPrescription && hasAnyMedications ? (
             <ShareButton
               doctorName={doctorName}
@@ -143,20 +143,20 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
           )}
         </div>
 
-        {/* ── AI disclaimer (compact badge — full banner stays in upload flow only) ── */}
+        {/* ── AI disclaimer (compact badge  full banner stays in upload flow only) ── */}
         {hasAI && (
           <Badge variant="warning" dot>
-            AI-generated summary — consult your doctor
+            AI-generated summary  consult your doctor
           </Badge>
         )}
 
         {/* ══════════════ PRESCRIPTION ══════════════ */}
         {isPrescription && (
           <>
-            {/* Desktop: 2-column grid — medications left, notes+share right */}
+            {/* Desktop: 2-column grid  medications left, notes+share right */}
             <div className="md:grid md:grid-cols-[1fr_380px] md:gap-8 md:items-start">
 
-              {/* Left column — medications */}
+              {/* Left column  medications */}
               <section>
                 <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
                   Medications · {medicationCount ?? medications.length}
@@ -196,7 +196,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
                 )}
               </section>
 
-              {/* Right column — doctor notes + doc link + share */}
+              {/* Right column  doctor notes + doc link + share */}
               <div className="space-y-5 mt-5 md:mt-0">
                 {/* Doctor notes */}
                 {hasRecommendations && (
@@ -208,7 +208,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
                   <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} documentType={documentType} />
                 )}
 
-                {/* WhatsApp share — full button */}
+                {/* WhatsApp share  full button */}
                 {hasAnyMedications && (
                   <ShareButton
                     doctorName={doctorName}
@@ -290,7 +290,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
   )
 }
 
-// ── Subcomponent — original document link ────────────────────────────────────
+// ── Subcomponent  original document link ────────────────────────────────────
 
 function DocumentLink({ url, fileUrl, documentType }: { url: string; fileUrl: string | null; documentType: string }) {
   const isPdf = fileUrl?.toLowerCase().endsWith('.pdf')

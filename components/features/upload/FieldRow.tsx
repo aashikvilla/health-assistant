@@ -29,7 +29,7 @@ export default function FieldRow({ label, value, confidence, onChange, required 
         {required && isEmpty ? (
           <span
             className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-error-subtle"
-            title="Required — tap to fill in"
+            title="Required  tap to fill in"
             aria-label="Required field"
           >
             <svg className="w-3.5 h-3.5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">

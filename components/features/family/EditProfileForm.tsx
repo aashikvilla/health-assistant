@@ -69,7 +69,7 @@ export function EditProfileForm({ profile, onClose }: EditProfileFormProps) {
               defaultValue={(profile as unknown as { blood_group?: string }).blood_group ?? ''}
               className="w-full px-4 py-2.5 text-base rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
-              <option value="">— Not set —</option>
+              <option value=""> Not set </option>
               {BLOOD_GROUPS.map((g) => (
                 <option key={g} value={g}>{g}</option>
               ))}

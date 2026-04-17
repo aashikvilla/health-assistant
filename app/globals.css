@@ -15,7 +15,7 @@ html {
   --font-plus-jakarta: system-ui, sans-serif;
   --font-manrope: system-ui, sans-serif;
 
-  /* Brand — Clinical Curator palette (design.md) */
+  /* Brand  Clinical Curator palette (design.md) */
   --color-brand-50:  #dce8ff;
   --color-brand-100: #b6d0ff;
   --color-brand-200: #8cb7ff;
@@ -27,37 +27,51 @@ html {
   --color-brand-800: #003170;
   --color-brand-900: #001f4d;
 
-  /* Semantic — light mode */
-  --color-primary:                #0058bd;
-  --color-primary-hover:          #004494;
-  --color-primary-subtle:         #dce8ff;
-  --color-primary-container:      #d1e4ff;
+  /* Semantic  light mode */
+  --color-primary:                #1d4ed8;
+  --color-primary-hover:          #1e40af;
+  --color-primary-subtle:         #dbeafe;
+  --color-primary-container:      #dbeafe;
   --color-primary-foreground:     #ffffff;
 
-  /* Teal — human health tracks */
+  /* Accent / Violet */
+  --color-accent:             #9333ea;
+  --color-accent-hover:       #7c3aed;
+  --color-accent-subtle:      #f3e8ff;
+  --color-accent-foreground:  #ffffff;
+
+  /* Violet */
+  --color-violet:             #a855f7;
+  --color-violet-subtle:      #f3e8ff;
+
+  /* Pink */
+  --color-pink:               #ec4899;
+  --color-pink-subtle:        #fce7f3;
+
+  /* Teal  human health tracks */
   --color-teal:                   #006a66;
   --color-teal-subtle:            #dff4f2;
 
-  /* Pink-Red — alerts, urgent markers (Pet segment) */
+  /* Pink-Red  alerts, urgent markers (Pet segment) */
   --color-tertiary:               #ab2653;
   --color-tertiary-subtle:        #ffd9e2;
 
-  /* Surface hierarchy — stacked sheets of paper */
-  --color-surface:                    #f7f9ff;   /* base */
-  --color-surface-subtle:             #f1f4fa;   /* surface-container-low */
+  /* Surface hierarchy  stacked sheets of paper */
+  --color-surface:                    #f8f9ff;   /* base */
+  --color-surface-subtle:             #f2f3ff;   /* surface-container-low */
   --color-surface-muted:              #e8edf5;   /* surface-container */
-  --color-surface-container-lowest:   #ffffff;   /* interactive cards — top layer */
+  --color-surface-container-lowest:   #ffffff;   /* interactive cards  top layer */
   --color-surface-inverse:            #181c21;
 
-  /* Ghost borders — 12–20% opacity only (no-line rule) */
-  --color-border:             #dde2ec;
-  --color-border-subtle:      #edf0f7;
-  --color-border-strong:      #c8cdd6;
+  /* Ghost borders  12–20% opacity only (no-line rule) */
+  --color-border:             rgba(168,85,247,0.13);
+  --color-border-subtle:      rgba(168,85,247,0.08);
+  --color-border-strong:      rgba(168,85,247,0.25);
 
-  /* Typography — on-surface tones */
-  --color-text-primary:       #181c21;
-  --color-text-secondary:     #43474e;
-  --color-text-muted:         #74777f;
+  /* Typography  on-surface tones */
+  --color-text-primary:       #07071a;
+  --color-text-secondary:     #16163a;
+  --color-text-muted:         #3b3b62;
   --color-text-inverse:       #ffffff;
   --color-text-link:          #0058bd;
 
@@ -81,7 +95,7 @@ html {
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
 
-  /* Ambient shadows — diffused, tinted with on-surface */
+  /* Ambient shadows  diffused, tinted with on-surface */
   --shadow-xs:  0 2px 8px 0 rgba(24, 28, 33, 0.04);
   --shadow-sm:  0 2px 12px 0 rgba(24, 28, 33, 0.06);
   --shadow-md:  0 4px 24px 0 rgba(24, 28, 33, 0.06);
@@ -94,7 +108,7 @@ html {
   --transition-slow:   300ms ease;
 
   /* ─────────────────────────────────────────────────────────────────────────
-     LEGACY ALIASES — `--nuskha-*`
+     LEGACY ALIASES  `--nuskha-*`
      The Stage 2 (upload) screens were authored with raw CSS variables of the
      form `var(--nuskha-...)` in inline styles before the Clinical Curator
      palette was finalised. These aliases keep those screens rendering until
@@ -134,6 +148,17 @@ html {
   --color-primary-subtle:             var(--color-primary-subtle);
   --color-primary-container:          var(--color-primary-container);
   --color-primary-foreground:         var(--color-primary-foreground);
+
+  --color-accent:             var(--color-accent);
+  --color-accent-hover:       var(--color-accent-hover);
+  --color-accent-subtle:      var(--color-accent-subtle);
+  --color-accent-foreground:  var(--color-accent-foreground);
+
+  --color-violet:             var(--color-violet);
+  --color-violet-subtle:      var(--color-violet-subtle);
+
+  --color-pink:               var(--color-pink);
+  --color-pink-subtle:        var(--color-pink-subtle);
 
   --color-teal:                       var(--color-teal);
   --color-teal-subtle:                var(--color-teal-subtle);
@@ -193,13 +218,13 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Focus ring — consistent across all interactive elements */
+/* Focus ring  consistent across all interactive elements */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Scrollbar — subtle */
+/* Scrollbar  subtle */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-full); }
@@ -208,22 +233,22 @@ h1, h2, h3, h4, h5, h6 {
 /* ─────────────────────────────────────────────────────────────────────────────
    MOBILE / PWA UTILITIES
    Safe-area insets for notched phones (iPhone X+, Android with cutouts).
-   Use these classes on fixed/sticky bars — never hardcode px values.
+   Use these classes on fixed/sticky bars  never hardcode px values.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* Bottom nav / fixed footers — account for home indicator */
+/* Bottom nav / fixed footers  account for home indicator */
 .pb-safe  { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .pt-safe  { padding-top:    env(safe-area-inset-top,    0px); }
 .pl-safe  { padding-left:   env(safe-area-inset-left,   0px); }
 .pr-safe  { padding-right:  env(safe-area-inset-right,  0px); }
 
-/* Minimum touch target — 44px × 44px per Apple HIG / WCAG 2.5.5 */
+/* Minimum touch target  44px × 44px per Apple HIG / WCAG 2.5.5 */
 .touch-target {
   min-height: 44px;
   min-width:  44px;
 }
 
-/* Full-bleed mobile section — extends behind safe areas */
+/* Full-bleed mobile section  extends behind safe areas */
 .mobile-full { margin-left: calc(-1 * env(safe-area-inset-left, 0px)); }
 
 /* Prevent text scaling on orientation change */
@@ -232,7 +257,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* Smooth momentum scrolling inside overflow containers on iOS */
 .scroll-smooth-ios { -webkit-overflow-scrolling: touch; }
 
-/* Glassmorphism — floating surfaces (nav bars, headers) */
+/* Glassmorphism  floating surfaces (nav bars, headers) */
 .glass-surface {
   background: rgba(247, 249, 255, 0.82);
   backdrop-filter: blur(16px);
@@ -245,33 +270,10 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   HOMEPAGE — EXTENDED PALETTE + ANIMATIONS
+   HOMEPAGE  EXTENDED PALETTE + ANIMATIONS
    Scoped to the public landing page via .hp-* classes.
    Does NOT override the core Clinical Curator palette.
    ──────────────────────────────────────────────────────────────────────────── */
-
-:root {
-  --hp-blue:      #1d4ed8;
-  --hp-blue-h:    #1e40af;
-  --hp-blue-s:    #dbeafe;
-  --hp-violet:    #a855f7;
-  --hp-violet-s:  #f3e8ff;
-  --hp-pink:      #ec4899;
-  --hp-pink-s:    #fce7f3;
-  --hp-bg:        #f8f9ff;
-  --hp-surface:   #f2f3ff;
-  --hp-text:      #0a0a18;
-  --hp-text-2:    #1e1e3c;
-  --hp-text-m:    #4f4f72;
-  --hp-border:    rgba(168,85,247,0.13);
-  --hp-border-h:  rgba(168,85,247,0.35);
-  --hp-grad:      linear-gradient(135deg, #1d4ed8 0%, #a855f7 100%);
-  --hp-grad-pk:   linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-  --hp-grad-full: linear-gradient(135deg, #1d4ed8 0%, #a855f7 55%, #ec4899 100%);
-  --hp-sh-sm:     0 2px 12px rgba(29,78,216,.06);
-  --hp-sh-md:     0 4px 24px rgba(29,78,216,.10);
-  --hp-sh-lg:     0 8px 40px rgba(29,78,216,.14);
-}
 
 /* ── Fade-up stagger ── */
 .hp-fi1 { animation: hp-fadeUp .6s ease both .1s }
@@ -322,6 +324,32 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @keyframes hp-shareSlide  { from { opacity:0; transform:translateY(6px) }    to { opacity:1; transform:none } }
 @keyframes hp-shareGlow   { 0%,100% { opacity:.6 } 50% { opacity:1 } }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   GRADIENT UTILITIES
+   Named gradient classes — use via className, not inline style props.
+   Reference CSS custom properties so gradients update with theme changes.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Blue → Violet — primary brand gradient */
+.gradient-brand {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-violet) 100%);
+}
+
+/* Blue → Violet → Pink — full spectrum brand gradient */
+.gradient-brand-full {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-violet) 55%, var(--color-pink) 100%);
+}
+
+/* Dark navy → Blue → Violet → Pink — hero section gradient */
+.gradient-hero {
+  background: linear-gradient(135deg, #0f0f2d 0%, var(--color-primary) 45%, var(--color-accent-hover) 80%, #c026d3 100%);
+}
+
+/* Deep dark → CTA box gradient */
+.gradient-cta-box {
+  background: linear-gradient(135deg, #060a1f 0%, #1a1068 40%, #5b21b6 72%, #7c3aed 100%);
+}
+
 /* Step number hover — CSS-only for Server Component compatibility */
-.hp-step-num { background: var(--hp-text); }
-.group:hover .hp-step-num { background: var(--hp-grad); box-shadow: 0 4px 16px rgba(168,85,247,.35); }
+.hp-step-num { background: #07071a; }
+.group:hover .hp-step-num { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-violet) 100%); box-shadow: 0 4px 16px rgba(168,85,247,.35); }

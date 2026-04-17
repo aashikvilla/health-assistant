@@ -89,7 +89,7 @@ export default function ProcessingState() {
         </div>
 
         <p className="text-xs text-center mt-6" style={{ color: 'var(--nuskha-on-surface)', opacity: 0.35, fontFamily: 'var(--font-manrope)' }}>
-          Don&apos;t close this tab — we&apos;re almost done
+          Don&apos;t close this tab  we&apos;re almost done
         </p>
       </div>
     </div>

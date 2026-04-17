@@ -1,4 +1,4 @@
-# 12 — Dashboard — With Records (`/dashboard`) — UI/UX & CRO Critique
+# 12  Dashboard  With Records (`/dashboard`)  UI/UX & CRO Critique
 
 **Screenshot:** `12-dashboard-hub-with-records.png`
 **Route:** `/dashboard`
@@ -7,50 +7,50 @@
 
 ---
 
-## 1. Active Medications Strip — Product's Key Daily Feature, Broken
+## 1. Active Medications Strip  Product's Key Daily Feature, Broken
 
 **Current:** "YOUR ACTIVE MEDICATIONS" section shows 7 medications:
 - Tab. Ultrafen-plus · 50mg · "As directed by your doctor"
-- Tab. Relentus · — · "As directed by your doctor"
-- Tab. Ultracal-D · — · "As directed by your doctor"
-- Tab. Cartlix · — · "As directed by your doctor"
+- Tab. Relentus ·  · "As directed by your doctor"
+- Tab. Ultracal-D ·  · "As directed by your doctor"
+- Tab. Cartlix ·  · "As directed by your doctor"
 - Tab. Diclofenac · 50mg · "As directed by your doctor"
-- Tab. Ultracal-D · — · "As directed by your doctor" (duplicate)
+- Tab. Ultracal-D ·  · "As directed by your doctor" (duplicate)
 - Cap. Omepraz · 20mg · "As directed by your doctor"
 
-**Problem 1 — "As directed by your doctor" × 7:** Every single medication row shows the identical frequency string. This is the OCR-extracted value from the prescription. When OCR captures "As directed by your doctor" as the frequency, that value should not be blindly displayed when it adds zero information. The entire medications strip becomes a list of drug names with no differentiating context.
+**Problem 1  "As directed by your doctor" × 7:** Every single medication row shows the identical frequency string. This is the OCR-extracted value from the prescription. When OCR captures "As directed by your doctor" as the frequency, that value should not be blindly displayed when it adds zero information. The entire medications strip becomes a list of drug names with no differentiating context.
 
 **What the strip should communicate per row (priority order):**
 1. Drug name (current ✓)
-2. Dosage amount (current, partial — some show "50mg", some show "—")
-3. Frequency (NOT "As directed by your doctor" — show "Twice daily", "After meals", or nothing)
+2. Dosage amount (current, partial  some show "50mg", some show "")
+3. Frequency (NOT "As directed by your doctor"  show "Twice daily", "After meals", or nothing)
 4. Duration context (optional: "Day 3 of 7" for a course of antibiotics)
 
-**Fix rule:** If `frequency` value matches any of: "as directed", "as advised", "as prescribed", "per doctor instructions" — show `dosage` in the frequency position, or show nothing. Never repeat generic instructions across 7 rows.
+**Fix rule:** If `frequency` value matches any of: "as directed", "as advised", "as prescribed", "per doctor instructions"  show `dosage` in the frequency position, or show nothing. Never repeat generic instructions across 7 rows.
 
-**Problem 2 — Duplicate entry:** "Tab. Ultracal-D" appears twice in the list. This is a data quality issue — either the same medication was extracted twice from the prescription, or two separate medications have the same name. The UI should deduplicate or flag: "Tab. Ultracal-D appears twice — was this prescribed twice?"
+**Problem 2  Duplicate entry:** "Tab. Ultracal-D" appears twice in the list. This is a data quality issue  either the same medication was extracted twice from the prescription, or two separate medications have the same name. The UI should deduplicate or flag: "Tab. Ultracal-D appears twice  was this prescribed twice?"
 
-**Problem 3 — Broken grey square icons:** Each row has a small grey square (approximately 20×20px) before the drug name. These are clearly broken placeholder boxes where a styled medicine icon or the coloured mini-pill illustration should appear. Broken image placeholders are one of the highest-perceived-quality damage signals in UI — users read them as "this app is broken."
+**Problem 3  Broken grey square icons:** Each row has a small grey square (approximately 20×20px) before the drug name. These are clearly broken placeholder boxes where a styled medicine icon or the coloured mini-pill illustration should appear. Broken image placeholders are one of the highest-perceived-quality damage signals in UI  users read them as "this app is broken."
 
 **Fix:** Either use the same coloured medicine-packet illustration as MedicationCard (scaled to 24px), or use a consistent generic pill icon (⬤ or 💊 emoji as fallback). No broken grey squares.
 
-**Problem 4 — All 7 medications listed:** For a user checking their dashboard, seeing 7 medications in a strip is excessive. The strip is designed for a quick glance — "what am I supposed to take today?" Show 3–4, with "View all 7 →" link. The current design defeats its own purpose by showing everything.
+**Problem 4  All 7 medications listed:** For a user checking their dashboard, seeing 7 medications in a strip is excessive. The strip is designed for a quick glance  "what am I supposed to take today?" Show 3–4, with "View all 7 →" link. The current design defeats its own purpose by showing everything.
 
 ---
 
-## 2. Profile Wheel — Active State and Overflow
+## 2. Profile Wheel  Active State and Overflow
 
 **Current:** "A" (You, grey), "L" (LAVanya, blue/active), "+" (Add), with "Edit profile" link top-right.
 
-**Active state:** The blue circle for active profile (LAVanya) vs. grey for inactive (You) — works.
+**Active state:** The blue circle for active profile (LAVanya) vs. grey for inactive (You)  works.
 
-**"Edit profile" appears here but not on the empty state:** This inconsistency was noted in Screen 09. Either show it in both states or neither. If it edits the active profile, the label should be "Edit LAVanya" — otherwise users don't know which profile they're editing.
+**"Edit profile" appears here but not on the empty state:** This inconsistency was noted in Screen 09. Either show it in both states or neither. If it edits the active profile, the label should be "Edit LAVanya"  otherwise users don't know which profile they're editing.
 
-**"Edit profile" is not visible in dashboard with records screenshot.** Wait — looking at the screenshot, it says "Edit profile" is visible top-right. Confirm this is present in both empty and populated states for consistency.
+**"Edit profile" is not visible in dashboard with records screenshot.** Wait  looking at the screenshot, it says "Edit profile" is visible top-right. Confirm this is present in both empty and populated states for consistency.
 
 ---
 
-## 3. Documents Section — Information Architecture
+## 3. Documents Section  Information Architecture
 
 **Current:** "YOUR DOCUMENTS · View all" header, followed by one prescription card: "M. M. Joynal Abedin · 11 Nov 2010 · 7 medications · [R knee pain and difficulty in going up by stairs...] · ⋮"
 
@@ -60,7 +60,7 @@
 
 **What fails:**
 
-**1. Section header "YOUR DOCUMENTS" when a profile is selected:** If LAVanya is the active profile, this should read "LAVANYA'S DOCUMENTS" — not "YOUR DOCUMENTS." The pronoun "YOUR" is contextually wrong when viewing a family member's profile. This is a personalisation bug.
+**1. Section header "YOUR DOCUMENTS" when a profile is selected:** If LAVanya is the active profile, this should read "LAVANYA'S DOCUMENTS"  not "YOUR DOCUMENTS." The pronoun "YOUR" is contextually wrong when viewing a family member's profile. This is a personalisation bug.
 
 **2. Diagnosis tag truncated with "...":** "R knee pain and difficulty in going up by stairs" truncates mid-sentence with "...". Tags are the primary scannable differentiator between records. A truncated tag is useless. Either:
 - Shorten at source: if the tag is >30 chars, extract the key noun phrase ("Knee Pain")
@@ -69,7 +69,7 @@
 
 **3. Only one document visible:** If the user has multiple documents, showing only one before "View all" means the section has a very low information density for its visual weight. Show 2–3 rows before the "View all" link. The section currently takes the same vertical space whether showing 1 or 3 items.
 
-**4. Three-dot menu (⋮) on the document row:** The overflow menu's contents are unknown. This is a known antipattern (mystery meat navigation). At minimum, the overflow should contain: "View Record", "Share via WhatsApp", "Delete." If "Delete" is in there, it needs a confirmation dialog — deleting a medical record is destructive. If the menu is empty or only has "Delete", replace it with a trash icon directly.
+**4. Three-dot menu (⋮) on the document row:** The overflow menu's contents are unknown. This is a known antipattern (mystery meat navigation). At minimum, the overflow should contain: "View Record", "Share via WhatsApp", "Delete." If "Delete" is in there, it needs a confirmation dialog  deleting a medical record is destructive. If the menu is empty or only has "Delete", replace it with a trash icon directly.
 
 **5. Lab Report visibility:** The documents section shows prescriptions. Where are lab reports? Do they appear in the same section? If yes, their card design should differ slightly from prescriptions (a flask/lab icon vs. a prescription icon). If no, there should be a separate "Lab Reports" section or a unified "All Records" view. The current section header "YOUR DOCUMENTS" implies all document types, but the card design (showing "7 medications") is prescription-specific.
 
@@ -89,19 +89,19 @@ This is a one-line change in the CTA label using the active profile name. The im
 
 ---
 
-## 5. Visual Design — Flat and Sparse
+## 5. Visual Design  Flat and Sparse
 
 **Current:** White background, grey section headers (uppercase, 10px), white cards with light grey borders. Clean but low visual energy.
 
-**The "sticky note board" problem:** The dashboard should feel like a living health companion, not a read-only list. Currently it feels like a simple list view — no colour, no visual accent, no personality.
+**The "sticky note board" problem:** The dashboard should feel like a living health companion, not a read-only list. Currently it feels like a simple list view  no colour, no visual accent, no personality.
 
 **Specific improvements:**
 
 1. **Medications strip:** Give each medication row a subtle left-border accent in the same colour as its MedicationCard counterpart. This connects the strip visually to the detailed card view and adds colour to an otherwise monochrome list.
 
-2. **Section headers:** "YOUR ACTIVE MEDICATIONS" in uppercase 10px grey — too small, too corporate. Consider: "Active Medications" at 14px medium weight with a subtle pill icon prefix. More readable, less clinical.
+2. **Section headers:** "YOUR ACTIVE MEDICATIONS" in uppercase 10px grey  too small, too corporate. Consider: "Active Medications" at 14px medium weight with a subtle pill icon prefix. More readable, less clinical.
 
-3. **Profile wheel section:** The family profiles section is the most important navigational element on the page but is visually the least prominent. Bold the active profile name, add a subtle "selected" ring (not just a different background colour — a ring).
+3. **Profile wheel section:** The family profiles section is the most important navigational element on the page but is visually the least prominent. Bold the active profile name, add a subtle "selected" ring (not just a different background colour  a ring).
 
 4. **Card hierarchy:** Currently the only document card has no visual hierarchy beyond the three-dot menu. High-priority items (recent lab results with abnormal values, upcoming medication end dates) should have a different visual treatment than routine records.
 
@@ -109,9 +109,9 @@ This is a one-line change in the CTA label using the active profile name. The im
 
 ## 6. Missing Features That Should Be Here (Per FRD)
 
-**Lab Alert card (FRD F5):** The FRD mentions surfacing out-of-range lab values on the dashboard. The current implementation has an `abnormalMarkers` structure. A "Lab Alert" card at the top of the dashboard — "⚠ LAVanya's recent CBC: 2 values outside range — [View]" — would be a high-value addition to the dashboard for users who have lab reports.
+**Lab Alert card (FRD F5):** The FRD mentions surfacing out-of-range lab values on the dashboard. The current implementation has an `abnormalMarkers` structure. A "Lab Alert" card at the top of the dashboard  "⚠ LAVanya's recent CBC: 2 values outside range  [View]"  would be a high-value addition to the dashboard for users who have lab reports.
 
-**Medication reminders strip:** FRD F4 specifies upcoming medication times. A "Coming up today" section: "💊 Tab. Ultrafen-plus at 2:00 PM" would drive daily engagement. Without any time-aware content, the dashboard is static — users have no reason to open it daily.
+**Medication reminders strip:** FRD F4 specifies upcoming medication times. A "Coming up today" section: "💊 Tab. Ultrafen-plus at 2:00 PM" would drive daily engagement. Without any time-aware content, the dashboard is static  users have no reason to open it daily.
 
 **Lab value trend signal:** FRD F5 specifies trending for repeated tests. If LAVanya has had multiple CBC reports, a tiny spark chart showing Haemoglobin trend over time would be a "wow" feature visible right on the dashboard. "Haemoglobin: ▲ improving over 3 tests" as a one-line entry in the documents section.
 
@@ -121,9 +121,9 @@ This is a one-line change in the CTA label using the active profile name. The im
 
 **Current:** A small "Active" pill visible to the right of "YOUR ACTIVE MEDICATIONS."
 
-**The ambiguity:** Is "Active" a filter toggle (showing only active medications, vs. all including discontinued ones)? Or is it a status indicator for the section? This is a mystery meat element. Users who see it will tap it expecting something — if it doesn't respond or if it's just decorative, it's a trust-eroding broken interaction.
+**The ambiguity:** Is "Active" a filter toggle (showing only active medications, vs. all including discontinued ones)? Or is it a status indicator for the section? This is a mystery meat element. Users who see it will tap it expecting something  if it doesn't respond or if it's just decorative, it's a trust-eroding broken interaction.
 
-**Fix:** If it's a filter, label it clearly: "Filter: Active ▾" with a dropdown to show "All" / "Active" / "Completed." If it's just a label/status, remove it — the section header "YOUR ACTIVE MEDICATIONS" already communicates that these are active.
+**Fix:** If it's a filter, label it clearly: "Filter: Active ▾" with a dropdown to show "All" / "Active" / "Completed." If it's just a label/status, remove it  the section header "YOUR ACTIVE MEDICATIONS" already communicates that these are active.
 
 ---
 
@@ -139,7 +139,7 @@ This is a one-line change in the CTA label using the active profile name. The im
 
 ## 9. Mobile Issues
 
-**Active medications strip with 7 items:** On mobile (375px), 7 rows × ~56px each = 392px of medication list. This is half a phone screen. With section header, document section, and sticky CTA, the total page height becomes approximately 700–800px — just over 1 phone screen. Manageable, but test that all content is above the sticky CTA's overlap area.
+**Active medications strip with 7 items:** On mobile (375px), 7 rows × ~56px each = 392px of medication list. This is half a phone screen. With section header, document section, and sticky CTA, the total page height becomes approximately 700–800px  just over 1 phone screen. Manageable, but test that all content is above the sticky CTA's overlap area.
 
 **Sticky CTA overlap:** The "+ Upload for yourself" sticky bottom button covers the last visible document card row when the user is near the bottom of the page. Add a bottom padding to the scroll container equal to the CTA height (~60px) to prevent content from being hidden behind it.
 
@@ -155,6 +155,6 @@ This is a one-line change in the CTA label using the active profile name. The im
 1. **Medication time reminders:** "Take Tab. Ultrafen-plus now" as a card when it's medication time
 2. **Lab trend signals:** "LAVanya's Haemoglobin improved from 11.2 → 12.5 since last test ▲"
 3. **Upcoming checkup prompts:** "You haven't uploaded a lab report in 6 months. Time for a checkup? →"
-4. **Anniversary/follow-up alerts:** "It's been 14 days since LAVanya's last prescription — did you visit the doctor?"
+4. **Anniversary/follow-up alerts:** "It's been 14 days since LAVanya's last prescription  did you visit the doctor?"
 
 None of these are on the roadmap in the current screenshots, but they're all described in the FRD. Building one of them (daily medication reminder card) would transform the dashboard from a "check occasionally" screen to a "open daily" screen.

@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Authenticated Upload Page — /dashboard/upload/[profileId]
+ * Authenticated Upload Page  /dashboard/upload/[profileId]
  *
  * Same OCR state machine as the public /upload page, but:
  * - User is always authenticated (enforced by (app)/layout.tsx)
@@ -297,7 +297,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
         />
       )}
 
-      {/* S05 — AI Explanation / Analysis loading */}
+      {/* S05  AI Explanation / Analysis loading */}
       {step === 'explaining' && (
         (documentType === 'prescription' && !explanation && !explainError) ||
         (documentType === 'lab_report' && !labExplanation && !labExplainError)
@@ -367,7 +367,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
             </div>
           </nav>
 
-          {/* Patient context strip — identity, not provenance */}
+          {/* Patient context strip  identity, not provenance */}
           <div className="mx-5 mt-4 px-4 py-3 rounded-2xl bg-surface-container-lowest border border-border-subtle">
             <p className="font-body text-sm font-medium text-text-primary">
               {labExplanation.patientName || 'Your Report'}
@@ -381,7 +381,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
           <section className="flex-1 px-5 pt-5 pb-28 space-y-4">
             {labExplanation.abnormalMarkers.length > 0 ? (
               <>
-                {/* Summary badge — orientation before detail */}
+                {/* Summary badge  orientation before detail */}
                 <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-error-subtle border border-error/15">
                   <svg className="w-4 h-4 text-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
@@ -408,7 +408,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Disclaimer — after results, not before */}
+            {/* Disclaimer  after results, not before */}
             <DisclaimerBanner doctorName={labExplanation.doctorName || 'your doctor'} />
 
             <DoctorNotes notes={labExplanation.doctorNotes} title="Things to follow" />

@@ -1,4 +1,4 @@
-# Vitae — User Flows
+# Vitae  User Flows
 
 Complete end-to-end flows with all paths, states, and screenshot references.
 Screenshots live in `/screenshots/`.
@@ -10,28 +10,28 @@ Screenshots live in `/screenshots/`.
 | File | Screen | Route | Notes |
 |---|---|---|---|
 | `01-landing-home.png` | Marketing homepage | `/` | Public |
-| `02-pub-upload-s1-file-picker.png` | Upload — file picker | `/upload` | Public, Step 1/3 |
-| `03-pub-upload-s2a-ocr-processing.png` | Upload — OCR in-flight | `/upload` | Public, Step 2a |
-| `04-pub-upload-s2b-prescription-review.png` | Upload — prescription review | `/upload` | Public, Step 2b |
-| `05-pub-upload-s3a-ai-explanation-loading.png` | Upload — AI generating | `/upload` | Public, Step 3a |
-| `06-pub-upload-s3b-prescription-explanation.png` | Upload — explanation result | `/upload` | Public, Step 3b |
-| `07-auth-upload-s2-lab-report-review.png` | Upload — lab report review | `/dashboard/upload/[profileId]` | Auth, Step 2/3 |
-| `07b-auth-upload-s2-lab-report-review-alt.png` | Upload — lab report review (alt) | `/dashboard/upload/[profileId]` | Duplicate of 07 |
-| `08-auth-upload-s3-lab-report-analysis.png` | Upload — lab analysis result | `/dashboard/upload/[profileId]` | Auth, Step 3/3 |
-| `09-dashboard-hub-empty-state.png` | Dashboard — no records yet | `/dashboard` | Auth |
+| `02-pub-upload-s1-file-picker.png` | Upload  file picker | `/upload` | Public, Step 1/3 |
+| `03-pub-upload-s2a-ocr-processing.png` | Upload  OCR in-flight | `/upload` | Public, Step 2a |
+| `04-pub-upload-s2b-prescription-review.png` | Upload  prescription review | `/upload` | Public, Step 2b |
+| `05-pub-upload-s3a-ai-explanation-loading.png` | Upload  AI generating | `/upload` | Public, Step 3a |
+| `06-pub-upload-s3b-prescription-explanation.png` | Upload  explanation result | `/upload` | Public, Step 3b |
+| `07-auth-upload-s2-lab-report-review.png` | Upload  lab report review | `/dashboard/upload/[profileId]` | Auth, Step 2/3 |
+| `07b-auth-upload-s2-lab-report-review-alt.png` | Upload  lab report review (alt) | `/dashboard/upload/[profileId]` | Duplicate of 07 |
+| `08-auth-upload-s3-lab-report-analysis.png` | Upload  lab analysis result | `/dashboard/upload/[profileId]` | Auth, Step 3/3 |
+| `09-dashboard-hub-empty-state.png` | Dashboard  no records yet | `/dashboard` | Auth |
 | `10-auth-signin-signup.png` | Sign in / Sign up | `/auth` | Public |
 | `11-dashboard-add-family-member.png` | Add family member | `/dashboard/add-member` | Auth |
-| `12-dashboard-hub-with-records.png` | Dashboard — with records | `/dashboard` | Auth |
-| `13-timeline-all-records.png` | Timeline — all family records | `/timeline` | Auth |
-| `14-record-detail-rx-meta-and-meds.png` | Record detail — header + med list | `/records/[id]` | Auth, top section |
-| `15-record-detail-rx-ai-cards-and-share.png` | Record detail — AI cards + share | `/records/[id]` | Auth, bottom section |
-| `source-doc-prescription-sample.avif` | Sample prescription image | — | Input document, not UI |
-| `source-doc-lab-report-sample.pdf` | Sample lab report PDF | — | Input document, not UI |
-| `source-doc-lab-report-sample2.pdf` | Sample lab report PDF (alt) | — | Input document, not UI |
+| `12-dashboard-hub-with-records.png` | Dashboard  with records | `/dashboard` | Auth |
+| `13-timeline-all-records.png` | Timeline  all family records | `/timeline` | Auth |
+| `14-record-detail-rx-meta-and-meds.png` | Record detail  header + med list | `/records/[id]` | Auth, top section |
+| `15-record-detail-rx-ai-cards-and-share.png` | Record detail  AI cards + share | `/records/[id]` | Auth, bottom section |
+| `source-doc-prescription-sample.avif` | Sample prescription image |  | Input document, not UI |
+| `source-doc-lab-report-sample.pdf` | Sample lab report PDF |  | Input document, not UI |
+| `source-doc-lab-report-sample2.pdf` | Sample lab report PDF (alt) |  | Input document, not UI |
 
 ---
 
-## Flow 1 — Public "Try Before Sign Up" (Prescription)
+## Flow 1  Public "Try Before Sign Up" (Prescription)
 
 No account required. User gets full AI explanation, then is prompted to save.
 
@@ -40,18 +40,18 @@ No account required. User gets full AI explanation, then is prompted to save.
   ↓  "Try Free Upload" CTA
 [02] File picker  /upload  (Step 1/3)
   ↓  Upload photo / PDF / enter manually
-[03] OCR processing  (Step 2a — spinner, "Reading your prescription…")
+[03] OCR processing  (Step 2a  spinner, "Reading your prescription…")
   ↓  OCR resolves → document_type = prescription
-[04] Prescription review  (Step 2b — "Check the Details")
+[04] Prescription review  (Step 2b  "Check the Details")
      User can edit any field before confirming
   ↓  "Yes, This Looks Right →"
-[05] AI explanation loading  (Step 3a — "Preparing your explanation…")
+[05] AI explanation loading  (Step 3a  "Preparing your explanation…")
   ↓  /api/explain returns PrescriptionExplanation
-[06] Prescription explanation  (Step 3b — MedicationCards + DoctorNotes)
-  ↓  "Save to My Account — Free"  →  saves to localStorage as nuskha_pending_upload
+[06] Prescription explanation  (Step 3b  MedicationCards + DoctorNotes)
+  ↓  "Save to My Account  Free"  →  saves to localStorage as nuskha_pending_upload
   ↓  redirect → /auth?mode=signup&return=/dashboard
 
-[10] Auth — sign up  /auth
+[10] Auth  sign up  /auth
   ↓  email+password or Google OAuth
 [Onboarding] Enter full name  /onboarding
   ↓  submit
@@ -68,9 +68,9 @@ No account required. User gets full AI explanation, then is prompted to save.
 
 ---
 
-## Flow 2 — Public "Try Before Sign Up" (Lab Report)
+## Flow 2  Public "Try Before Sign Up" (Lab Report)
 
-Same entry as Flow 1, but lab report takes a different path — skips review screen.
+Same entry as Flow 1, but lab report takes a different path  skips review screen.
 
 ```
 [02] File picker  /upload  (Step 1/3)
@@ -81,14 +81,14 @@ Same entry as Flow 1, but lab report takes a different path — skips review scr
 [05] AI analysis loading  ("Analysing your report…")
   ↓  /api/analyse returns LabReportExplanation
      AbnormalMarkerCard(s) or "All Clear" card + DoctorNotes
-  ↓  "Save to My Account — Free" → localStorage → /auth?mode=signup
+  ↓  "Save to My Account  Free" → localStorage → /auth?mode=signup
 ```
 
-> Lab reports skip the review step because the test values need no human correction — they're numeric and the user can't meaningfully edit them.
+> Lab reports skip the review step because the test values need no human correction  they're numeric and the user can't meaningfully edit them.
 
 ---
 
-## Flow 3 — Authenticated Upload (Prescription)
+## Flow 3  Authenticated Upload (Prescription)
 
 User is signed in. Document saved with full AI explanation in one flow.
 
@@ -120,7 +120,7 @@ User is signed in. Document saved with full AI explanation in one flow.
 
 ---
 
-## Flow 4 — Authenticated Upload (Lab Report)
+## Flow 4  Authenticated Upload (Lab Report)
 
 ```
 [12] Dashboard  /dashboard
@@ -146,7 +146,7 @@ User is signed in. Document saved with full AI explanation in one flow.
 
 ---
 
-## Flow 5 — Sign Up (Direct, No Upload)
+## Flow 5  Sign Up (Direct, No Upload)
 
 ```
 [01] Landing homepage
@@ -155,13 +155,13 @@ User is signed in. Document saved with full AI explanation in one flow.
   ↓  email + password  or  Google OAuth
 [Onboarding] Enter full name  /onboarding
   ↓  submit → onboarding_completed = true
-[09] Dashboard — empty state  /dashboard
+[09] Dashboard  empty state  /dashboard
   ↓  "Add a Profile" or "Upload a Prescription"
 ```
 
 ---
 
-## Flow 6 — Sign In (Returning User)
+## Flow 6  Sign In (Returning User)
 
 ```
 [10] Auth page  /auth  (default: sign-in tab)
@@ -172,9 +172,9 @@ User is signed in. Document saved with full AI explanation in one flow.
 
 ---
 
-## Flow 7 — View a Saved Record
+## Flow 7  View a Saved Record
 
-Single unified page. Explanation and share are inline — no secondary navigation.
+Single unified page. Explanation and share are inline  no secondary navigation.
 
 ```
 [12] Dashboard  (or [13] Timeline)
@@ -212,11 +212,11 @@ If a prescription record was saved without rich AI data (legacy records or edge 
 the page calls `generateExplanation()` on first view, shows the rich cards, and saves
 the result back to DB so subsequent views are instant. No LLM call after that.
 
-> `/explanation/[id]` redirects to `/records/[id]` — both URLs reach the same page.
+> `/explanation/[id]` redirects to `/records/[id]`  both URLs reach the same page.
 
 ---
 
-## Flow 8 — Family Hub
+## Flow 8  Family Hub
 
 ```
 [12] Dashboard  /dashboard?profile=[profileId]
@@ -244,7 +244,7 @@ Documents section:
 
 ---
 
-## Flow 9 — Add Family Member
+## Flow 9  Add Family Member
 
 ```
 [12] Dashboard  → tap "+" chip in profile wheel  →  /dashboard/add-member
@@ -252,7 +252,7 @@ Documents section:
      Full name (required)
      Relationship (select)
      Date of birth (optional)
-     Their email (optional — if they sign up with same email they get access)
+     Their email (optional  if they sign up with same email they get access)
   ↓  "Save Profile"
      createProfile() → family_profiles row  +  profile_memberships row
   ↓  redirect → /dashboard
@@ -264,7 +264,7 @@ Documents section:
 
 ---
 
-## Flow 10 — Timeline
+## Flow 10  Timeline
 
 ```
 [12] Dashboard  → "View all" link  →  /timeline
@@ -278,7 +278,7 @@ Documents section:
 
 ---
 
-## Flow 11 — Settings
+## Flow 11  Settings
 
 ```
 Bottom nav → Profile tab  →  /settings
@@ -290,7 +290,7 @@ Bottom nav → Profile tab  →  /settings
 
 ---
 
-## State Machine — Upload Flow (both public and authenticated)
+## State Machine  Upload Flow (both public and authenticated)
 
 ```
 pick
@@ -326,8 +326,8 @@ explaining (result shown)
 |---|---|---|
 | `documents` | ✓ (file_url, doctor_name, date, tags) | ✓ (file_url, doctor_name, date) |
 | `document_analyses` | ✓ medications_found (rich MedicationExplanation[]), recommendations | ✓ key_findings.tests + key_findings.abnormalMarkers, recommendations, values_out_of_range |
-| `prescriptions` | ✓ (best-effort, legacy support) | — |
-| `medications` | ✓ one row per medication (status=active) | — |
+| `prescriptions` | ✓ (best-effort, legacy support) |  |
+| `medications` | ✓ one row per medication (status=active) |  |
 
 ---
 

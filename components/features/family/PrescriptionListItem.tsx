@@ -1,6 +1,7 @@
 // Server component
 
 import Link from 'next/link'
+import { Badge } from '@/components/ui'
 import type { HubPrescription } from '@/types/family'
 
 interface PrescriptionListItemProps {
@@ -8,7 +9,7 @@ interface PrescriptionListItemProps {
 }
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—'
+  if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-IN', {
     day:   '2-digit',
     month: 'short',
@@ -38,12 +39,7 @@ export function PrescriptionListItem({ prescription }: PrescriptionListItemProps
 
       <div className="flex items-center gap-2 shrink-0">
         {condition_tags.slice(0, 2).map((tag) => (
-          <span
-            key={tag}
-            className="text-xs px-2.5 py-0.5 bg-teal-subtle text-teal rounded-full font-medium"
-          >
-            {tag}
-          </span>
+          <Badge key={tag} variant="default" size="sm">{tag}</Badge>
         ))}
         <span className="text-text-muted text-base" aria-hidden>›</span>
       </div>

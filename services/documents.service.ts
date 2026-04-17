@@ -1,5 +1,5 @@
 /**
- * Documents service — Stage 2
+ * Documents service  Stage 2
  *
  * Handles persisting extracted prescription/lab report data to the DB.
  * The documents table stores the raw file reference + metadata.
@@ -39,8 +39,8 @@ function buildSummary(type: DocumentType, data: PrescriptionData | LabReportData
   const test_count = lab.tests.length
   const abnormal = lab.tests.filter((t) => t.status === 'high' || t.status === 'low' || t.status === 'critical').length
   return abnormal > 0
-    ? `${test_count} test${test_count !== 1 ? 's' : ''} — ${abnormal} outside reference range`
-    : `${test_count} test${test_count !== 1 ? 's' : ''} — all within reference range`
+    ? `${test_count} test${test_count !== 1 ? 's' : ''}  ${abnormal} outside reference range`
+    : `${test_count} test${test_count !== 1 ? 's' : ''}  all within reference range`
 }
 
 function buildDocDate(data: PrescriptionData | LabReportData, type: DocumentType): string | null {
@@ -114,7 +114,7 @@ export const documentsService = {
       ? explanation.medications.map(({ id: _id, ...rest }) => rest)
       : null
 
-    // Supabase JSON columns require the Json type — cast structured objects explicitly
+    // Supabase JSON columns require the Json type  cast structured objects explicitly
     const analysisPayload =
       type === 'prescription'
         ? {
@@ -156,7 +156,7 @@ export const documentsService = {
       })
 
     if (analysisError) {
-      // Analysis write failed — roll back the document row to avoid orphan
+      // Analysis write failed  roll back the document row to avoid orphan
       await supabase.from('documents').delete().eq('id', doc.id)
       return {
         data: null,
@@ -165,7 +165,7 @@ export const documentsService = {
       }
     }
 
-    // 3. Write to prescriptions table (prescriptions only, best-effort — non-fatal)
+    // 3. Write to prescriptions table (prescriptions only, best-effort  non-fatal)
     if (type === 'prescription') {
       const rx = data as PrescriptionData
       await supabase.from('prescriptions').insert({
@@ -178,7 +178,7 @@ export const documentsService = {
       })
     }
 
-    // 4. Write individual medication rows (best-effort — non-fatal)
+    // 4. Write individual medication rows (best-effort  non-fatal)
     if (type === 'prescription') {
       const meds = prescriptionMeds ?? (data as PrescriptionData).medications
       if (meds && meds.length > 0) {
@@ -203,7 +203,7 @@ export const documentsService = {
    * Persist a generated explanation back into document_analyses.
    * Called when the explanation page generates explanation on-demand for
    * an authenticated upload that was saved without an explanation.
-   * Best-effort — caller should not fail if this does.
+   * Best-effort  caller should not fail if this does.
    */
   async saveExplanationToAnalysis(
     documentId: string,

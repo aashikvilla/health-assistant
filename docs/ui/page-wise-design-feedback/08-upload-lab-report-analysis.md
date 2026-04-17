@@ -1,13 +1,13 @@
-# 08 — Lab Report Analysis Result — Auth Upload Step 3 — UI/UX & CRO Critique
+# 08  Lab Report Analysis Result  Auth Upload Step 3  UI/UX & CRO Critique
 
 **Screenshot:** `08-auth-upload-s3-lab-report-analysis.png`
 **Route:** `/dashboard/upload/[profileId]` (authenticated, lab report result)
-**Goal:** Show the AI analysis of the lab report — abnormal markers with plain-language explanations — and get the user to save it.
+**Goal:** Show the AI analysis of the lab report  abnormal markers with plain-language explanations  and get the user to save it.
 **Stakes:** For a user who just got blood test results, this is an emotionally high-stakes screen. Clarity, reassurance, and accuracy are paramount. A confusing or anxiety-inducing result screen will damage trust irreparably.
 
 ---
 
-## 1. Title — Still Says "Upload Prescription"
+## 1. Title  Still Says "Upload Prescription"
 
 **Current:** Top-left of the screen, prominently: "Upload Prescription."
 
@@ -21,7 +21,7 @@ The fact that this error persists through both the review step (Screen 07) and t
 
 ---
 
-## 2. Screen Layout — Correct Hierarchy, Wrong Emphasis
+## 2. Screen Layout  Correct Hierarchy, Wrong Emphasis
 
 **Current top-to-bottom order:**
 1. Nav + title
@@ -46,27 +46,27 @@ The fact that this error persists through both the review step (Screen 07) and t
 
 ---
 
-## 3. "Referred by Dr. Hiran Shah. For Nath M. Patel" — Looks Like a Hyperlink
+## 3. "Referred by Dr. Hiran Shah. For Nath M. Patel"  Looks Like a Hyperlink
 
 **Current:** Rendered in small muted teal/blue text below the page title.
 
-**The Prägnanz problem:** In any web context, teal/blue text means "this is a link — tap me." This attribution line is not a link. Users will tap it expecting something to happen. When nothing happens, they will feel the interface is broken.
+**The Prägnanz problem:** In any web context, teal/blue text means "this is a link  tap me." This attribution line is not a link. Users will tap it expecting something to happen. When nothing happens, they will feel the interface is broken.
 
-**Severity:** Medium — taps on non-interactive "link" text are a documented source of user frustration in usability testing.
+**Severity:** Medium  taps on non-interactive "link" text are a documented source of user frustration in usability testing.
 
 **Fix:** Render in standard grey text (#6B7280 or similar), same weight as other metadata. Remove any teal/blue colour from non-interactive text. If you want to draw attention to it, use a card container with a slight background (like the prescription meta block in Screen 14).
 
-**Content improvement:** "Referred by Dr. Hiran Shah. For Nath M. Patel." is grammatically passive and reads like a footer line. Reframe as a patient context header: "Nath M. Patel · CBC · 02 Dec 2019 · Dr. Hiran Shah." — this reads as identity, not provenance.
+**Content improvement:** "Referred by Dr. Hiran Shah. For Nath M. Patel." is grammatically passive and reads like a footer line. Reframe as a patient context header: "Nath M. Patel · CBC · 02 Dec 2019 · Dr. Hiran Shah."  this reads as identity, not provenance.
 
 ---
 
-## 4. Disclaimer Banner — Same Peak-End Rule Violation
+## 4. Disclaimer Banner  Same Peak-End Rule Violation
 
 **Current:** Full-width yellow banner: "AI-generated summary. Do not adjust medication based on this. Consult Dr. Hiran Shah before making any changes."
 
 Same issue as Screen 06. Worse here, because lab results carry more anxiety than prescriptions. A user seeing abnormal blood test results is already anxious. The first thing they read should be their results, not a warning that pre-frames the results as potentially wrong.
 
-Additionally, the disclaimer says "Do not adjust medication based on this" — for a lab report, the relevant caution is about test interpretation, not medication adjustment. The disclaimer is copied from the prescription flow and doesn't even apply accurately to lab results.
+Additionally, the disclaimer says "Do not adjust medication based on this"  for a lab report, the relevant caution is about test interpretation, not medication adjustment. The disclaimer is copied from the prescription flow and doesn't even apply accurately to lab results.
 
 **Fix:**
 1. Move the disclaimer below the AbnormalMarkerCards
@@ -75,7 +75,7 @@ Additionally, the disclaimer says "Do not adjust medication based on this" — f
 
 ---
 
-## 5. AbnormalMarkerCard Design — Strong but Needs Refinement
+## 5. AbnormalMarkerCard Design  Strong but Needs Refinement
 
 **Current:** Each abnormal marker card shows:
 - Test name (e.g., "Packed Cell Volume (PCV)")
@@ -85,8 +85,8 @@ Additionally, the disclaimer says "Do not adjust medication based on this" — f
 - Plain-language explanation paragraph
 
 **What works:**
-- Large value display is scannable — users can see their number immediately
-- Plain-language explanation paragraph is the core product value — well-executed
+- Large value display is scannable  users can see their number immediately
+- Plain-language explanation paragraph is the core product value  well-executed
 - "High" badge in red is correctly alarming
 - Coloured accent bar/border differentiates from normal results
 
@@ -94,15 +94,15 @@ Additionally, the disclaimer says "Do not adjust medication based on this" — f
 
 1. **The value display lacks context:** "57.5 %" tells you the number but not the gap. Show a mini visual scale: `[====|====>]` where the arrow shows how far above the range the value is. A value at 51 (just over 50) needs different treatment than a value at 70 (critically over). The current display treats both identically.
 
-2. **Missing severity grading:** The FRD defines three levels: `normal / attention / critical`. "High" covers a wide range. PCV at 57.5 (vs. max 50) is mild elevation. PCV at 70 is potentially serious. The card should differentiate: "Mildly elevated" vs. "Significantly elevated" — this is what the plain-language explanation paragraph does (it says "mild dehydration or living at high altitude"), but the badge should match.
+2. **Missing severity grading:** The FRD defines three levels: `normal / attention / critical`. "High" covers a wide range. PCV at 57.5 (vs. max 50) is mild elevation. PCV at 70 is potentially serious. The card should differentiate: "Mildly elevated" vs. "Significantly elevated"  this is what the plain-language explanation paragraph does (it says "mild dehydration or living at high altitude"), but the badge should match.
 
 3. **Explanation length:** The explanation paragraphs are appropriately detailed. But on mobile, 3–4 sentences per card means the page gets long quickly. Consider a collapsed state: first 1 sentence visible, "Read more →" for the full explanation. Progressive disclosure.
 
-4. **"All Clear" state:** When all values are normal, this section should show a prominent "All Clear" card with a green checkmark and celebratory micro-animation. This positive state is the most emotionally resonant moment in the product for users with normal results — it must be designed as a reward, not just an absence of warning cards.
+4. **"All Clear" state:** When all values are normal, this section should show a prominent "All Clear" card with a green checkmark and celebratory micro-animation. This positive state is the most emotionally resonant moment in the product for users with normal results  it must be designed as a reward, not just an absence of warning cards.
 
 ---
 
-## 6. "Things to Follow" Section — High Value, Low Visibility
+## 6. "Things to Follow" Section  High Value, Low Visibility
 
 **Current:** 4 bullet points with specific actionable advice:
 - Ask doctor whether to repeat PCV and Hb test after hydration
@@ -122,7 +122,7 @@ Additionally, the disclaimer says "Do not adjust medication based on this" — f
 
 ---
 
-## 7. "Save Lab Report" Button — Terminal CTA Analysis
+## 7. "Save Lab Report" Button  Terminal CTA Analysis
 
 **Current:** Full-width blue "Save Lab Report" button at the bottom of the page.
 
@@ -130,7 +130,7 @@ Additionally, the disclaimer says "Do not adjust medication based on this" — f
 
 **What needs improvement:**
 
-1. **"Save Lab Report" is transactional copy.** After reading about abnormal blood values and receiving personalised advice, the user's emotional state is: concerned, informed, motivated to act. The CTA should match that state: "Save & Track Over Time →" (suggests longitudinal value), or "Keep This Report" (possessive, lower friction than "save"), or "Done — Save Report →" (completion framing).
+1. **"Save Lab Report" is transactional copy.** After reading about abnormal blood values and receiving personalised advice, the user's emotional state is: concerned, informed, motivated to act. The CTA should match that state: "Save & Track Over Time →" (suggests longitudinal value), or "Keep This Report" (possessive, lower friction than "save"), or "Done  Save Report →" (completion framing).
 
 2. **No confirmation of where they'll go:** After saving, the user lands on `/records/[id]`. Telling them this in the CTA: "Save & View Full Report →" sets expectation and reduces post-save confusion.
 
@@ -143,27 +143,27 @@ Additionally, the disclaimer says "Do not adjust medication based on this" — f
 The FRD specifies several features for lab report analysis that are not visible in this screen:
 
 **F2 outputs not shown:**
-- `summary` field: 2–3 sentence plain-language summary of the report as a whole — not present. The AbnormalMarkerCards provide per-marker explanations but no overall summary.
-- `risk_flags`: Anything requiring immediate attention with severity flags — if PCV is critically elevated, this should be prominently flagged, not just shown as a "High" badge in a card.
-- `terms_explained`: Medical jargon translations — not present. "Packed Cell Volume" is jargon. The app explains it in the card, but a dedicated "Terms explained" section would be valuable for literacy.
+- `summary` field: 2–3 sentence plain-language summary of the report as a whole  not present. The AbnormalMarkerCards provide per-marker explanations but no overall summary.
+- `risk_flags`: Anything requiring immediate attention with severity flags  if PCV is critically elevated, this should be prominently flagged, not just shown as a "High" badge in a card.
+- `terms_explained`: Medical jargon translations  not present. "Packed Cell Volume" is jargon. The app explains it in the card, but a dedicated "Terms explained" section would be valuable for literacy.
 
-**Lab trending (F5):** If this user has uploaded a previous CBC, the current results should be compared to the previous ones: "Your Haemoglobin was 11.8 last month (▲ 0.7 improvement)" or "Your PCV has been above range in both reports (▲ trend to watch)." This trending is described in the FRD as "a KEY differentiator" — it's not visible in any current screen.
+**Lab trending (F5):** If this user has uploaded a previous CBC, the current results should be compared to the previous ones: "Your Haemoglobin was 11.8 last month (▲ 0.7 improvement)" or "Your PCV has been above range in both reports (▲ trend to watch)." This trending is described in the FRD as "a KEY differentiator"  it's not visible in any current screen.
 
 ---
 
 ## 9. Accessibility
 
-**Colour for severity:** The AbnormalMarkerCard uses red for "High" and presumably yellow/amber for "Low." Users with red-green colour blindness (8% of males) cannot distinguish red warning states from normal states by colour alone. The "High" text badge is the accessible fallback — ensure it's always rendered as text, never just a coloured indicator.
+**Colour for severity:** The AbnormalMarkerCard uses red for "High" and presumably yellow/amber for "Low." Users with red-green colour blindness (8% of males) cannot distinguish red warning states from normal states by colour alone. The "High" text badge is the accessible fallback  ensure it's always rendered as text, never just a coloured indicator.
 
 **Screen reader card structure:** Each AbnormalMarkerCard should be an `<article>` element with a heading (`<h3>`) for the test name. Screen readers should be able to navigate between cards using heading navigation.
 
-**Numeric values:** "57.5 %" should be read by screen readers as "57.5 percent" — ensure the percentage symbol is either a `<span aria-label="percent">` or the value is followed by an explicit unit label in the DOM.
+**Numeric values:** "57.5 %" should be read by screen readers as "57.5 percent"  ensure the percentage symbol is either a `<span aria-label="percent">` or the value is followed by an explicit unit label in the DOM.
 
 ---
 
 ## 10. Mobile Issues
 
-**Two long explanation cards:** On mobile (375px), each AbnormalMarkerCard with a 3-sentence explanation is roughly 160px tall. Two cards = 320px. Add the header, disclaimer, things-to-follow, and CTA, and the page is approximately 900–1000px — about 1.5 phone screens. This is manageable but needs:
+**Two long explanation cards:** On mobile (375px), each AbnormalMarkerCard with a 3-sentence explanation is roughly 160px tall. Two cards = 320px. Add the header, disclaimer, things-to-follow, and CTA, and the page is approximately 900–1000px  about 1.5 phone screens. This is manageable but needs:
 - No footer of any kind
 - No marketing nav
 - Clean, focused layout

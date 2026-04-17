@@ -4,7 +4,7 @@ import { signOut } from '@/app/actions'
 
 /**
  * Icon button that signs the user out.
- * Uses a form so the server action runs server-side — no client Supabase client needed.
+ * Uses a form so the server action runs server-side  no client Supabase client needed.
  */
 export function LogoutButton() {
   return (

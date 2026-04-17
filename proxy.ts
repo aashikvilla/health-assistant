@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
 }
 
 // Matcher excludes static assets and the OCR API route from session refresh.
-// `/upload` IS run through the proxy so middleware can enforce auth — see
+// `/upload` IS run through the proxy so middleware can enforce auth  see
 // `lib/supabase/middleware.ts` `protectedPrefixes`.
 export const config = {
   matcher: [

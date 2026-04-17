@@ -15,7 +15,7 @@ export type SaveUploadResult =
  * Persist an extracted prescription to the database.
  *
  * Called by the authenticated upload review screen when the user clicks
- * "Looks good — Save Prescription". Validates that the profile belongs to
+ * "Looks good  Save Prescription". Validates that the profile belongs to
  * the current user before writing.
  */
 export async function savePrescription(
@@ -114,7 +114,7 @@ export async function savePendingUpload(
 }
 
 /**
- * Redirect helper — centralises post-save navigation.
+ * Redirect helper  centralises post-save navigation.
  * Use this after a successful save when you want to navigate from a server
  * action (redirect() cannot be called from client components).
  */

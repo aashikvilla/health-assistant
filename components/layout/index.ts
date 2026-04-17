@@ -1,8 +1,6 @@
 export { PageLayout } from './PageLayout'
 export { PageHeader } from './PageHeader'
 export { PageFooter } from './PageFooter'
-export { AppHeader } from './AppHeader'
-export { AppFooter } from './AppFooter'
 export { BottomNav } from './BottomNav'
 export { AppDrawerNav } from './AppDrawerNav'
 export { LogoutButton } from './LogoutButton'

@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 /**
  * Registers the service worker on mount.
  * Include this once in the root layout (already done in app/layout.tsx).
- * Safe to render in any environment — no-ops in dev when SW is absent.
+ * Safe to render in any environment  no-ops in dev when SW is absent.
  */
 export function ServiceWorkerRegistration() {
   useEffect(() => {
@@ -18,7 +18,7 @@ export function ServiceWorkerRegistration() {
           const newSW = reg.installing
           newSW?.addEventListener('statechange', () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-              // A new version is available — could trigger an in-app update toast here
+              // A new version is available  could trigger an in-app update toast here
               console.info('[SW] New version available. Refresh to update.')
             }
           })

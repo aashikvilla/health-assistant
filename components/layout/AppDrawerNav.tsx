@@ -39,7 +39,7 @@ const NAV_ITEMS = [
   { label: 'Profile',  href: '/settings',  Icon: ProfileIcon  },
 ]
 
-// Only show the hamburger on top-level screens — same rule as BottomNav.
+// Only show the hamburger on top-level screens  same rule as BottomNav.
 const PRIMARY_PATHS = ['/dashboard', '/timeline', '/settings']
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -67,7 +67,7 @@ export function AppDrawerNav() {
 
   const visible = PRIMARY_PATHS.some((p) => pathname === p)
 
-  // Detect desktop client-side — avoids Tailwind v4 hidden/sm:flex cascade issues
+  // Detect desktop client-side  avoids Tailwind v4 hidden/sm:flex cascade issues
   const [isDesktop, setIsDesktop] = useState(false)
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 640)
@@ -78,12 +78,12 @@ export function AppDrawerNav() {
 
   return (
     <>
-      {/* ── Hamburger trigger — desktop only, primary routes only ─── */}
+      {/* ── Hamburger trigger  desktop only, primary routes only ─── */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Open navigation"
         aria-expanded={open}
-        className="fixed top-[10px] right-5 z-[100] w-9 h-9 rounded-xl items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80"
+        className="fixed top-[10px] right-5 z-100 w-9 h-9 rounded-xl items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80"
         style={{
           display: isDesktop ? 'flex' : 'none',
           background: 'rgba(255,255,255,.22)',
@@ -119,7 +119,7 @@ export function AppDrawerNav() {
         aria-label="Navigation"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 h-14 border-b border-border-subtle flex-shrink-0">
+        <div className="flex items-center justify-between px-5 h-14 border-b border-border-subtle shrink-0">
           <span className="font-body text-[11px] font-bold text-text-muted uppercase tracking-widest">
             Menu
           </span>
@@ -145,12 +145,12 @@ export function AppDrawerNav() {
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors min-h-[48px]"
                 style={active
-                  ? { background: 'rgba(29,78,216,.07)', borderLeft: '2px solid #1d4ed8', color: '#1d4ed8' }
-                  : { color: '#64748b', borderLeft: '2px solid transparent' }
+                  ? { background: 'rgba(29,78,216,.07)', borderLeft: '2px solid var(--color-primary)', color: 'var(--color-primary)' }
+                  : { color: 'var(--color-text-muted)', borderLeft: '2px solid transparent' }
                 }
                 aria-current={active ? 'page' : undefined}
               >
-                <span style={{ color: active ? '#1d4ed8' : '#94a3b8' }}>
+                <span className={active ? 'text-primary' : 'text-text-muted'}>
                   <Icon active={active} />
                 </span>
                 <span className="font-body text-sm font-semibold">{label}</span>
@@ -160,14 +160,13 @@ export function AppDrawerNav() {
         </nav>
 
         {/* Sign out */}
-        <div className="px-4 py-4 border-t border-border-subtle flex-shrink-0">
+        <div className="px-4 py-4 border-t border-border-subtle shrink-0">
           <form action={signOut}>
             <button
               type="submit"
-              className="flex items-center gap-3 w-full px-3 py-3 rounded-xl transition-colors hover:bg-error-subtle min-h-[48px]"
-              style={{ color: '#ef4444' }}
+              className="flex items-center gap-3 w-full px-3 py-3 rounded-xl transition-colors hover:bg-error-subtle min-h-[48px] text-error"
             >
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.75} aria-hidden="true">
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.75} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />

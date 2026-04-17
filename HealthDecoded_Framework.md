@@ -1,4 +1,4 @@
-# HealthDecoded — Lab Report Analysis Framework
+# HealthDecoded  Lab Report Analysis Framework
 # Complete Technical & Product Specification for Development
 # Version 1.0
 
@@ -19,7 +19,7 @@ When a user uploads a lab report (PDF or photo), the system:
 
 ## PART 2: EXTRACTION PIPELINE
 
-### Step 1 — File ingestion
+### Step 1  File ingestion
 
 Accepted input types:
 - PDF (text-based or scanned)
@@ -27,14 +27,14 @@ Accepted input types:
 - Multi-page PDFs (up to 50 pages)
 
 **PDF text extraction:**
-Use `pdf-parse` (Node.js) or `PyMuPDF` (Python) to extract raw text from text-layer PDFs. This is fast and accurate — no OCR needed.
+Use `pdf-parse` (Node.js) or `PyMuPDF` (Python) to extract raw text from text-layer PDFs. This is fast and accurate  no OCR needed.
 
 ```
 Raw PDF → pdf-parse → Plain text string → Send to Claude
 ```
 
 **Scanned PDF or photo:**
-Use Claude's vision API (passing image as base64). Claude reads the image directly — no separate OCR step needed. This handles:
+Use Claude's vision API (passing image as base64). Claude reads the image directly  no separate OCR step needed. This handles:
 - Blurry or slightly rotated photos
 - Printed lab report tables
 - Handwritten doctor annotations (basic)
@@ -46,28 +46,28 @@ Image file → Base64 encode → Claude Vision API → Structured JSON
 **Multi-page handling:**
 Extract all pages into a single concatenated text string. Include page break markers so Claude knows where pages end. Cap at ~40,000 tokens (~30 pages). If longer, split into logical sections (e.g., blood panel + hormones separately).
 
-### Step 2 — Pre-processing (before sending to Claude)
+### Step 2  Pre-processing (before sending to Claude)
 
 Before sending to the AI, do a quick clean-up pass:
 
 1. Remove repeated header/footer text (lab name, patient info repeating on every page)
-2. Normalize whitespace — multiple spaces → single space, remove form feed characters
+2. Normalize whitespace  multiple spaces → single space, remove form feed characters
 3. Detect report type heuristically:
    - Contains "mg/dL", "g/dL", "IU/L", "ng/mL" → likely lab report
    - Contains "Tablet", "Capsule", "twice daily", "mg" doses → likely prescription
    - Contains "Impression", "Finding" → likely radiology/scan report
 4. Tag the detected type and pass it to Claude as context
 
-### Step 3 — Claude API call
+### Step 3  Claude API call
 
 **Model:** claude-sonnet-4-20250514 (best balance of speed, cost, accuracy)
 **Max tokens output:** 4000 (enough for a full 20-marker panel with explanations)
-**Temperature:** 0 (deterministic — critical for medical accuracy)
+**Temperature:** 0 (deterministic  critical for medical accuracy)
 **Mode:** JSON mode (system prompt instructs Claude to return only valid JSON)
 
 **What to send:**
 ```
-system_prompt: [Full medical analysis prompt — see Part 3]
+system_prompt: [Full medical analysis prompt  see Part 3]
 user_message: "Analyse this lab report:\n\n{extracted_text}"
 ```
 
@@ -79,7 +79,7 @@ user_message: [
 ]
 ```
 
-### Step 4 — Response handling
+### Step 4  Response handling
 
 Claude returns a JSON object. Parse it, validate the schema (check all required fields exist), and save to `reports.analysis` (JSONB column in PostgreSQL).
 
@@ -87,7 +87,7 @@ If parsing fails (malformed JSON), retry once with: "Your last response was not 
 
 If it fails again, set `analysis_status = "failed"` and notify the user that analysis couldn't be completed.
 
-### Step 5 — Storage
+### Step 5  Storage
 
 Save to database:
 - `reports.file_url` → Supabase storage path to original file
@@ -96,7 +96,7 @@ Save to database:
 - `reports.type` → "lab_report" | "prescription" | "scan" | "other"
 - `reports.processed_at` → Timestamp
 
-Trigger a push notification to all family members: "Preeti's report is ready — 2 markers need attention."
+Trigger a push notification to all family members: "Preeti's report is ready  2 markers need attention."
 
 ---
 
@@ -112,9 +112,9 @@ You are a medical report interpreter for HealthDecoded, a family health platform
 CRITICAL RULES:
 1. Return ONLY valid JSON. No preamble, no explanation, no markdown code blocks. Just the raw JSON object.
 2. Never diagnose. Never say "you have X condition." Say "this marker suggests..." or "this may indicate..."
-3. Always be reassuring in tone. Most markers will be normal — celebrate that.
+3. Always be reassuring in tone. Most markers will be normal  celebrate that.
 4. Plain English only. No medical jargon without immediate explanation.
-5. Be specific with tips — give real, actionable Indian-context advice (e.g., specific Indian foods, sunlight patterns in India).
+5. Be specific with tips  give real, actionable Indian-context advice (e.g., specific Indian foods, sunlight patterns in India).
 6. If a value is within range but close to the boundary, note it as "watch" status.
 7. For markers you cannot interpret (due to missing reference range or unusual units), set status as "unclassified" with a note.
 8. Health score: Calculate 0–100 based on: (number of normal markers / total markers) × 100, then subtract 5 for each "monitor" marker and 15 for each "action_needed" marker. Floor at 0.
@@ -130,7 +130,7 @@ OUTPUT JSON SCHEMA (follow exactly):
     "test_date": "YYYY-MM-DD or null",
     "report_type": "lab_report | prescription | scan | other",
     "total_markers": "number",
-    "processing_notes": "string — any caveats about the extraction"
+    "processing_notes": "string  any caveats about the extraction"
   },
   "health_score": {
     "score": "number 0–100",
@@ -162,7 +162,7 @@ OUTPUT JSON SCHEMA (follow exactly):
           "text": "specific, actionable tip"
         }
       ],
-      "requires_doctor": "boolean — true if this marker alone warrants a doctor visit"
+      "requires_doctor": "boolean  true if this marker alone warrants a doctor visit"
     }
   ],
   "sections": {
@@ -174,14 +174,14 @@ OUTPUT JSON SCHEMA (follow exactly):
     {
       "marker_id": "string",
       "marker_name": "string",
-      "one_liner": "one sentence max — the key thing to know about this marker"
+      "one_liner": "one sentence max  the key thing to know about this marker"
     }
   ],
   "lifestyle_plan": {
-    "diet": ["string — specific food recommendations relevant to flagged markers"],
-    "exercise": ["string — specific exercise recommendations"],
-    "supplements": ["string — supplement recommendations with dosage context"],
-    "follow_up": "string — when to retest and what to watch"
+    "diet": ["string  specific food recommendations relevant to flagged markers"],
+    "exercise": ["string  specific exercise recommendations"],
+    "supplements": ["string  supplement recommendations with dosage context"],
+    "follow_up": "string  when to retest and what to watch"
   },
   "prescription_items": [
     {
@@ -213,19 +213,19 @@ How to classify each marker (Claude uses this logic, but also hardcode it as a v
 ```
 CLASSIFICATION RULES:
 
-1. NORMAL — value is within reference range AND more than 10% away from boundaries
-2. MONITOR — value is within reference range BUT within 10% of the upper or lower boundary
+1. NORMAL  value is within reference range AND more than 10% away from boundaries
+2. MONITOR  value is within reference range BUT within 10% of the upper or lower boundary
              OR value is slightly outside range (within 15% of boundary)
-3. ACTION_NEEDED — value is outside reference range by more than 15%
+3. ACTION_NEEDED  value is outside reference range by more than 15%
                    OR lab has explicitly flagged it (often bold or marked H/L in reports)
-4. UNCLASSIFIED — no reference range provided, or unusual units, or narrative result
+4. UNCLASSIFIED  no reference range provided, or unusual units, or narrative result
 ```
 
 **Special cases to handle:**
 - "Negative" / "Positive" results (urine tests, blood group, smear): Set value = "Negative" or "Positive", status = "normal" if Negative, "action_needed" if Positive unexpectedly
-- Blood Group — status = "normal" (informational only), explanation = their blood type
-- Peripheral blood smear impressions — parse the impression text, set status based on whether impression is "Normal" or contains abnormal findings
-- ESR, PAP Smear, X-Ray, Ultrasound — these have narrative impressions, not numeric values. Extract the impression sentence as the value.
+- Blood Group  status = "normal" (informational only), explanation = their blood type
+- Peripheral blood smear impressions  parse the impression text, set status based on whether impression is "Normal" or contains abnormal findings
+- ESR, PAP Smear, X-Ray, Ultrasound  these have narrative impressions, not numeric values. Extract the impression sentence as the value.
 
 **Range position calculation (for the range bar UI):**
 ```
@@ -266,10 +266,10 @@ Display health_score.headline as a short sentence
 Display 3 stat chips: count of each status bucket
 ```
 
-**3. Status bucketing — render order**
+**3. Status bucketing  render order**
 ```
 Always render in this order:
-  1. action_needed markers (most urgent — shown first)
+  1. action_needed markers (most urgent  shown first)
   2. monitor markers
   3. normal markers (collapsed by default)
 ```
@@ -279,7 +279,7 @@ Always render in this order:
 For each marker in action_needed and monitor:
 
 HEADER ROW:
-  Left:  icon (mapped from category — see icon map below)
+  Left:  icon (mapped from category  see icon map below)
          marker.name (DM Sans 500 16px)
          marker.nickname (italic, small, gray)
   Right: status pill (color from status)
@@ -290,7 +290,7 @@ RANGE BAR:
   Zone boundaries set by: reference_min and reference_max
   Dot position: marker.range_position (0–100%)
   Dot color: red if action_needed, amber if monitor, teal if normal
-  Labels below: DM Mono 10px — show reference_label
+  Labels below: DM Mono 10px  show reference_label
 
 VALUE ROW:
   Left:  marker.value + marker.unit (DM Mono 500 large, colored by status)
@@ -423,7 +423,7 @@ function validateAnalysis(json) {
 | Report in Hindi/regional language | Claude handles mixed Hindi/English. Add "Please translate any non-English text before analysing" to the prompt. |
 | Duplicate upload | Hash the file on client before upload. If hash exists in DB for this family, show "This report may already be uploaded. View existing?" |
 | Reference range missing | Claude sets status = "unclassified" for that marker. Render as gray, with explanation "We couldn't find a reference range for this marker." |
-| Markers outside plausible range (data entry error in PDF) | Add a sanity check: if value > 10× reference_max or < reference_min/10, flag as potentially erroneous. Show "This value seems unusually extreme — please verify with the original report." |
+| Markers outside plausible range (data entry error in PDF) | Add a sanity check: if value > 10× reference_max or < reference_min/10, flag as potentially erroneous. Show "This value seems unusually extreme  please verify with the original report." |
 | Very large report (50+ pages) | Split into batches of 15 pages each. Process in parallel. Merge results. Show progress bar. |
 | Network failure mid-analysis | Save `analysis_status = "processing"` with a timestamp. A background job checks for processing records older than 5 minutes and retries. |
 | Prescription with unfamiliar drug name | Claude still describes what category it likely belongs to based on name. Mark with requires_doctor = true. |
@@ -441,28 +441,28 @@ See attached reference file: `sample_analysis_output.json`
 
 ### Backend (Next.js API routes)
 
-- [ ] `POST /api/upload` — receives file, stores in Supabase Storage, creates report record with status "processing", triggers /api/analyse asynchronously
-- [ ] `POST /api/analyse` — fetches file from storage, extracts text (pdf-parse or passes image directly), calls Claude API, validates JSON, saves to reports.analysis, updates status, sends push notification
-- [ ] `GET /api/reports` — returns all reports for current user's family_id (RLS handles filtering)
-- [ ] `GET /api/reports/[id]` — returns single report including full analysis JSON
-- [ ] `DELETE /api/reports/[id]` — admin only, deletes report + file from storage
+- [ ] `POST /api/upload`  receives file, stores in Supabase Storage, creates report record with status "processing", triggers /api/analyse asynchronously
+- [ ] `POST /api/analyse`  fetches file from storage, extracts text (pdf-parse or passes image directly), calls Claude API, validates JSON, saves to reports.analysis, updates status, sends push notification
+- [ ] `GET /api/reports`  returns all reports for current user's family_id (RLS handles filtering)
+- [ ] `GET /api/reports/[id]`  returns single report including full analysis JSON
+- [ ] `DELETE /api/reports/[id]`  admin only, deletes report + file from storage
 
 ### Frontend (React components)
 
-- [ ] `<UploadSheet>` — bottom sheet, file picker, member selector, type selector, handles upload + shows processing state
-- [ ] `<ReportCard>` — compact card for lists — name, date, status summary chips
-- [ ] `<ReportDetail>` — full analysis view — health score, marker cards, lifestyle plan
-- [ ] `<MarkerCard>` — individual marker with range bar, explanation, tips
-- [ ] `<RangeBar>` — SVG or CSS range visualization with zone colors and dot pointer
-- [ ] `<StatusPill>` — colored pill component for normal/monitor/action_needed
-- [ ] `<PrescriptionCard>` — medicine info, schedule, warnings, course progress
+- [ ] `<UploadSheet>`  bottom sheet, file picker, member selector, type selector, handles upload + shows processing state
+- [ ] `<ReportCard>`  compact card for lists  name, date, status summary chips
+- [ ] `<ReportDetail>`  full analysis view  health score, marker cards, lifestyle plan
+- [ ] `<MarkerCard>`  individual marker with range bar, explanation, tips
+- [ ] `<RangeBar>`  SVG or CSS range visualization with zone colors and dot pointer
+- [ ] `<StatusPill>`  colored pill component for normal/monitor/action_needed
+- [ ] `<PrescriptionCard>`  medicine info, schedule, warnings, course progress
 
 ### PWA setup
 
-- [ ] `manifest.json` — app name, icons (192px, 512px), theme color #1B3A4B, display standalone
-- [ ] `service-worker.js` — cache app shell, cache last 3 reports for offline reading
-- [ ] VAPID keys — for Web Push notifications (generate with `web-push` npm package)
-- [ ] `<meta name="theme-color">` — #F7F4EF (warm cream, matches app background)
+- [ ] `manifest.json`  app name, icons (192px, 512px), theme color #1B3A4B, display standalone
+- [ ] `service-worker.js`  cache app shell, cache last 3 reports for offline reading
+- [ ] VAPID keys  for Web Push notifications (generate with `web-push` npm package)
+- [ ] `<meta name="theme-color">`  #F7F4EF (warm cream, matches app background)
 
 ---
 
@@ -472,13 +472,13 @@ See attached reference file: `sample_analysis_output.json`
 Unstructured Claude responses are unpredictable for rendering. Structured JSON means the app can reliably render the same UI regardless of the report content. It also makes it easy to validate, store, and query.
 
 **Why temperature = 0?**
-Medical information must be consistent. Temperature 0 makes Claude deterministic — the same report run twice returns the same analysis. This is critical for trust.
+Medical information must be consistent. Temperature 0 makes Claude deterministic  the same report run twice returns the same analysis. This is critical for trust.
 
 **Why Claude Sonnet over Haiku?**
 Haiku is cheaper but misses nuance in borderline markers and sometimes produces less accurate plain-English explanations. Sonnet is worth the cost for healthcare (roughly ₹3–6 per analysis).
 
 **Why Supabase JSONB for analysis storage?**
-JSONB lets you query inside the analysis later — e.g., "find all family reports where any marker has status = action_needed" using PostgreSQL's JSON operators. This enables future features like family health dashboards and trend analysis across reports.
+JSONB lets you query inside the analysis later  e.g., "find all family reports where any marker has status = action_needed" using PostgreSQL's JSON operators. This enables future features like family health dashboards and trend analysis across reports.
 
 **Why not run OCR separately?**
-Claude's vision API handles OCR natively and produces better results on lab report tables than standalone OCR tools because it understands the semantic structure of what it's reading — not just the characters.
+Claude's vision API handles OCR natively and produces better results on lab report tables than standalone OCR tools because it understands the semantic structure of what it's reading  not just the characters.

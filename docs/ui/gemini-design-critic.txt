@@ -5,7 +5,7 @@
    * Justification: Fitts's Law. A button 2000px down is unreachable. Miller's Law suggests 21+ fields are too many for
      working memory; chunking them into 7 items reduces load.
 
-  05 & 06 — AI Explanation Loading & Results
+  05 & 06  AI Explanation Loading & Results
    * Proposed Improvements:
        * Skeleton Screens: Replace the bare spinner with skeleton cards that mimic the final MedicationCard layout.
        * Disclaimer Move: Shift the yellow disclaimer from the top to a subtle 1-line footer. Lead with the Value
@@ -14,7 +14,7 @@
    * Justification: Peak-End Rule. Don't start the result experience with a warning. Start with the "Whoa" moment (the
      analysis).
 
-  07 & 08 — Lab Report Review & Analysis
+  07 & 08  Lab Report Review & Analysis
    * Proposed Improvements:
        * Title Fix: Change "Upload Prescription" to "Lab Report Analysis."
        * Relative Context: In the header, show "2 of 22 parameters outside normal range" instead of just "(2)".
@@ -23,7 +23,7 @@
    * Justification: Tesler's Law. Complexity (verification) is currently shifted to the user. The system should take
      responsibility for the accuracy of clinical values.
 
-  09 & 12 — Dashboard / Family Hub (/dashboard)
+  09 & 12  Dashboard / Family Hub (/dashboard)
    * Proposed Improvements:
        * Human Greeting: Change "Hi aashikvilla99" to "Hi Aashik."
        * Data Hygiene: Fix "LAVanya" to "Lavanya" via storage-layer normalization.
@@ -33,7 +33,7 @@
    * Justification: Aesthetic-Usability Effect. Broken icons and technical usernames signal a "low-trust" developer tool
      rather than a "high-trust" medical app.
 
-  10 — Auth (/auth)
+  10  Auth (/auth)
    * Proposed Improvements:
        * The Escape: Add a "Forgot password?" link (critical mission failure if missing).
        * Context: Add a one-line value prop: "Your family's health records, understood."
@@ -42,7 +42,7 @@
   Based on the existing documentation, designer feedback, and a comprehensive audit of the current codebase, I have
   developed a detailed redesign strategy for HealthDecoded (Vitae).
 
-  11 — Add Family Member (/dashboard/add-member)
+  11  Add Family Member (/dashboard/add-member)
    * Proposed Improvements:
        * Cancel vs. Skip: Rename "Skip for now" to "Cancel" to avoid false task deferral.
        * Custom Selects: Replace native browser dropdowns with custom styled "Chip" selectors for relationships.
@@ -230,13 +230,13 @@
 
   2. Screen-by-Screen Improvement Plan
 
-  13 — Timeline (/timeline)
+  13  Timeline (/timeline)
    * Proposed Improvements:
        * Separation: Add vertical space and labels ("Who" and "Type") between the two filter rows.
        * Enriched Rows: Show "7 medications" or "2 abnormal markers" directly on the timeline card.
    * Justification: Law of Proximity. Currently, two identical rows of chips blend into one confusing block.
 
-  14 & 15 — Record Details (/records/[id])
+  14 & 15  Record Details (/records/[id])
    * Proposed Improvements:
        * Merge View: Ensure the dashboard "Active Medications" strip links directly to the AI-enriched detail cards, not
          a raw OCR list.
@@ -799,7 +799,7 @@
        * Justification: Keeps the user engaged during the 5-10 second processing window while reinforcing trust.
 
   The "Vibe" Problem:
-  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palette—standard medical blues and slate
+  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palettestandard medical blues and slate
   grays. In 2026, users expect a health app to feel warm, magical, and obsessively polished. It should feel like a
   "Health Concierge," not a "File Manager."
 
@@ -913,7 +913,7 @@
   The Redesign North Star: The Clinical Curator.
    * Palette: Primary Electric Indigo (#4F46E5), Secondary Soft Teal (#006A66), Surface Oxygen White (#F7F9FF).
    * Structure: Bento Grid for information organization; Tonal Layering (no 1px borders) for depth.
-   * Motion: Liquid Transitions — UI elements should feel like they are "organic" and responsive to the user's touch.
+   * Motion: Liquid Transitions  UI elements should feel like they are "organic" and responsive to the user's touch.
 
   ---
 
@@ -1177,7 +1177,7 @@ Tips for getting started:
    This design is safe but invisible. It will get some sign-ups from people already searching for health record tools,
    but it will not go viral or convert cold traffic at the scale needed for first 10k users.
    The current version feels like a B2B medical SaaS from 2023. To win in 2026, it needs to feel like a delightful
-   consumer health app — warm, magical, human-centered, and obsessively polished with micro-moments that make people
+   consumer health app  warm, magical, human-centered, and obsessively polished with micro-moments that make people
    say “whoa, this is actually cool.”
    I can redesign the full homepage (desktop + mobile) with exact Figma specs, new copy, color system, icon set, and
    interaction specs if you want the next iteration. Just say the word.
@@ -1453,7 +1453,7 @@ Tips for getting started:
 
    * Brand Identity: Shift to "Electric Indigo" (#4F46E5) as the primary brand color. It feels more "tech-forward" and
      vibrant than standard medical blue.
-   * Aesthetic: "Soft-Tech" — A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
+   * Aesthetic: "Soft-Tech"  A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
      high-quality 3D or stylized SVG illustrations.
    * Typography: Switch to a high-legibility sans-serif (e.g., Inter or Plus Jakarta Sans) with generous letter spacing
      and clear weight hierarchy.
@@ -1844,7 +1844,7 @@ Tips for getting started:
 
   Screen-by-Screen Improvement Plan
 
-  01 — Landing Homepage (/)
+  01  Landing Homepage (/)
    * Proposed Improvements:
        * Bento Grid Layout: Replace the 6-column feature grid with a Bento-style layout. Highlight "Smart Analysis" in a
          2x2 block.
@@ -1855,7 +1855,7 @@ Tips for getting started:
    * Justification: Hick's Law. Currently, two equal CTAs create decision paralysis. A Bento grid improves Prägnanz
      (simplicity) and scannability.
 
-  02 — File Picker — Upload Step 1 (/upload)
+  02  File Picker  Upload Step 1 (/upload)
    * Proposed Improvements:
        * Task Layout: Remove the 4-column marketing footer and main nav. Show only the logo and a "Cancel/Back" escape.
        * Proximity Fix: Move the "blur warning" directly under the "Photo" card.
@@ -1863,14 +1863,14 @@ Tips for getting started:
    * Justification: Jakob's Law. Users expect task screens (like Gmail/Stripe) to be focused and devoid of marketing
      clutter.
 
-  03 — OCR Processing (Loading)
+  03  OCR Processing (Loading)
    * Proposed Improvements:
        * Engagement: Add an elapsed time counter (e.g., "Processing... 3s").
        * Hierarchy: Move the "Keep page open" instruction to a prominent sticky bar at the top.
    * Justification: Doherty Threshold. Providing system feedback in <400ms or showing active progress prevents the "Is
      it frozen?" anxiety.
 
-  04 — Prescription Review (/upload/review)
+  04  Prescription Review (/upload/review)
    * Proposed Improvements:
        * Sticky CTA: Make the "Yes, This Looks Right" button sticky at the bottom of the viewport.
        * Accordion View: Collapse medicines into single-line "pills" (Name + Dosage). Only expand the one currently
@@ -1879,7 +1879,7 @@ Tips for getting started:
    * Justification: Fitts's Law. A button 2000px down is unreachable. Miller's Law suggests 21+ fields are too many for
      working memory; chunking them into 7 items reduces load.
 
-  05 & 06 — AI Explanation Loading & Results
+  05 & 06  AI Explanation Loading & Results
    * Proposed Improvements:
        * Skeleton Screens: Replace the bare spinner with skeleton cards that mimic the final MedicationCard layout.
        * Disclaimer Move: Shift the yellow disclaimer from the top to a subtle 1-line footer. Lead with the Value
@@ -1888,7 +1888,7 @@ Tips for getting started:
    * Justification: Peak-End Rule. Don't start the result experience with a warning. Start with the "Whoa" moment (the
      analysis).
 
-  07 & 08 — Lab Report Review & Analysis
+  07 & 08  Lab Report Review & Analysis
    * Proposed Improvements:
        * Title Fix: Change "Upload Prescription" to "Lab Report Analysis."
        * Relative Context: In the header, show "2 of 22 parameters outside normal range" instead of just "(2)".
@@ -1897,7 +1897,7 @@ Tips for getting started:
    * Justification: Tesler's Law. Complexity (verification) is currently shifted to the user. The system should take
      responsibility for the accuracy of clinical values.
 
-  09 & 12 — Dashboard / Family Hub (/dashboard)
+  09 & 12  Dashboard / Family Hub (/dashboard)
    * Proposed Improvements:
        * Human Greeting: Change "Hi aashikvilla99" to "Hi Aashik."
        * Data Hygiene: Fix "LAVanya" to "Lavanya" via storage-layer normalization.
@@ -1907,7 +1907,7 @@ Tips for getting started:
    * Justification: Aesthetic-Usability Effect. Broken icons and technical usernames signal a "low-trust" developer tool
      rather than a "high-trust" medical app.
 
-  10 — Auth (/auth)
+  10  Auth (/auth)
    * Proposed Improvements:
        * The Escape: Add a "Forgot password?" link (critical mission failure if missing).
        * Context: Add a one-line value prop: "Your family's health records, understood."
@@ -1916,7 +1916,7 @@ Tips for getting started:
   Based on the existing documentation, designer feedback, and a comprehensive audit of the current codebase, I have
   developed a detailed redesign strategy for HealthDecoded (Vitae).
 
-  11 — Add Family Member (/dashboard/add-member)
+  11  Add Family Member (/dashboard/add-member)
    * Proposed Improvements:
        * Cancel vs. Skip: Rename "Skip for now" to "Cancel" to avoid false task deferral.
        * Custom Selects: Replace native browser dropdowns with custom styled "Chip" selectors for relationships.
@@ -2104,13 +2104,13 @@ Tips for getting started:
 
   2. Screen-by-Screen Improvement Plan
 
-  13 — Timeline (/timeline)
+  13  Timeline (/timeline)
    * Proposed Improvements:
        * Separation: Add vertical space and labels ("Who" and "Type") between the two filter rows.
        * Enriched Rows: Show "7 medications" or "2 abnormal markers" directly on the timeline card.
    * Justification: Law of Proximity. Currently, two identical rows of chips blend into one confusing block.
 
-  14 & 15 — Record Details (/records/[id])
+  14 & 15  Record Details (/records/[id])
    * Proposed Improvements:
        * Merge View: Ensure the dashboard "Active Medications" strip links directly to the AI-enriched detail cards, not
          a raw OCR list.
@@ -2673,7 +2673,7 @@ Tips for getting started:
        * Justification: Keeps the user engaged during the 5-10 second processing window while reinforcing trust.
 
   The "Vibe" Problem:
-  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palette—standard medical blues and slate
+  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palettestandard medical blues and slate
   grays. In 2026, users expect a health app to feel warm, magical, and obsessively polished. It should feel like a
   "Health Concierge," not a "File Manager."
 
@@ -2787,7 +2787,7 @@ Tips for getting started:
   The Redesign North Star: The Clinical Curator.
    * Palette: Primary Electric Indigo (#4F46E5), Secondary Soft Teal (#006A66), Surface Oxygen White (#F7F9FF).
    * Structure: Bento Grid for information organization; Tonal Layering (no 1px borders) for depth.
-   * Motion: Liquid Transitions — UI elements should feel like they are "organic" and responsive to the user's touch.
+   * Motion: Liquid Transitions  UI elements should feel like they are "organic" and responsive to the user's touch.
 
   ---
 
@@ -3056,7 +3056,7 @@ Tips for getting started:
    This design is safe but invisible. It will get some sign-ups from people already searching for health record tools,
    but it will not go viral or convert cold traffic at the scale needed for first 10k users.
    The current version feels like a B2B medical SaaS from 2023. To win in 2026, it needs to feel like a delightful
-   consumer health app — warm, magical, human-centered, and obsessively polished with micro-moments that make people
+   consumer health app  warm, magical, human-centered, and obsessively polished with micro-moments that make people
    say “whoa, this is actually cool.”
    I can redesign the full homepage (desktop + mobile) with exact Figma specs, new copy, color system, icon set, and
    interaction specs if you want the next iteration. Just say the word.
@@ -3332,7 +3332,7 @@ Tips for getting started:
 
    * Brand Identity: Shift to "Electric Indigo" (#4F46E5) as the primary brand color. It feels more "tech-forward" and
      vibrant than standard medical blue.
-   * Aesthetic: "Soft-Tech" — A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
+   * Aesthetic: "Soft-Tech"  A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
      high-quality 3D or stylized SVG illustrations.
    * Typography: Switch to a high-legibility sans-serif (e.g., Inter or Plus Jakarta Sans) with generous letter spacing
      and clear weight hierarchy.
@@ -3723,7 +3723,7 @@ Tips for getting started:
 
   Screen-by-Screen Improvement Plan
 
-  01 — Landing Homepage (/)
+  01  Landing Homepage (/)
    * Proposed Improvements:
        * Bento Grid Layout: Replace the 6-column feature grid with a Bento-style layout. Highlight "Smart Analysis" in a
          2x2 block.
@@ -3734,7 +3734,7 @@ Tips for getting started:
    * Justification: Hick's Law. Currently, two equal CTAs create decision paralysis. A Bento grid improves Prägnanz
      (simplicity) and scannability.
 
-  02 — File Picker — Upload Step 1 (/upload)
+  02  File Picker  Upload Step 1 (/upload)
    * Proposed Improvements:
        * Task Layout: Remove the 4-column marketing footer and main nav. Show only the logo and a "Cancel/Back" escape.
        * Proximity Fix: Move the "blur warning" directly under the "Photo" card.
@@ -3742,14 +3742,14 @@ Tips for getting started:
    * Justification: Jakob's Law. Users expect task screens (like Gmail/Stripe) to be focused and devoid of marketing
      clutter.
 
-  03 — OCR Processing (Loading)
+  03  OCR Processing (Loading)
    * Proposed Improvements:
        * Engagement: Add an elapsed time counter (e.g., "Processing... 3s").
        * Hierarchy: Move the "Keep page open" instruction to a prominent sticky bar at the top.
    * Justification: Doherty Threshold. Providing system feedback in <400ms or showing active progress prevents the "Is
      it frozen?" anxiety.
 
-  04 — Prescription Review (/upload/review)
+  04  Prescription Review (/upload/review)
    * Proposed Improvements:
        * Sticky CTA: Make the "Yes, This Looks Right" button sticky at the bottom of the viewport.
        * Accordion View: Collapse medicines into single-line "pills" (Name + Dosage). Only expand the one currently
@@ -3758,7 +3758,7 @@ Tips for getting started:
    * Justification: Fitts's Law. A button 2000px down is unreachable. Miller's Law suggests 21+ fields are too many for
      working memory; chunking them into 7 items reduces load.
 
-  05 & 06 — AI Explanation Loading & Results
+  05 & 06  AI Explanation Loading & Results
    * Proposed Improvements:
        * Skeleton Screens: Replace the bare spinner with skeleton cards that mimic the final MedicationCard layout.
        * Disclaimer Move: Shift the yellow disclaimer from the top to a subtle 1-line footer. Lead with the Value
@@ -3767,7 +3767,7 @@ Tips for getting started:
    * Justification: Peak-End Rule. Don't start the result experience with a warning. Start with the "Whoa" moment (the
      analysis).
 
-  07 & 08 — Lab Report Review & Analysis
+  07 & 08  Lab Report Review & Analysis
    * Proposed Improvements:
        * Title Fix: Change "Upload Prescription" to "Lab Report Analysis."
        * Relative Context: In the header, show "2 of 22 parameters outside normal range" instead of just "(2)".
@@ -3776,7 +3776,7 @@ Tips for getting started:
    * Justification: Tesler's Law. Complexity (verification) is currently shifted to the user. The system should take
      responsibility for the accuracy of clinical values.
 
-  09 & 12 — Dashboard / Family Hub (/dashboard)
+  09 & 12  Dashboard / Family Hub (/dashboard)
    * Proposed Improvements:
        * Human Greeting: Change "Hi aashikvilla99" to "Hi Aashik."
        * Data Hygiene: Fix "LAVanya" to "Lavanya" via storage-layer normalization.
@@ -3786,7 +3786,7 @@ Tips for getting started:
    * Justification: Aesthetic-Usability Effect. Broken icons and technical usernames signal a "low-trust" developer tool
      rather than a "high-trust" medical app.
 
-  10 — Auth (/auth)
+  10  Auth (/auth)
    * Proposed Improvements:
        * The Escape: Add a "Forgot password?" link (critical mission failure if missing).
        * Context: Add a one-line value prop: "Your family's health records, understood."
@@ -3795,7 +3795,7 @@ Tips for getting started:
   Based on the existing documentation, designer feedback, and a comprehensive audit of the current codebase, I have
   developed a detailed redesign strategy for HealthDecoded (Vitae).
 
-  11 — Add Family Member (/dashboard/add-member)
+  11  Add Family Member (/dashboard/add-member)
    * Proposed Improvements:
        * Cancel vs. Skip: Rename "Skip for now" to "Cancel" to avoid false task deferral.
        * Custom Selects: Replace native browser dropdowns with custom styled "Chip" selectors for relationships.
@@ -3983,13 +3983,13 @@ Tips for getting started:
 
   2. Screen-by-Screen Improvement Plan
 
-  13 — Timeline (/timeline)
+  13  Timeline (/timeline)
    * Proposed Improvements:
        * Separation: Add vertical space and labels ("Who" and "Type") between the two filter rows.
        * Enriched Rows: Show "7 medications" or "2 abnormal markers" directly on the timeline card.
    * Justification: Law of Proximity. Currently, two identical rows of chips blend into one confusing block.
 
-  14 & 15 — Record Details (/records/[id])
+  14 & 15  Record Details (/records/[id])
    * Proposed Improvements:
        * Merge View: Ensure the dashboard "Active Medications" strip links directly to the AI-enriched detail cards, not
          a raw OCR list.
@@ -4552,7 +4552,7 @@ Tips for getting started:
        * Justification: Keeps the user engaged during the 5-10 second processing window while reinforcing trust.
 
   The "Vibe" Problem:
-  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palette—standard medical blues and slate
+  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palettestandard medical blues and slate
   grays. In 2026, users expect a health app to feel warm, magical, and obsessively polished. It should feel like a
   "Health Concierge," not a "File Manager."
 
@@ -4666,7 +4666,7 @@ Tips for getting started:
   The Redesign North Star: The Clinical Curator.
    * Palette: Primary Electric Indigo (#4F46E5), Secondary Soft Teal (#006A66), Surface Oxygen White (#F7F9FF).
    * Structure: Bento Grid for information organization; Tonal Layering (no 1px borders) for depth.
-   * Motion: Liquid Transitions — UI elements should feel like they are "organic" and responsive to the user's touch.
+   * Motion: Liquid Transitions  UI elements should feel like they are "organic" and responsive to the user's touch.
 
   ---
 
@@ -4935,7 +4935,7 @@ Tips for getting started:
    This design is safe but invisible. It will get some sign-ups from people already searching for health record tools,
    but it will not go viral or convert cold traffic at the scale needed for first 10k users.
    The current version feels like a B2B medical SaaS from 2023. To win in 2026, it needs to feel like a delightful
-   consumer health app — warm, magical, human-centered, and obsessively polished with micro-moments that make people
+   consumer health app  warm, magical, human-centered, and obsessively polished with micro-moments that make people
    say “whoa, this is actually cool.”
    I can redesign the full homepage (desktop + mobile) with exact Figma specs, new copy, color system, icon set, and
    interaction specs if you want the next iteration. Just say the word.
@@ -5211,7 +5211,7 @@ Tips for getting started:
 
    * Brand Identity: Shift to "Electric Indigo" (#4F46E5) as the primary brand color. It feels more "tech-forward" and
      vibrant than standard medical blue.
-   * Aesthetic: "Soft-Tech" — A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
+   * Aesthetic: "Soft-Tech"  A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
      high-quality 3D or stylized SVG illustrations.
    * Typography: Switch to a high-legibility sans-serif (e.g., Inter or Plus Jakarta Sans) with generous letter spacing
      and clear weight hierarchy.
@@ -5602,7 +5602,7 @@ Tips for getting started:
 
   Screen-by-Screen Improvement Plan
 
-  01 — Landing Homepage (/)
+  01  Landing Homepage (/)
    * Proposed Improvements:
        * Bento Grid Layout: Replace the 6-column feature grid with a Bento-style layout. Highlight "Smart Analysis" in a
          2x2 block.
@@ -5613,7 +5613,7 @@ Tips for getting started:
    * Justification: Hick's Law. Currently, two equal CTAs create decision paralysis. A Bento grid improves Prägnanz
      (simplicity) and scannability.
 
-  02 — File Picker — Upload Step 1 (/upload)
+  02  File Picker  Upload Step 1 (/upload)
    * Proposed Improvements:
        * Task Layout: Remove the 4-column marketing footer and main nav. Show only the logo and a "Cancel/Back" escape.
        * Proximity Fix: Move the "blur warning" directly under the "Photo" card.
@@ -5621,14 +5621,14 @@ Tips for getting started:
    * Justification: Jakob's Law. Users expect task screens (like Gmail/Stripe) to be focused and devoid of marketing
      clutter.
 
-  03 — OCR Processing (Loading)
+  03  OCR Processing (Loading)
    * Proposed Improvements:
        * Engagement: Add an elapsed time counter (e.g., "Processing... 3s").
        * Hierarchy: Move the "Keep page open" instruction to a prominent sticky bar at the top.
    * Justification: Doherty Threshold. Providing system feedback in <400ms or showing active progress prevents the "Is
      it frozen?" anxiety.
 
-  04 — Prescription Review (/upload/review)
+  04  Prescription Review (/upload/review)
    * Proposed Improvements:
        * Sticky CTA: Make the "Yes, This Looks Right" button sticky at the bottom of the viewport.
        * Accordion View: Collapse medicines into single-line "pills" (Name + Dosage). Only expand the one currently
@@ -5637,7 +5637,7 @@ Tips for getting started:
    * Justification: Fitts's Law. A button 2000px down is unreachable. Miller's Law suggests 21+ fields are too many for
      working memory; chunking them into 7 items reduces load.
 
-  05 & 06 — AI Explanation Loading & Results
+  05 & 06  AI Explanation Loading & Results
    * Proposed Improvements:
        * Skeleton Screens: Replace the bare spinner with skeleton cards that mimic the final MedicationCard layout.
        * Disclaimer Move: Shift the yellow disclaimer from the top to a subtle 1-line footer. Lead with the Value
@@ -5646,7 +5646,7 @@ Tips for getting started:
    * Justification: Peak-End Rule. Don't start the result experience with a warning. Start with the "Whoa" moment (the
      analysis).
 
-  07 & 08 — Lab Report Review & Analysis
+  07 & 08  Lab Report Review & Analysis
    * Proposed Improvements:
        * Title Fix: Change "Upload Prescription" to "Lab Report Analysis."
        * Relative Context: In the header, show "2 of 22 parameters outside normal range" instead of just "(2)".
@@ -5655,7 +5655,7 @@ Tips for getting started:
    * Justification: Tesler's Law. Complexity (verification) is currently shifted to the user. The system should take
      responsibility for the accuracy of clinical values.
 
-  09 & 12 — Dashboard / Family Hub (/dashboard)
+  09 & 12  Dashboard / Family Hub (/dashboard)
    * Proposed Improvements:
        * Human Greeting: Change "Hi aashikvilla99" to "Hi Aashik."
        * Data Hygiene: Fix "LAVanya" to "Lavanya" via storage-layer normalization.
@@ -5665,7 +5665,7 @@ Tips for getting started:
    * Justification: Aesthetic-Usability Effect. Broken icons and technical usernames signal a "low-trust" developer tool
      rather than a "high-trust" medical app.
 
-  10 — Auth (/auth)
+  10  Auth (/auth)
    * Proposed Improvements:
        * The Escape: Add a "Forgot password?" link (critical mission failure if missing).
        * Context: Add a one-line value prop: "Your family's health records, understood."
@@ -5674,7 +5674,7 @@ Tips for getting started:
   Based on the existing documentation, designer feedback, and a comprehensive audit of the current codebase, I have
   developed a detailed redesign strategy for HealthDecoded (Vitae).
 
-  11 — Add Family Member (/dashboard/add-member)
+  11  Add Family Member (/dashboard/add-member)
    * Proposed Improvements:
        * Cancel vs. Skip: Rename "Skip for now" to "Cancel" to avoid false task deferral.
        * Custom Selects: Replace native browser dropdowns with custom styled "Chip" selectors for relationships.
@@ -5862,13 +5862,13 @@ Tips for getting started:
 
   2. Screen-by-Screen Improvement Plan
 
-  13 — Timeline (/timeline)
+  13  Timeline (/timeline)
    * Proposed Improvements:
        * Separation: Add vertical space and labels ("Who" and "Type") between the two filter rows.
        * Enriched Rows: Show "7 medications" or "2 abnormal markers" directly on the timeline card.
    * Justification: Law of Proximity. Currently, two identical rows of chips blend into one confusing block.
 
-  14 & 15 — Record Details (/records/[id])
+  14 & 15  Record Details (/records/[id])
    * Proposed Improvements:
        * Merge View: Ensure the dashboard "Active Medications" strip links directly to the AI-enriched detail cards, not
          a raw OCR list.
@@ -6431,7 +6431,7 @@ Tips for getting started:
        * Justification: Keeps the user engaged during the 5-10 second processing window while reinforcing trust.
 
   The "Vibe" Problem:
-  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palette—standard medical blues and slate
+  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palettestandard medical blues and slate
   grays. In 2026, users expect a health app to feel warm, magical, and obsessively polished. It should feel like a
   "Health Concierge," not a "File Manager."
 
@@ -6545,7 +6545,7 @@ Tips for getting started:
   The Redesign North Star: The Clinical Curator.
    * Palette: Primary Electric Indigo (#4F46E5), Secondary Soft Teal (#006A66), Surface Oxygen White (#F7F9FF).
    * Structure: Bento Grid for information organization; Tonal Layering (no 1px borders) for depth.
-   * Motion: Liquid Transitions — UI elements should feel like they are "organic" and responsive to the user's touch.
+   * Motion: Liquid Transitions  UI elements should feel like they are "organic" and responsive to the user's touch.
 
   ---
 
@@ -6814,7 +6814,7 @@ Tips for getting started:
    This design is safe but invisible. It will get some sign-ups from people already searching for health record tools,
    but it will not go viral or convert cold traffic at the scale needed for first 10k users.
    The current version feels like a B2B medical SaaS from 2023. To win in 2026, it needs to feel like a delightful
-   consumer health app — warm, magical, human-centered, and obsessively polished with micro-moments that make people
+   consumer health app  warm, magical, human-centered, and obsessively polished with micro-moments that make people
    say “whoa, this is actually cool.”
    I can redesign the full homepage (desktop + mobile) with exact Figma specs, new copy, color system, icon set, and
    interaction specs if you want the next iteration. Just say the word.
@@ -7090,7 +7090,7 @@ Tips for getting started:
 
    * Brand Identity: Shift to "Electric Indigo" (#4F46E5) as the primary brand color. It feels more "tech-forward" and
      vibrant than standard medical blue.
-   * Aesthetic: "Soft-Tech" — A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
+   * Aesthetic: "Soft-Tech"  A mix of Glassmorphism (translucency), Bento Grid layouts (structured but dynamic), and
      high-quality 3D or stylized SVG illustrations.
    * Typography: Switch to a high-legibility sans-serif (e.g., Inter or Plus Jakarta Sans) with generous letter spacing
      and clear weight hierarchy.
@@ -7481,7 +7481,7 @@ Tips for getting started:
 
   Screen-by-Screen Improvement Plan
 
-  01 — Landing Homepage (/)
+  01  Landing Homepage (/)
    * Proposed Improvements:
        * Bento Grid Layout: Replace the 6-column feature grid with a Bento-style layout. Highlight "Smart Analysis" in a
          2x2 block.
@@ -7492,7 +7492,7 @@ Tips for getting started:
    * Justification: Hick's Law. Currently, two equal CTAs create decision paralysis. A Bento grid improves Prägnanz
      (simplicity) and scannability.
 
-  02 — File Picker — Upload Step 1 (/upload)
+  02  File Picker  Upload Step 1 (/upload)
    * Proposed Improvements:
        * Task Layout: Remove the 4-column marketing footer and main nav. Show only the logo and a "Cancel/Back" escape.
        * Proximity Fix: Move the "blur warning" directly under the "Photo" card.
@@ -7500,14 +7500,14 @@ Tips for getting started:
    * Justification: Jakob's Law. Users expect task screens (like Gmail/Stripe) to be focused and devoid of marketing
      clutter.
 
-  03 — OCR Processing (Loading)
+  03  OCR Processing (Loading)
    * Proposed Improvements:
        * Engagement: Add an elapsed time counter (e.g., "Processing... 3s").
        * Hierarchy: Move the "Keep page open" instruction to a prominent sticky bar at the top.
    * Justification: Doherty Threshold. Providing system feedback in <400ms or showing active progress prevents the "Is
      it frozen?" anxiety.
 
-  04 — Prescription Review (/upload/review)
+  04  Prescription Review (/upload/review)
    * Proposed Improvements:
        * Sticky CTA: Make the "Yes, This Looks Right" button sticky at the bottom of the viewport.
        * Accordion View: Collapse medicines into single-line "pills" (Name + Dosage). Only expand the one currently
@@ -7516,7 +7516,7 @@ Tips for getting started:
    * Justification: Fitts's Law. A button 2000px down is unreachable. Miller's Law suggests 21+ fields are too many for
      working memory; chunking them into 7 items reduces load.
 
-  05 & 06 — AI Explanation Loading & Results
+  05 & 06  AI Explanation Loading & Results
    * Proposed Improvements:
        * Skeleton Screens: Replace the bare spinner with skeleton cards that mimic the final MedicationCard layout.
        * Disclaimer Move: Shift the yellow disclaimer from the top to a subtle 1-line footer. Lead with the Value
@@ -7525,7 +7525,7 @@ Tips for getting started:
    * Justification: Peak-End Rule. Don't start the result experience with a warning. Start with the "Whoa" moment (the
      analysis).
 
-  07 & 08 — Lab Report Review & Analysis
+  07 & 08  Lab Report Review & Analysis
    * Proposed Improvements:
        * Title Fix: Change "Upload Prescription" to "Lab Report Analysis."
        * Relative Context: In the header, show "2 of 22 parameters outside normal range" instead of just "(2)".
@@ -7534,7 +7534,7 @@ Tips for getting started:
    * Justification: Tesler's Law. Complexity (verification) is currently shifted to the user. The system should take
      responsibility for the accuracy of clinical values.
 
-  09 & 12 — Dashboard / Family Hub (/dashboard)
+  09 & 12  Dashboard / Family Hub (/dashboard)
    * Proposed Improvements:
        * Human Greeting: Change "Hi aashikvilla99" to "Hi Aashik."
        * Data Hygiene: Fix "LAVanya" to "Lavanya" via storage-layer normalization.
@@ -7544,7 +7544,7 @@ Tips for getting started:
    * Justification: Aesthetic-Usability Effect. Broken icons and technical usernames signal a "low-trust" developer tool
      rather than a "high-trust" medical app.
 
-  10 — Auth (/auth)
+  10  Auth (/auth)
    * Proposed Improvements:
        * The Escape: Add a "Forgot password?" link (critical mission failure if missing).
        * Context: Add a one-line value prop: "Your family's health records, understood."
@@ -7553,7 +7553,7 @@ Tips for getting started:
   Based on the existing documentation, designer feedback, and a comprehensive audit of the current codebase, I have
   developed a detailed redesign strategy for HealthDecoded (Vitae).
 
-  11 — Add Family Member (/dashboard/add-member)
+  11  Add Family Member (/dashboard/add-member)
    * Proposed Improvements:
        * Cancel vs. Skip: Rename "Skip for now" to "Cancel" to avoid false task deferral.
        * Custom Selects: Replace native browser dropdowns with custom styled "Chip" selectors for relationships.
@@ -7741,13 +7741,13 @@ Tips for getting started:
 
   2. Screen-by-Screen Improvement Plan
 
-  13 — Timeline (/timeline)
+  13  Timeline (/timeline)
    * Proposed Improvements:
        * Separation: Add vertical space and labels ("Who" and "Type") between the two filter rows.
        * Enriched Rows: Show "7 medications" or "2 abnormal markers" directly on the timeline card.
    * Justification: Law of Proximity. Currently, two identical rows of chips blend into one confusing block.
 
-  14 & 15 — Record Details (/records/[id])
+  14 & 15  Record Details (/records/[id])
    * Proposed Improvements:
        * Merge View: Ensure the dashboard "Active Medications" strip links directly to the AI-enriched detail cards, not
          a raw OCR list.
@@ -8310,7 +8310,7 @@ Tips for getting started:
        * Justification: Keeps the user engaged during the 5-10 second processing window while reinforcing trust.
 
   The "Vibe" Problem:
-  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palette—standard medical blues and slate
+  Currently, Vitae (referenced as HealthDecoded in the code) uses a "Safe" palettestandard medical blues and slate
   grays. In 2026, users expect a health app to feel warm, magical, and obsessively polished. It should feel like a
   "Health Concierge," not a "File Manager."
 
@@ -8424,7 +8424,7 @@ Tips for getting started:
   The Redesign North Star: The Clinical Curator.
    * Palette: Primary Electric Indigo (#4F46E5), Secondary Soft Teal (#006A66), Surface Oxygen White (#F7F9FF).
    * Structure: Bento Grid for information organization; Tonal Layering (no 1px borders) for depth.
-   * Motion: Liquid Transitions — UI elements should feel like they are "organic" and responsive to the user's touch.
+   * Motion: Liquid Transitions  UI elements should feel like they are "organic" and responsive to the user's touch.
 
   ---
 
@@ -8711,7 +8711,7 @@ Tips for getting started:
   4. Prescription Review (/upload/review)
    * Current Issue: Confirm CTA is buried 2000px down; 21+ editable fields create cognitive overload.
    * Improvement: Sticky Action Bar. A frosted-glass bottom bar with the "Yes, This Looks Right" button. Use Collapsible
-     Medicine Pills—show only the drug name; tap to expand dosage/duration.
+     Medicine Pillsshow only the drug name; tap to expand dosage/duration.
    * Justification: Fitts’s Law & Miller’s Law. High-effort verification should be broken into small, scannable
      "chunks."
 
@@ -8724,7 +8724,7 @@ Tips for getting started:
 
   6. Dashboard / Family Hub (/dashboard)
    * Current Issue: Data bugs ("LAVanya"), technical usernames ("Hi user_99"), and empty "dead space."
-   * Improvement: Human-First Greeting. "Hi [First Name] 👋." Implement a "Health Pulse" Ribbon at the top—a horizontal
+   * Improvement: Human-First Greeting. "Hi [First Name] 👋." Implement a "Health Pulse" Ribbon at the topa horizontal
      scrolling row of active meds.
    * Intelligent Empty State: Instead of a white screen, show a "Skeleton Hub" with tips: "Upload Papa's latest report
      here to track heart health trends."

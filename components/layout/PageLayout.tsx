@@ -21,9 +21,9 @@ import React from 'react'
  */
 
 interface PageLayoutProps {
-  /** Header component (required) — typically <PageHeader /> */
+  /** Header component (required)  typically <PageHeader /> */
   header: React.ReactNode
-  /** Main content — wrapped with proper padding */
+  /** Main content  wrapped with proper padding */
   children: React.ReactNode
   /** Optional footer component */
   footer?: React.ReactNode
@@ -42,7 +42,7 @@ export function PageLayout({
       {/* Header */}
       {header}
 
-      {/* Main content — responsive side padding */}
+      {/* Main content  responsive side padding */}
       {/*
         Mobile: px-4 (16px sides) on 375px phone = 343px content width
         Tablet (sm: 640px): px-6 (24px sides)

@@ -1,4 +1,4 @@
-# MEDASSIST AI — Functional Requirements Document & Engineering Plan
+# MEDASSIST AI  Functional Requirements Document & Engineering Plan
 
 **Your AI-Powered Family Health Assistant**
 
@@ -70,10 +70,10 @@ Upload any medical document (prescription, lab report, discharge summary, scan r
 #### API Endpoints
 
 ```
-POST /api/documents/upload    — Upload file, trigger OCR
-GET  /api/documents/:id       — Get document with extracted text
-PUT  /api/documents/:id/text  — Manual text correction
-GET  /api/documents           — List user's documents (paginated)
+POST /api/documents/upload     Upload file, trigger OCR
+GET  /api/documents/:id        Get document with extracted text
+PUT  /api/documents/:id/text   Manual text correction
+GET  /api/documents            List user's documents (paginated)
 ```
 
 ---
@@ -103,9 +103,9 @@ GET  /api/documents           — List user's documents (paginated)
 
 Use a tiered approach for cost and reliability:
 
-- **Tier 1 (Default):** Google Gemini 1.5 Flash via free API — fast, free, good for most documents
-- **Tier 2 (Fallback):** Groq (Llama 3.1 70B) — free tier, fast inference, good medical understanding
-- **Tier 3 (Complex cases):** Claude Sonnet via Anthropic API — for documents with ambiguous or critical findings
+- **Tier 1 (Default):** Google Gemini 1.5 Flash via free API  fast, free, good for most documents
+- **Tier 2 (Fallback):** Groq (Llama 3.1 70B)  free tier, fast inference, good medical understanding
+- **Tier 3 (Complex cases):** Claude Sonnet via Anthropic API  for documents with ambiguous or critical findings
 
 #### Prompt Engineering
 
@@ -136,11 +136,11 @@ System prompt must include:
 | Full Name | Yes | Display name for the profile |
 | Relationship | Yes | Self, Spouse, Child, Parent, Other |
 | Date of Birth | Yes | Used for age-appropriate reference ranges |
-| Gender | Yes | Male, Female, Other — affects lab reference ranges |
+| Gender | Yes | Male, Female, Other  affects lab reference ranges |
 | Blood Group | No | A+, A-, B+, B-, O+, O-, AB+, AB- |
 | Height / Weight | No | For BMI calculation and drug dosage context |
-| Known Conditions | No | Diabetes, Hypertension, etc. — multi-select + free text |
-| Allergies | No | Drug allergies, food allergies — CRITICAL for medication safety |
+| Known Conditions | No | Diabetes, Hypertension, etc.  multi-select + free text |
+| Allergies | No | Drug allergies, food allergies  CRITICAL for medication safety |
 | Emergency Contact | No | Name + phone number |
 
 #### Family Management Rules
@@ -148,7 +148,7 @@ System prompt must include:
 - One user account can manage up to **8 family profiles**
 - Each profile has its own document history and timeline
 - Profile switcher in the app header for quick navigation
-- All data is scoped to the profile — no cross-contamination
+- All data is scoped to the profile  no cross-contamination
 
 ---
 
@@ -193,13 +193,13 @@ System prompt must include:
 
 #### Timeline Event Types
 
-- **Document Upload** — auto-created when a document is analyzed
-- **Lab Report** — with trend visualization for repeated tests (e.g., HbA1c over time)
-- **Doctor Visit** — manual entry with notes
-- **Medication Started/Stopped** — auto-tracked from F4
-- **Vaccination** — manual entry
-- **Surgery/Procedure** — manual entry
-- **Symptom Log** — manual entry (date + description)
+- **Document Upload**  auto-created when a document is analyzed
+- **Lab Report**  with trend visualization for repeated tests (e.g., HbA1c over time)
+- **Doctor Visit**  manual entry with notes
+- **Medication Started/Stopped**  auto-tracked from F4
+- **Vaccination**  manual entry
+- **Surgery/Procedure**  manual entry
+- **Symptom Log**  manual entry (date + description)
 
 #### Lab Value Trending
 
@@ -227,7 +227,7 @@ When the same lab test appears across multiple reports (e.g., Fasting Blood Suga
 - Selected document analyses with AI summaries
 - Active medications list
 - Lab value trends (if applicable)
-- **No editing capability — read-only view**
+- **No editing capability  read-only view**
 
 #### Security
 
@@ -250,7 +250,7 @@ When the same lab test appears across multiple reports (e.g., Fasting Blood Suga
 
 - **Age-based:** Annual health checkup after 30, eye exam every 2 years after 40, colonoscopy at 45+
 - **Condition-based:** HbA1c every 3 months for diabetics, BP monitoring for hypertension
-- **Time-based:** "You haven't uploaded a blood test in 6 months — consider a routine check"
+- **Time-based:** "You haven't uploaded a blood test in 6 months  consider a routine check"
 - **Vaccination schedules** for children (if age < 18)
 
 #### Implementation
@@ -328,7 +328,7 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 
 **RLS:** `family_profiles.user_id = auth.uid()`
 **CHECK:** Max 8 active profiles per user_id (enforced via `BEFORE INSERT` trigger)
-**INDEX:** `(user_id, is_active)` — covers the common "get active profiles for user" query
+**INDEX:** `(user_id, is_active)`  covers the common "get active profiles for user" query
 
 ---
 
@@ -485,8 +485,8 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | created_at | timestamptz | DEFAULT now() | |
 
 **RLS:** `lab_values.user_id = auth.uid()`
-**INDEX:** `(profile_id, test_name, test_date DESC)` — For trend queries
-**UNIQUE:** `(document_id, test_name)` — One value per test per document
+**INDEX:** `(profile_id, test_name, test_date DESC)`  For trend queries
+**UNIQUE:** `(document_id, test_name)`  One value per test per document
 
 ---
 
@@ -512,7 +512,7 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | created_at | timestamptz | DEFAULT now() | |
 
 **RLS (Owner):** `shared_links.user_id = auth.uid()` (for management)
-**Public Read:** No direct table SELECT for unauthenticated users. Use the `get_shared_link(token text)` SECURITY DEFINER RPC — returns the row only if the token matches a valid, non-revoked, non-expired link. Direct table policies would expose all valid links to any anon query.
+**Public Read:** No direct table SELECT for unauthenticated users. Use the `get_shared_link(token text)` SECURITY DEFINER RPC  returns the row only if the token matches a valid, non-revoked, non-expired link. Direct table policies would expose all valid links to any anon query.
 
 ---
 
@@ -556,7 +556,7 @@ All tables use UUID primary keys, `created_at`/`updated_at` timestamps, and Row 
 | created_at | timestamptz | DEFAULT now() | |
 
 **RLS:** `push_subscriptions.user_id = auth.uid()`
-**UNIQUE:** `(user_id, endpoint)` — prevents duplicate device registrations
+**UNIQUE:** `(user_id, endpoint)`  prevents duplicate device registrations
 **INDEX:** `(user_id) WHERE is_active = true`
 
 ---
@@ -590,7 +590,7 @@ Decisions made during initial migration (April 2026):
 
 | Decision | Rationale |
 |---|---|
-| `shared_links` public access via RPC only (`get_shared_link`) | A direct SELECT policy with `NOT is_revoked AND expires_at > now()` exposes **all** valid links to any unauthenticated query — a full data leak. RPC enforces token lookup server-side. |
+| `shared_links` public access via RPC only (`get_shared_link`) | A direct SELECT policy with `NOT is_revoked AND expires_at > now()` exposes **all** valid links to any unauthenticated query  a full data leak. RPC enforces token lookup server-side. |
 | `push_subscriptions` UNIQUE(user_id, endpoint) | Without this, re-registering a device (e.g. after browser reset) silently creates duplicates, causing double-delivery of push notifications. |
 | `family_profiles` index on `(user_id, is_active)` | The app almost always queries active profiles for a user. A composite index avoids a filter scan over all profiles including soft-deleted ones. |
 | `document_analyses` has `updated_at` | Analyses can be re-run (`analysis_version` increments). Without `updated_at` there is no way to know when a re-analysis last occurred. |
@@ -633,36 +633,36 @@ This section is specifically designed for AI coding tools (Cursor, Claude, Bolt,
 
 ```
 /src
-  /app                        — Next.js App Router pages
-    /dashboard                — Main dashboard
-    /upload                   — Document upload flow
-    /documents/[id]           — Document detail + analysis view
-    /profile                  — Health profile management
-    /medications              — Medication tracker
-    /timeline                 — Health timeline view
-    /share/[token]            — Public shared view (no auth required)
-    /settings                 — User settings, notifications
+  /app                         Next.js App Router pages
+    /dashboard                 Main dashboard
+    /upload                    Document upload flow
+    /documents/[id]            Document detail + analysis view
+    /profile                   Health profile management
+    /medications               Medication tracker
+    /timeline                  Health timeline view
+    /share/[token]             Public shared view (no auth required)
+    /settings                  User settings, notifications
   /components
-    /ui                       — Shared UI components (Button, Card, Modal)
-    /documents                — Document-specific components
-    /profile                  — Profile components
-    /medications              — Medication components
-    /timeline                 — Timeline components
-    /analysis                 — AI analysis display components
+    /ui                        Shared UI components (Button, Card, Modal)
+    /documents                 Document-specific components
+    /profile                   Profile components
+    /medications               Medication components
+    /timeline                  Timeline components
+    /analysis                  AI analysis display components
   /lib
-    /supabase.ts              — Supabase client init
-    /ocr.ts                   — OCR processing logic
-    /ai.ts                    — LLM integration (prompt, parse, fallback)
-    /ai-prompts.ts            — All system prompts in one file
-    /notifications.ts         — Push notification helpers
-    /utils.ts                 — Shared utilities
+    /supabase.ts               Supabase client init
+    /ocr.ts                    OCR processing logic
+    /ai.ts                     LLM integration (prompt, parse, fallback)
+    /ai-prompts.ts             All system prompts in one file
+    /notifications.ts          Push notification helpers
+    /utils.ts                  Shared utilities
   /types
-    /database.ts              — TypeScript types matching DB schema
-    /ai-response.ts           — AI response type definitions
+    /database.ts               TypeScript types matching DB schema
+    /ai-response.ts            AI response type definitions
   /hooks
-    /useProfile.ts            — Profile management hook
-    /useDocuments.ts          — Document CRUD hook
-    /useMedications.ts        — Medication management hook
+    /useProfile.ts             Profile management hook
+    /useDocuments.ts           Document CRUD hook
+    /useMedications.ts         Medication management hook
 ```
 
 ### 5.2 Implementation Order (Dependency Chain)
@@ -724,14 +724,14 @@ async function analyzeDocument(ocrText: string, patientProfile: Profile) {
 
 ### 5.5 Security & Compliance Notes
 
-**CRITICAL — This app handles sensitive health data. Follow these rules:**
+**CRITICAL  This app handles sensitive health data. Follow these rules:**
 
 - Never log or store raw medical data in application logs
-- All Supabase tables must have RLS enabled — no exceptions
-- LLM API calls should NOT include patient name or identifying info — only age, gender, and medical values
+- All Supabase tables must have RLS enabled  no exceptions
+- LLM API calls should NOT include patient name or identifying info  only age, gender, and medical values
 - Shared links must auto-expire and be revocable
 - Display medical disclaimer on EVERY AI-generated analysis
-- Do not claim to provide medical diagnoses — always frame as "educational explanation"
+- Do not claim to provide medical diagnoses  always frame as "educational explanation"
 - Consider adding a Terms of Service acknowledgment on first use
 - File uploads must be validated for type and size before storage
 
@@ -754,14 +754,14 @@ This section defines how multiple developers or AI assistants can work simultane
 
 | Workstream | Scope | Can Start After | Independent? |
 |-----------|-------|----------------|-------------|
-| WS-1: DB & Auth | Schema migration, RLS, auth flow, user profile | Supabase project created | Yes — foundational |
+| WS-1: DB & Auth | Schema migration, RLS, auth flow, user profile | Supabase project created | Yes  foundational |
 | WS-2: Document Pipeline | Upload UI, OCR processing, document list/detail views | WS-1 complete | Yes after WS-1 |
-| WS-3: AI Engine | LLM integration, prompt engineering, analysis parsing, analysis display | WS-1 complete (needs types) | Yes — can mock OCR input |
-| WS-4: Profile & Family | Profile CRUD, family management, profile switcher | WS-1 complete | Yes — parallel with WS-2,3 |
-| WS-5: Medications | Med tracker, adherence log, reminder setup | WS-1 + WS-4 complete | Yes — parallel with WS-2,3 |
-| WS-6: Timeline & Trends | Timeline view, lab value charting, event aggregation | WS-2 + WS-3 + WS-5 | No — needs data from all |
+| WS-3: AI Engine | LLM integration, prompt engineering, analysis parsing, analysis display | WS-1 complete (needs types) | Yes  can mock OCR input |
+| WS-4: Profile & Family | Profile CRUD, family management, profile switcher | WS-1 complete | Yes  parallel with WS-2,3 |
+| WS-5: Medications | Med tracker, adherence log, reminder setup | WS-1 + WS-4 complete | Yes  parallel with WS-2,3 |
+| WS-6: Timeline & Trends | Timeline view, lab value charting, event aggregation | WS-2 + WS-3 + WS-5 | No  needs data from all |
 | WS-7: Sharing | Share link generation, public view, QR code, PDF export | WS-4 + WS-6 | Mostly independent |
-| WS-8: Notifications | Push subscription, reminder scheduling, notification center | WS-5 | Yes — backend-focused |
+| WS-8: Notifications | Push subscription, reminder scheduling, notification center | WS-5 | Yes  backend-focused |
 
 ---
 
@@ -784,4 +784,4 @@ Use this to decide what to build now vs. later based on current build capacity a
 
 ---
 
-*MedAssist AI — FRD v1.0 — April 2026*
+*MedAssist AI  FRD v1.0  April 2026*

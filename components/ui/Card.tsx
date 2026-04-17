@@ -18,13 +18,13 @@ export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {}
 // Ghost border (ring at 15% opacity) only where accessibility requires it.
 
 const variants: Record<Variant, string> = {
-  // Interactive card — #ffffff pops against #f7f9ff surface base. No border needed.
+  // Interactive card  #ffffff pops against #f7f9ff surface base. No border needed.
   default:  'bg-surface-container-lowest',
-  // Grouping area — sits recessed on the page
+  // Grouping area  sits recessed on the page
   subtle:   'bg-surface-subtle',
-  // Accessibility fallback — ghost border at 15% opacity (design.md rule)
+  // Accessibility fallback  ghost border at 15% opacity (design.md rule)
   outlined: 'bg-surface-container-lowest ring-1 ring-black/[0.15]',
-  // Floating element — ambient shadow only, no muddy drop shadow
+  // Floating element  ambient shadow only, no muddy drop shadow
   elevated: 'bg-surface-container-lowest shadow-md',
 }
 
@@ -48,7 +48,7 @@ function Card({ variant = 'default', padding = 'md', className = '', ...props }:
   )
 }
 
-// No divider lines — use vertical spacing only (design.md: "Forbid divider lines")
+// No divider lines  use vertical spacing only (design.md: "Forbid divider lines")
 function CardHeader({ className = '', ...props }: CardHeaderProps) {
   return <div className={['pb-4', className].filter(Boolean).join(' ')} {...props} />
 }

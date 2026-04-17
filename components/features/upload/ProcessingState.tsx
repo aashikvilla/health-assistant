@@ -52,11 +52,11 @@ export default function ProcessingState({ label, documentType }: ProcessingState
     : 'Taking a little longer than usual…'
 
   return (
-    /* Fixed overlay — covers header + footer during processing */
+    /* Fixed overlay  covers header + footer during processing */
     <div className="fixed inset-0 z-50 bg-surface flex flex-col items-center justify-center px-6 py-10 overflow-auto">
       <div className="w-full max-w-sm flex flex-col items-center">
 
-        {/* ── Keep-open notice — top priority ─────────────────── */}
+        {/* ── Keep-open notice  top priority ─────────────────── */}
         <div
           className="w-full flex items-start gap-3 rounded-2xl px-4 py-3.5 mb-8"
           style={{ background: 'var(--color-warning-subtle, #fffbeb)', border: '1px solid rgba(234,179,8,0.25)' }}
@@ -67,7 +67,7 @@ export default function ProcessingState({ label, documentType }: ProcessingState
               d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7" />
           </svg>
           <p className="text-sm font-medium leading-snug" style={{ color: 'var(--color-warning, #92400e)' }}>
-            Keep this tab open — your document is being processed
+            Keep this tab open  your document is being processed
           </p>
         </div>
 

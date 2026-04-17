@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Vitae",
-    title: "Vitae — Family Health Record Manager",
+    title: "Vitae  Family Health Record Manager",
     description: "Your AI-powered family health record manager",
   },
 

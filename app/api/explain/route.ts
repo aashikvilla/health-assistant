@@ -3,7 +3,7 @@ import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescrip
 import { checkRateLimit } from '@/lib/rate-limit'
 import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 
-// Tried in order — skips to next on 429 rate limit
+// Tried in order  skips to next on 429 rate limit
 const FREE_MODELS = [
   'google/gemma-4-31b-it:free',
   'nousresearch/hermes-3-llama-3.1-405b:free',
@@ -26,7 +26,7 @@ function buildPrompt(prescription: PrescriptionData): string {
 Prescription:
 ${JSON.stringify(prescription, null, 2)}
 
-Return ONLY valid JSON — no markdown, no code fences:
+Return ONLY valid JSON  no markdown, no code fences:
 {
   "id": "preview",
   "doctorName": string,
@@ -39,10 +39,10 @@ Return ONLY valid JSON — no markdown, no code fences:
       "name": string,
       "dosage": string,
       "frequency": string,
-      "treats": string (1 sentence — what condition this addresses),
-      "how_to_take": string (1-2 sentences — timing, food, water),
-      "side_effects": string (1-2 sentences — common effects only, plain language),
-      "avoid": string (1-2 sentences — food/drink/activity interactions)
+      "treats": string (1 sentence  what condition this addresses),
+      "how_to_take": string (1-2 sentences  timing, food, water),
+      "side_effects": string (1-2 sentences  common effects only, plain language),
+      "avoid": string (1-2 sentences  food/drink/activity interactions)
     }
   ],
   "doctorNotes": string[] (3-5 follow-up points the patient should raise at next visit)
@@ -102,14 +102,14 @@ export async function POST(req: NextRequest) {
           const parsed = JSON.parse(cleaned) as PrescriptionExplanation
           return NextResponse.json(parsed)
         } catch {
-          // Truncated or malformed JSON — try next model
+          // Truncated or malformed JSON  try next model
           lastError = 'AI response was incomplete. Retrying with another model.'
           continue
         }
       } catch (err) {
         const e = err as Error & { code?: number }
         lastError = e.message
-        if (e.code === 429 || e.code === 402) continue  // rate-limited or provider spend cap — try next model
+        if (e.code === 429 || e.code === 402) continue  // rate-limited or provider spend cap  try next model
         throw err
       }
     }

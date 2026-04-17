@@ -1,4 +1,4 @@
-// Stage 5 — Family Hub types
+// Stage 5  Family Hub types
 
 export type ProfileRelationship =
   | 'self'
@@ -49,7 +49,7 @@ export interface HubPrescription {
   condition_tags: string[]
   medication_count: number | null
   created_at: string
-  /** Linked documents.id — null for prescriptions created before the F2-B fix */
+  /** Linked documents.id  null for prescriptions created before the F2-B fix */
   document_id: string | null
 
 }
@@ -57,7 +57,7 @@ export interface HubPrescription {
 export interface CreateProfileInput {
   name: string   // maps to full_name in DB
   relationship: ProfileRelationship
-  dob?: string   // YYYY-MM-DD — maps to date_of_birth in DB
-  email?: string   // optional — enables later account claiming
+  dob?: string   // YYYY-MM-DD  maps to date_of_birth in DB
+  email?: string   // optional  enables later account claiming
   avatar_url?: string
 }

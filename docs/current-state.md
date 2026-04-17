@@ -1,7 +1,7 @@
-# Vitae — Current State (Honest Audit)
+# Vitae  Current State (Honest Audit)
 
 > **Date of audit:** 2026-04-13
-> **Audited by:** Claude (Sonnet 4.6) on `develop` branch — post family-profile-management commit
+> **Audited by:** Claude (Sonnet 4.6) on `develop` branch  post family-profile-management commit
 > **Purpose:** Single source of truth for what's actually built, what's a stub, and what's broken.
 >
 > For the full feature plan with independent work units, see **`docs/plan.md`**.
@@ -14,9 +14,9 @@
 |                             |                                                                                                                                                                              |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Works end-to-end**        | Auth (email + Google OAuth), Family Hub, Add Member, Public upload → review → AI explanation → save → login → auto-save to DB → redirect to document view, Records, Timeline |
-| **Works end-to-end**        | OCR extraction — `google/gemma-4-26b-a4b-it` (Gemma 4 26B, multimodal, 256K context) confirmed live on OpenRouter. Real uploads work with dev mode off.                      |
-| **Stub / always redirects** | `/explanation/[id]` — `fetchPrescription` returns `null`, page always redirects to `/dashboard`                                                                              |
-| **Minimal stub**            | `/settings` — shows email + sign-out only                                                                                                                                    |
+| **Works end-to-end**        | OCR extraction  `google/gemma-4-26b-a4b-it` (Gemma 4 26B, multimodal, 256K context) confirmed live on OpenRouter. Real uploads work with dev mode off.                      |
+| **Stub / always redirects** | `/explanation/[id]`  `fetchPrescription` returns `null`, page always redirects to `/dashboard`                                                                              |
+| **Minimal stub**            | `/settings`  shows email + sign-out only                                                                                                                                    |
 | **Not started**             | `/share/[token]`, medication reminders UI, push notification UI, lab trends, profile editing, onboarding                                                                     |
 
 **Core flow is complete.** Auth → upload → OCR → explanation → save → view all work end-to-end.
@@ -31,7 +31,7 @@
 | **F1-A** | `users_profile` row on signup              | ❌ **Missing** | Table exists, never written to. Needed for settings + onboarding.                                                                                                                          |
 | **F1-B** | Onboarding flow                            | ❌ **Missing** | No route, no form. Self-profile still uses email prefix as name.                                                                                                                           |
 | **F2**   | Document upload + DB persist               | ✅ **Built**   | `createFromExtraction` writes `documents` + `document_analyses` + `prescriptions` + `timeline_events`. Public + authenticated upload flows both work.                                      |
-| **F2-A** | Fix AI model                               | ✅ **Done**    | `google/gemma-4-26b-a4b-it` is Gemma 4 26B — real, multimodal, 256K context, live on OpenRouter. Real uploads work.                                                                        |
+| **F2-A** | Fix AI model                               | ✅ **Done**    | `google/gemma-4-26b-a4b-it` is Gemma 4 26B  real, multimodal, 256K context, live on OpenRouter. Real uploads work.                                                                        |
 | **F3**   | Records & Timeline                         | ✅ **Built**   | `/records/[id]` (DocumentDetail), `/timeline` (TimelineView with profile + type filters), `records.service.ts`.                                                                            |
 | **F4**   | Plain-language explanation (authenticated) | ✅ **Done**    | `/explanation/[id]` fetches document + analysis via `recordsService.getDocumentWithExplanation`. If no rich explanation in DB, generates on-demand via `lib/explain.ts` and persists back. |
 | **F5**   | Family Hub (profiles + per-profile data)   | ✅ **Built**   | Dashboard, ProfileWheel, AddMemberForm, PrescriptionListItem, ActiveMedicationsStrip, LabAlertCard all working.                                                                            |
@@ -65,9 +65,9 @@
 | Service / File                  | Status   | Notes                                                                                                                                                                    |
 | ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `services/family.service.ts`    | ✅       | `getProfiles`, `createProfile` (enforces 5 limit), `ensureSelfProfile`, `getProfilePrescriptions`                                                                        |
-| `services/documents.service.ts` | ✅       | `createFromExtraction` — writes documents + analyses + prescriptions + timeline_events                                                                                   |
+| `services/documents.service.ts` | ✅       | `createFromExtraction`  writes documents + analyses + prescriptions + timeline_events                                                                                   |
 | `services/records.service.ts`   | ✅       | `getAllDocumentsForUser`, `getRecord`                                                                                                                                    |
-| `lib/extract.ts`                | ✅       | `google/gemma-4-26b-a4b-it` (Gemma 4 26B, multimodal) — confirmed live on OpenRouter. `extractPrescriptionData`, `extractLabReportData`, `classifyDocument` all working. |
+| `lib/extract.ts`                | ✅       | `google/gemma-4-26b-a4b-it` (Gemma 4 26B, multimodal)  confirmed live on OpenRouter. `extractPrescriptionData`, `extractLabReportData`, `classifyDocument` all working. |
 | `app/api/ocr/route.ts`          | ✅ (dev) | Calls `lib/extract.ts`. Works in dev mode with mock.                                                                                                                     |
 | `app/api/explain/route.ts`      | ✅       | Plain-language explanation generation. Used in public upload flow. Free model pool with 429 fallback.                                                                    |
 | `hooks/`                        | ❌ Empty | No custom hooks written yet. All state lives in Server Components or services.                                                                                           |
@@ -78,31 +78,31 @@
 
 ### UI Primitives (`components/ui/`)
 
-Button, Input, Card, Badge, Heading, Section, Accordion, Spinner — all complete.
+Button, Input, Card, Badge, Heading, Section, Accordion, Spinner  all complete.
 
 ### Layout (`components/layout/`)
 
-PageLayout, AppHeader, BottomNav, AppFooter, PageHeader, PageFooter, LogoutButton, PWAInstallBanner, ServiceWorkerRegistration — all complete.
+PageLayout, AppHeader, BottomNav, AppFooter, PageHeader, PageFooter, LogoutButton, PWAInstallBanner, ServiceWorkerRegistration  all complete.
 
 ### Upload (`components/features/upload/`)
 
-UploadPicker, ProcessingState, ReviewScreen, LabReportReviewScreen, FieldRow, PendingUploadBanner — all complete.
+UploadPicker, ProcessingState, ReviewScreen, LabReportReviewScreen, FieldRow, PendingUploadBanner  all complete.
 
 ### Explanation (`components/features/explanation/`)
 
-MedicationCard, DoctorNotes, DisclaimerBanner, ExplanationActions — components built, not wired to authenticated data.
+MedicationCard, DoctorNotes, DisclaimerBanner, ExplanationActions  components built, not wired to authenticated data.
 
 ### Family Hub (`components/features/family/`)
 
-ProfileWheel, ProfileChip, AddProfileChip, AddMemberForm, PrescriptionListItem, EmptyPrescriptions — all complete.
+ProfileWheel, ProfileChip, AddProfileChip, AddMemberForm, PrescriptionListItem, EmptyPrescriptions  all complete.
 
 ### Hub Widgets (`components/features/hub/`)
 
-ActiveMedicationsStrip, LabAlertCard — both complete.
+ActiveMedicationsStrip, LabAlertCard  both complete.
 
 ### Records (`components/features/records/`)
 
-TimelineView, RecordCard, DocumentDetail, MedicationList — all complete.
+TimelineView, RecordCard, DocumentDetail, MedicationList  all complete.
 
 ---
 
@@ -185,11 +185,11 @@ All tables exist with RLS enabled:
 
 ## 10. Files to Read First When Picking This Up
 
-1. `docs/MedAssist_AI_FRD.md` — product vision
-2. **This file** — current reality
-3. `CLAUDE.md` — conventions
-4. `docs/architecture.md` — data flow
-5. `app/(app)/dashboard/page.tsx` — the working vertical slice
-6. `services/family.service.ts` — canonical service shape
-7. `lib/supabase/server.ts` — auth + dev-bypass plumbing
-8. `app/globals.css` — design tokens
+1. `docs/MedAssist_AI_FRD.md`  product vision
+2. **This file**  current reality
+3. `CLAUDE.md`  conventions
+4. `docs/architecture.md`  data flow
+5. `app/(app)/dashboard/page.tsx`  the working vertical slice
+6. `services/family.service.ts`  canonical service shape
+7. `lib/supabase/server.ts`  auth + dev-bypass plumbing
+8. `app/globals.css`  design tokens

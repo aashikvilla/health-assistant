@@ -1,5 +1,5 @@
 /**
- * Icon Generator — run once to produce PWA icons from the SVG source.
+ * Icon Generator  run once to produce PWA icons from the SVG source.
  *
  * Usage:
  *   npm install --save-dev sharp   (one-time)

@@ -1,5 +1,5 @@
 /**
- * (public) Route Group Layout — public / marketing pages
+ * (public) Route Group Layout  public / marketing pages
  *
  * Provides for all pages under /public:
  * - Sticky branded header with centred nav links + Sign In CTA

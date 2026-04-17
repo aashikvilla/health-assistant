@@ -1,4 +1,4 @@
-// Stage 5 — Family Hub service
+// Stage 5  Family Hub service
 // Plain async functions. No React. No side effects.
 
 import { createClient } from '@/lib/supabase/server'
@@ -238,7 +238,7 @@ export const familyService = {
             relationship: 'other' as const,
             is_self: false,
           }))
-          // Best-effort — don't block on errors
+          // Best-effort  don't block on errors
           try { await supabase.from('profile_memberships').insert(memberships) } catch { /* ignore */ }
         }
 
@@ -260,12 +260,12 @@ export const familyService = {
       }
     }
 
-    // ── Case 3: brand new user — create group + profile + membership ────────
+    // ── Case 3: brand new user  create group + profile + membership ────────
     //
     // Generate UUIDs client-side for family_group and family_profile.
     // Reason: Supabase's insert().select() uses PostgREST RETURNING which is
     // subject to RLS. The family_groups SELECT policy requires a membership row,
-    // but the membership doesn't exist yet — chicken-and-egg. Generating the ID
+    // but the membership doesn't exist yet  chicken-and-egg. Generating the ID
     // client-side means we never need to SELECT the group back before adding the
     // membership, breaking the cycle.
     const { randomUUID } = await import('crypto')
@@ -312,7 +312,7 @@ export const familyService = {
       return { data: null, error: memberErr.message, success: false }
     }
 
-    // Ensure users_profile row exists for this new account (best-effort — non-fatal)
+    // Ensure users_profile row exists for this new account (best-effort  non-fatal)
     await supabase.from('users_profile').upsert(
       { user_id: userId, full_name: name, onboarding_completed: false },
       { onConflict: 'user_id', ignoreDuplicates: true }
@@ -346,7 +346,7 @@ export const familyService = {
   },
 
   // ─── Prescriptions ────────────────────────────────────────────────────────
-  // Lightweight read — full prescription data lives in Stage 6 (records)
+  // Lightweight read  full prescription data lives in Stage 6 (records)
 
   async getProfilePrescriptions(
     profileId: string,
