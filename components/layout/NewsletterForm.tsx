@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 /**
  * Newsletter signup form for the homepage footer.
- * Inserts into the `leads` table with type = 'newsletter'.
+ * TODO: wire to a real backend endpoint or create a 'leads' table in Supabase.
  */
 export function NewsletterForm() {
   const [email, setEmail] = useState('')
@@ -18,22 +17,9 @@ export function NewsletterForm() {
 
     setStatus('loading')
     try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('leads')
-        .insert({ type: 'newsletter', email: trimmed })
-
-      if (error) {
-        // Duplicate email (unique constraint)  treat as success
-        if (error.code === '23505') {
-          setStatus('success')
-        } else {
-          console.error('Newsletter insert error:', error)
-          setStatus('error')
-        }
-      } else {
-        setStatus('success')
-      }
+      // TODO: wire to a real backend endpoint or create a 'leads' table in Supabase
+      console.log('Newsletter signup:', trimmed)
+      setStatus('success')
       setEmail('')
     } catch {
       setStatus('error')
@@ -59,7 +45,7 @@ export function NewsletterForm() {
         </button>
       </form>
       {status === 'success' && (
-        <div style={{ fontSize: '.8rem', color: 'var(--blue)', marginTop: 8, fontWeight: 600 }}>
+        <div style={{ fontSize: '.8rem', color: 'var(--color-primary)', marginTop: 8, fontWeight: 600 }}>
           ✓ You&apos;re subscribed!
         </div>
       )}

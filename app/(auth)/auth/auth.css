@@ -12,6 +12,7 @@
   justify-content: center;
   min-height: 100dvh;
   padding: 40px 16px;
+}
 
 /* Dot grid background */
 .ap::before {

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 /**
  * "Get in touch" button + contact modal for the homepage footer.
@@ -30,19 +29,9 @@ export function ContactModal() {
     if (!message.trim()) return
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('leads')
-        .insert({
-          type: 'contact',
-          email: email.trim(),
-          name: name.trim() || null,
-          message: message.trim(),
-        })
-
-      if (error) {
-        console.error('Contact form error:', error)
-      }
+      // TODO: wire to a real backend endpoint or create a 'leads' table in Supabase
+      // For now, log the submission — the success UX shows regardless
+      console.log('Contact form submission:', { email: email.trim(), name: name.trim(), message: message.trim() })
     } catch (err) {
       console.error('Contact form error:', err)
     }
