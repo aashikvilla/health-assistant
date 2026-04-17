@@ -36,12 +36,22 @@ health-assistant/
 │   │   ├── Card.tsx
 │   │   ├── Heading.tsx
 │   │   ├── Input.tsx
+│   │   ├── Badge.tsx
 │   │   ├── Section.tsx
+│   │   ├── Accordion.tsx
+│   │   ├── Spinner.tsx
+│   │   ├── GradientHeroHeader.tsx  # Full-bleed gradient hero with nav + stats
+│   │   ├── PageHeader.tsx          # Sticky back-nav bar for sub-pages
+│   │   ├── EmptyState.tsx          # Icon + heading + description + CTA
+│   │   ├── SectionHeader.tsx       # Uppercase label with optional count + action
+│   │   ├── ListItem.tsx            # Icon + title + subtitle + badge row
 │   │   └── index.ts              # Barrel  always import via @/components/ui
 │   ├── layout/                   # Structural layout shells (used by routes)
-│   │   ├── AppHeader.tsx         # Shared sticky brand/page header (variant-driven)
-│   │   ├── AppFooter.tsx         # Slim brand footer for marketing routes
-│   │   ├── BottomNav.tsx         # Mobile bottom nav  only mounted under /hub
+│   │   ├── PageHeader.tsx        # Variant-driven header (brand / page)
+│   │   ├── PageFooter.tsx        # Slim footer for public/marketing routes
+│   │   ├── BottomNav.tsx         # Mobile bottom nav  primary routes only
+│   │   ├── AppDrawerNav.tsx      # Desktop slide-out drawer nav
+│   │   ├── LogoutButton.tsx      # Sign-out form action
 │   │   ├── PWAInstallBanner.tsx  # iOS/Android install prompt
 │   │   └── ServiceWorkerRegistration.tsx
 │   └── features/                 # Feature-specific compound components
@@ -96,7 +106,7 @@ health-assistant/
 │   ├── folder-structure.md       # This file
 │   ├── coding-patterns.md
 │   ├── architecture.md
-│   ├── design-system.md          # Clinical Curator palette reference
+│   ├── design-system.md          # Digital Health palette reference (canonical)
 │   ├── MedAssist_AI_FRD.md       # Product requirements
 │   └── stage-5-dev-log.md
 │
@@ -104,8 +114,8 @@ health-assistant/
 │
 ├── proxy.ts                      # Next.js 16 edge middleware (renamed from middleware.ts)
 ├── tailwind.config.ts            # Almost empty  all theming lives in globals.css
-├── CLAUDE.md                     # AI assistant context (primary)
-└── AGENTS.md                     # Agent-specific overrides
+├── CLAUDE.md                     # AI assistant context (primary  read this first)
+└── AGENTS.md                     # Agent-specific coding rules and quick reference
 ```
 
 ---

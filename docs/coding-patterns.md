@@ -1,24 +1,22 @@
 # Coding Patterns & Conventions
 
+> The rules in this file are non-negotiable. Every AI assistant, every contributor, every PR must follow them. When in doubt, look at `app/(app)/dashboard/page.tsx` and `services/family.service.ts` as the canonical reference implementations.
+
 ---
 
-## 0. Mobile-First  Non-Negotiable
+## 0. Mobile-First — Non-Negotiable
 
-**Every component, every layout, every screen is built mobile-first.** No exceptions.
-
-### The Rule
-
-Write base styles for mobile (320px+), then add responsive modifiers for larger screens.
+Every component, every layout, every screen is built mobile-first (375px baseline). No exceptions.
 
 ```tsx
-// ✅ Mobile-first
+// ✅ Mobile-first — base styles for mobile, modifiers for larger screens
 <div className="flex flex-col gap-4 p-4 sm:flex-row sm:gap-6 sm:p-6 md:p-8">
 
-// ❌ Desktop-first (reversed logic  breaks on small screens)
+// ❌ Desktop-first — breaks on small screens
 <div className="flex flex-row gap-6 p-8 max-sm:flex-col max-sm:gap-4 max-sm:p-4">
 ```
 
-### Breakpoints (Tailwind defaults  mobile-first)
+### Breakpoints
 
 | Prefix | Min-width | Target |
 |--------|-----------|--------|
@@ -33,152 +31,177 @@ Write base styles for mobile (320px+), then add responsive modifiers for larger 
 Every interactive element must be at least **44×44px** (Apple HIG + WCAG 2.5.5).
 
 ```tsx
-// ✅ Use the Button component  already handles this
-<Button size="md">Save</Button>   // h-10 = 40px + padding → ≥44px
+// ✅ Button component handles this automatically
+<Button size="md">Save</Button>
 
 // ✅ Icon-only buttons need explicit sizing
 <button className="touch-target flex items-center justify-center rounded-xl">
   <svg ... />
 </button>
 
-// ❌ Too small  impossible to tap accurately on mobile
+// ❌ Too small — impossible to tap accurately
 <button className="h-6 w-6"><svg ... /></button>
 ```
 
-### Safe Areas (Notched phones)
-
-Use CSS env() classes for fixed bars  never hardcode bottom/top padding.
+### Safe Areas (Notched Phones)
 
 ```tsx
 // ✅ Fixed bottom nav
-<nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border pb-safe">
+<nav className="fixed bottom-0 inset-x-0 pb-safe">
 
 // ✅ Fixed header
-<header className="fixed top-0 left-0 right-0 bg-surface border-b border-border pt-safe">
+<header className="sticky top-0 pt-safe">
 
-// ❌ Hardcoded  breaks on iPhone with home indicator
+// ❌ Hardcoded — breaks on iPhone with home indicator
 <nav className="fixed bottom-0 pb-8">
 ```
 
-### Text & Font Sizes
+### Input Font Sizes
 
 ```tsx
-// ✅ Never smaller than 16px on inputs  prevents iOS zoom
-<input className="text-base ..." />   // text-base = 16px
+// ✅ 16px minimum on inputs — prevents iOS auto-zoom
+<Input className="text-base" />
 
-// ✅ Body text minimum 14px
-<p className="text-sm ...">           // text-sm = 14px  OK for secondary text
-
-// ❌ Too small  causes accessibility and legibility issues
-<p className="text-xs ...">primary content</p>
-```
-
-### Spacing
-
-Comfortable touch spacing. Minimum 8px between interactive elements.
-
-```tsx
-// ✅ List of tappable items
-<ul className="divide-y divide-border">
-  <li className="flex items-center px-4 py-3 min-h-[44px]">...</li>
-</ul>
-
-// ✅ Form fields  generous spacing
-<div className="space-y-5">
-  <Input label="Email" ... />
-  <Input label="Password" ... />
-</div>
-```
-
-### Forms on Mobile
-
-```tsx
-// ✅ Correct input types  mobile keyboard selection
-<input type="email"    inputMode="email"   />   // email keyboard
-<input type="tel"      inputMode="tel"     />   // number pad
-<input type="number"   inputMode="numeric" />   // numeric keyboard
-<input type="search"   inputMode="search"  />   // search keyboard with return key
-
-// ✅ autocomplete for faster entry
-<input type="email"    autoComplete="email"         />
-<input type="password" autoComplete="current-password" />
-<input type="password" autoComplete="new-password"     />
-```
-
-### Responsive Layouts
-
-```tsx
-// ✅ Card grid  1 col on mobile, 2 on tablet, 3 on desktop
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-// ✅ Stack → row on larger screens
-<div className="flex flex-col sm:flex-row gap-3">
-
-// ✅ Hide/show by breakpoint
-<span className="hidden sm:block">Full label</span>
-<span className="sm:hidden">Short</span>
-
-// ✅ Responsive text size
-<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-```
-
-### Navigation
-
-For mobile: bottom navigation or hamburger menu. For desktop: sidebar or top nav.
-
-```tsx
-// ✅ Bottom nav (mobile)  always use pb-safe
-<nav className="fixed bottom-0 inset-x-0 flex justify-around bg-surface border-t border-border pb-safe sm:hidden">
-  {/* Mobile nav items */}
-</nav>
-
-// ✅ Sidebar (desktop only)
-<aside className="hidden lg:flex w-64 flex-col ...">
-  {/* Desktop nav */}
-</aside>
+// ❌ Smaller than 16px triggers iOS zoom
+<input className="text-sm" />
 ```
 
 ---
 
-## 1. Component Layers
+## 1. Design Tokens — Single Source of Truth
 
-### UI Primitives (`components/ui/`)
-Purely presentational. Receive data via props. Zero dependencies on services or Supabase.
+All colors are defined **once** in `app/globals.css` `:root`. Never define colors anywhere else.
 
 ```tsx
-// ✅ Correct
-function Button({ onClick, children, variant = 'primary' }) { ... }
+// ✅ Always use semantic Tailwind tokens
+<div className="bg-surface text-text-primary border border-border">
+<button className="bg-primary text-white hover:bg-primary-hover">
+<span className="bg-accent-subtle text-accent-hover">
 
-// ❌ Wrong  UI components don't fetch or call services
-function Button() {
+// ❌ Never hardcode hex values
+<div style={{ background: '#1d4ed8' }}>
+<div className="bg-[#1d4ed8]">
+<div className="bg-blue-600">
+```
+
+### Gradient Utilities
+
+Multi-stop gradients are defined as CSS classes in `globals.css`. Use them via `className`:
+
+```tsx
+// ✅ Named gradient classes
+<div className="gradient-hero">          // hero sections
+<div className="gradient-brand">         // blue → violet
+<div className="gradient-brand-full">    // blue → violet → pink
+<div className="gradient-cta-box">       // dark CTA
+
+// ❌ Never inline gradients
+<div style={{ background: 'linear-gradient(135deg, #1d4ed8, #7c3aed)' }}>
+```
+
+See `docs/design-system.md` for the full token reference.
+
+---
+
+## 2. Component Layers
+
+### UI Primitives (`components/ui/`)
+
+Purely presentational. Props only. Zero dependencies on services, Supabase, or `next/headers`.
+
+```tsx
+// ✅ Correct — props in, JSX out
+export function Badge({ variant = 'default', children }: BadgeProps) {
+  return <span className={variants[variant]}>{children}</span>
+}
+
+// ❌ Wrong — UI components never fetch
+export function Badge() {
   const data = useQuery(...)  // NO
 }
 ```
 
-### Feature Components (`components/features/`)
-Receive data from the page (server component) or call hooks. Do not call services directly.
+Always import from the barrel:
 
 ```tsx
-// ✅ Correct  page fetches, component renders
-// app/dashboard/page.tsx (Server Component)
+// ✅
+import { Button, Card, Badge, Input, GradientHeroHeader, PageHeader,
+         EmptyState, SectionHeader, ListItem } from '@/components/ui'
+
+// ❌ Never import individual files
+import { Button } from '@/components/ui/Button'
+```
+
+### Available UI Components
+
+| Component | Use for |
+|-----------|---------|
+| `Button` | All buttons. Variants: `primary`, `secondary`, `ghost`, `danger`, `link`. Supports `href`. |
+| `Card` | Card containers. Variants: `default`, `outlined`, `elevated`. |
+| `Badge` | Status/tag labels. Variants: `default`, `primary`, `success`, `warning`, `error`, `info`. |
+| `Input` | All text inputs with label, hint, error support. |
+| `Heading` | Semantic h1–h6 with consistent sizing. |
+| `Section` | Page section wrapper with optional title. |
+| `Accordion` | Collapsible content. |
+| `Spinner` | Loading indicator. |
+| `GradientHeroHeader` | Full-bleed gradient hero with nav, title, subtitle, stat pills. |
+| `PageHeader` | Sticky back-nav bar with title and optional action. |
+| `EmptyState` | Icon + heading + description + CTA. |
+| `SectionHeader` | Uppercase label with optional count and action link. |
+| `ListItem` | Icon + title + subtitle + badge row. |
+
+### Do Not Bypass UI Primitives
+
+```tsx
+// ✅ Use the component
+<Button variant="secondary" disabled>Upgrade</Button>
+<Badge variant="warning">High</Badge>
+<Input label="Email" type="email" name="email" />
+<EmptyState icon={...} heading="No records" description="..." ctaLabel="Upload" ctaHref="..." />
+
+// ❌ Never build these manually
+<button className="rounded-full bg-surface-muted ...">Upgrade</button>
+<span className="px-2 py-0.5 rounded-full bg-warning-subtle ...">High</span>
+<input className="rounded-xl bg-surface-subtle ..." />
+<div className="flex flex-col items-center ...">  {/* manual empty state */}
+```
+
+### Feature Components (`components/features/`)
+
+Receive data from the page (Server Component) or call hooks. Do not call services directly.
+
+```tsx
+// ✅ Page fetches, component renders
+// app/(app)/dashboard/page.tsx (Server Component)
 export default async function DashboardPage() {
   const supabase = await createClient()
-  const metrics  = await metricsService.getMetrics(userId)
-  return <MetricsDashboard metrics={metrics} />
+  const profiles = await familyService.getProfiles(user.id)
+  return <ProfileSectionWithEdit profiles={profiles.data} />
 }
 
-// components/features/health/MetricsDashboard.tsx
-export function MetricsDashboard({ metrics }: { metrics: Metric[] }) {
+// components/features/family/ProfileSectionWithEdit.tsx
+export function ProfileSectionWithEdit({ profiles }: { profiles: FamilyProfile[] }) {
   return <div>...</div>
 }
 ```
 
 ### Layout Components (`components/layout/`)
-Structural shell. Accept `children`. May read session from server but don't fetch domain data.
+
+Structural shells. Accept `children`. May read constants but don't fetch domain data.
+
+Active layout components:
+- `PageLayout` — root wrapper
+- `PageHeader` — variant-driven header (brand / page)
+- `PageFooter` — slim footer for public routes
+- `BottomNav` — mobile bottom tab bar (primary routes only)
+- `AppDrawerNav` — desktop slide-out drawer
+- `LogoutButton` — sign-out form action
+- `PWAInstallBanner` — iOS/Android install prompt
+- `ServiceWorkerRegistration` — PWA service worker
 
 ---
 
-## 2. Service Pattern
+## 3. Service Pattern
 
 Services contain all business logic. Plain async functions. No React. No side effects.
 
@@ -201,9 +224,15 @@ export const healthService = {
 }
 ```
 
+Rules:
+- Plain object export — no classes
+- **Always return `ApiResponse<T>`** — never throw, never return raw Supabase results
+- No React, no hooks, no side effects
+- Usable from Server Components, Server Actions, API routes, and hooks alike
+
 ---
 
-## 3. Hook Pattern
+## 4. Hook Pattern
 
 Hooks wrap services for client-side use. Handle loading/error state. Call services, not Supabase directly.
 
@@ -233,15 +262,15 @@ export function useMetrics(userId: string) {
 
 ---
 
-## 4. API Route Pattern
+## 5. API Route Pattern
 
 Route handlers call services. Never contain logic themselves.
 
 ```ts
 // app/api/health/metrics/route.ts
-import { NextResponse }   from 'next/server'
-import { createClient }   from '@/lib/supabase/server'
-import { healthService }  from '@/services/health.service'
+import { NextResponse }  from 'next/server'
+import { createClient }  from '@/lib/supabase/server'
+import { healthService } from '@/services/health.service'
 
 export async function GET() {
   const supabase = await createClient()
@@ -257,7 +286,7 @@ export async function GET() {
 
 ---
 
-## 5. Server Actions Pattern
+## 6. Server Actions Pattern
 
 For mutations (forms, writes). Always validate auth inside the action.
 
@@ -272,7 +301,6 @@ export async function updateProfile(_prev: unknown, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  // Delegate to service
   const result = await profileService.update(user.id, {
     full_name: formData.get('full_name') as string,
   })
@@ -284,75 +312,152 @@ export async function updateProfile(_prev: unknown, formData: FormData) {
 
 ---
 
-## 6. Using UI Components
+## 7. Page Layout Patterns
 
-Always import from the barrel. Use semantic tokens  never raw Tailwind colour values.
+### Top-Level Pages (Dashboard, Timeline, Settings)
+
+Full-bleed gradient hero + white content sheet that overlaps it:
 
 ```tsx
-// ✅
-import { Button, Card, Heading } from '@/components/ui'
+export default async function DashboardPage() {
+  // ... data fetching ...
+  return (
+    <>
+      {/* Full-bleed gradient hero */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 gradient-hero">
+        <GradientHeroHeader
+          title={displayName}
+          greeting="Good day,"
+          stats={[
+            { num: activeMeds.length, label: 'Active Meds' },
+            { num: alerts.length,     label: 'Alerts' },
+            { num: records.length,    label: 'Records' },
+          ]}
+          navAction={<SignOutButton />}
+        />
+      </div>
 
-<Button variant="primary">Save</Button>
-<Card variant="elevated">...</Card>
+      {/* Content sheet — overlaps hero */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 relative z-10 bg-surface rounded-[28px_28px_0_0]">
+        <div className="px-5 pt-5 pb-6 flex flex-col gap-5">
+          {/* page content */}
+        </div>
+      </div>
+    </>
+  )
+}
+```
 
-// ❌  bypasses theming
-<button className="bg-emerald-600 text-white">Save</button>
+### Sub-Pages (Records, Explanation, Upload)
+
+Sticky back-nav + scrollable content:
+
+```tsx
+export default async function RecordPage() {
+  return (
+    <>
+      <PageHeader title="Your Prescription" backHref="/dashboard" action={<ShareButton />} />
+      <div className="px-4 py-5 flex flex-col gap-4">
+        {/* page content */}
+      </div>
+    </>
+  )
+}
 ```
 
 ---
 
-## 7. Naming Conventions
+## 8. Tailwind v4 Syntax
+
+Tailwind v4 has updated class names. Always use the new forms:
+
+| ❌ Old / Wrong | ✅ Correct |
+|----------------|-----------|
+| `flex-shrink-0` | `shrink-0` |
+| `flex-grow` | `grow` |
+| `z-[100]` | `z-100` |
+| `bg-white/[.18]` | `bg-white/18` |
+| `-translate-y-[1px]` | `-translate-y-px` |
+| `hover:-translate-y-[1px]` | `hover:-translate-y-px` |
+| `bg-[#1d4ed8]` | `bg-primary` |
+| `text-[#07071a]` | `text-text-primary` |
+
+---
+
+## 9. Naming Conventions
 
 | Thing | Convention | Example |
-|---|---|---|
-| Component files | PascalCase | `MetricCard.tsx` |
+|-------|------------|---------|
+| Component files | PascalCase | `RecordCard.tsx` |
 | Hook files | camelCase with `use` prefix | `useMetrics.ts` |
 | Service files | camelCase with `.service` suffix | `health.service.ts` |
-| Type files | camelCase | `user.ts` |
+| Type files | camelCase | `family.ts` |
 | Constant files | camelCase | `index.ts` |
 | Route files | Next.js convention | `page.tsx`, `route.ts`, `layout.tsx` |
 | CSS classes | Semantic token names | `bg-primary`, `text-text-secondary` |
 
 ---
 
-## 8. TypeScript Rules
+## 10. TypeScript Rules
 
-- All props typed with explicit interfaces (no `any`)
+- All props typed with explicit interfaces — no `any`
 - Service return types use `ApiResponse<T>` wrapper
-- No `as any` casts  use type guards or proper generics
-- Prefer `type` over `interface` for unions; `interface` for object shapes
+- No `as any` casts — use type guards or proper generics
+- `import type { ... }` for type-only imports
+- `interface` for object shapes, `type` for unions
 
 ---
 
-## 9. Import Order
+## 11. Import Order
 
 ```ts
 // 1. React / Next.js
 import { useState } from 'react'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 // 2. Third-party
 import { createBrowserClient } from '@supabase/ssr'
 
-// 3. Internal  absolute (@/)
-import { Button } from '@/components/ui'
-import { healthService } from '@/services/health.service'
-import type { Metric } from '@/types'
+// 3. Internal — absolute (@/)
+import { Button, Card, Badge } from '@/components/ui'
+import { familyService } from '@/services/family.service'
+import type { FamilyProfile } from '@/types/family'
 
-// 4. Relative (avoid in most cases  prefer absolute)
+// 4. Relative (avoid — prefer absolute)
 import { formatDate } from './utils'
 ```
 
 ---
 
-## 10. Do / Don't
+## 12. Security Rules
+
+Every Server Action and API route must:
+
+1. Call `supabase.auth.getUser()` — never trust client-provided user IDs
+2. Return `{ error: 'Unauthorized' }` if no user — never throw
+3. Use parameterized Supabase queries — never string-interpolate user input
+4. Never expose `SUPABASE_SERVICE_ROLE_KEY` in client-accessible code
+5. Filter by `user_id` in queries — RLS is the last line of defense, not the only one
+
+---
+
+## 13. Do / Don't
 
 | ✅ Do | ❌ Don't |
-|---|---|
-| Use `bg-primary`, `text-text-primary` | Use `bg-emerald-600`, `text-gray-900` |
+|-------|---------|
+| Use `bg-primary`, `text-text-primary` | Use `bg-blue-600`, `text-gray-900`, or hex values |
+| Use `gradient-hero`, `gradient-brand` classes | Inline `linear-gradient(...)` in style props |
+| Use `Button`, `Input`, `Badge`, `Card` components | Build raw `<button>`, `<input>`, badge spans |
+| Use `GradientHeroHeader` for top-level pages | Duplicate the gradient hero pattern manually |
+| Use `PageHeader` for sub-pages | Build custom sticky nav bars per page |
+| Use `EmptyState` for empty content | Build custom empty state layouts per page |
+| Use `SectionHeader` for section labels | Hardcode `font-display text-[11px] uppercase` inline |
 | Fetch in Server Components | Fetch in UI primitive components |
-| Keep services pure async functions | Put React state in services |
+| Keep services as pure async functions | Put React state in services |
 | Use `ApiResponse<T>` for service returns | Return raw Supabase responses |
 | Handle loading, error, empty, success states | Render only the success state |
 | Use `@/` absolute imports | Use `../../` relative imports |
+| Use `shrink-0` (Tailwind v4) | Use `flex-shrink-0` |
+| Define tokens in `globals.css :root` only | Define `--variable` in page-level CSS |
 | Colocate feature types in `types/<feature>.ts` | Put types inline in component files |
