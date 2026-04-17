@@ -859,6 +859,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      get_registered_user_count: {
+        Args: Record<string, never>
+        Returns: number
+      }
       get_shared_link: {
         Args: { token: string }
         Returns: {

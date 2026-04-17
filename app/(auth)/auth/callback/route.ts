@@ -15,11 +15,16 @@ export async function GET(request: Request) {
       // Ensure self-profile exists  handles first OAuth login, email confirmation,
       // and the case where a family member was pre-added before they signed up.
       const metaName = data.user.user_metadata?.full_name as string | undefined
-      await familyService.ensureSelfProfile(
+      const result = await familyService.ensureSelfProfile(
         data.user.id,
         data.user.email ?? '',
         metaName
       )
+
+      if (result.error === 'early_access_full') {
+        await supabase.auth.signOut()
+        return NextResponse.redirect(`${origin}/access-closed`)
+      }
 
       return NextResponse.redirect(`${origin}${next}`)
     }

@@ -195,6 +195,14 @@ export const familyService = {
       }
     }
 
+    // ── Early access cap ────────────────────────────────────────────────────
+    // Case 1 returned early above — any path below creates a new users_profile row.
+    const accessLimit = parseInt(process.env.EARLY_ACCESS_LIMIT ?? '150', 10)
+    const { data: registeredCount } = await supabase.rpc('get_registered_user_count')
+    if ((registeredCount ?? 0) >= accessLimit) {
+      return { data: null, error: 'early_access_full', success: false }
+    }
+
     // ── Case 2: claimable profile with matching email ───────────────────────
     const { data: claimable } = await supabase
       .from('family_profiles')

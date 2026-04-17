@@ -32,6 +32,12 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   const fullName = (formData.get('full_name') as string | null)?.trim() || undefined
   const returnTo = formData.get('returnTo') as string | null
 
+  const limit = parseInt(process.env.EARLY_ACCESS_LIMIT ?? '150', 10)
+  const { data: currentCount } = await supabase.rpc('get_registered_user_count')
+  if ((currentCount ?? 0) >= limit) {
+    return { error: "Early access is currently full — we'll notify you when spots open in the next phase." }
+  }
+
   // Point email confirmation link back to our callback so ensureSelfProfile runs
   const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(returnTo ?? '/dashboard')}`
 
@@ -60,6 +66,12 @@ export async function signInWithGoogle(formData: FormData) {
   const supabase = await createClient()
   const origin   = (await headers()).get('origin')
   const returnTo = (formData.get('returnTo') as string | null) ?? '/dashboard'
+
+  const limit = parseInt(process.env.EARLY_ACCESS_LIMIT ?? '150', 10)
+  const { data: currentCount } = await supabase.rpc('get_registered_user_count')
+  if ((currentCount ?? 0) >= limit) {
+    redirect('/access-closed')
+  }
 
   const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(returnTo)}`
 
