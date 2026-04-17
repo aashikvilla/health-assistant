@@ -207,16 +207,19 @@ export const documentsService = {
    */
   async saveExplanationToAnalysis(
     documentId: string,
+    userId: string,
     medications: MedicationExplanation[],
     doctorNotes: string[]
   ): Promise<void> {
     const supabase = await createClient()
     await supabase
       .from('document_analyses')
-      .update({
+      .upsert({
+        document_id: documentId,
+        user_id: userId,
+        summary: '',
         medications_found: medications as unknown as Json,
         recommendations: doctorNotes as Json,
-      })
-      .eq('document_id', documentId)
+      }, { onConflict: 'document_id' })
   },
 }

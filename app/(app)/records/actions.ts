@@ -26,11 +26,21 @@ export async function generateRecordExplanation(
     return { success: true }
   }
 
+  // Zero-meds guard: nothing to explain, stop retrying
+  if (rawData.rawPrescriptionData.medications.length === 0) {
+    return { success: true }
+  }
+
   const generated = await generateExplanation(rawData.rawPrescriptionData, apiKey)
   if (!generated) return { success: false }
 
+  // Validate before save: only persist if AI returned a real explanation
+  const hasRichResponse = generated.medications.some((m) => m.treats)
+  if (!hasRichResponse) return { success: false }
+
   await documentsService.saveExplanationToAnalysis(
     documentId,
+    user.id,
     generated.medications.map(({ id: _id, ...m }) => m),
     generated.doctorNotes,
   )

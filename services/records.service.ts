@@ -301,9 +301,9 @@ export const recordsService = {
         const analysis = d.document_analyses?.[0] ?? null
         const storedMeds = (analysis?.medications_found as unknown[]) ?? []
 
-        // Detect rich vs raw: MedicationExplanation has 'treats', Medication has 'duration'
+        // Detect rich vs raw: MedicationExplanation has a non-empty 'treats' value
         const hasExplanation =
-            storedMeds.length > 0 && 'treats' in (storedMeds[0] as Record<string, unknown>)
+            storedMeds.length > 0 && !!(storedMeds[0] as { treats?: string }).treats
 
         // Fetch profile name for the "For <name>" context line
         const { data: profile } = await supabase

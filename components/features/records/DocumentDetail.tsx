@@ -144,79 +144,71 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
         {/* ══════════════ PRESCRIPTION ══════════════ */}
         {isPrescription && (
           <>
-            {/* Desktop: 2-column grid  medications left, notes+share right */}
-            <div className="md:grid md:grid-cols-[1fr_380px] md:gap-8 md:items-start">
+            {needsExplanation && record.documentId && (
+              <ExplanationLoader documentId={record.documentId} />
+            )}
 
-              {/* Left column  medications */}
-              <section>
-                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-                  Medications · {medicationCount ?? medications.length}
-                </h3>
+            {/* Medications */}
+            <section>
+              <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
+                Medications · {medicationCount ?? medications.length}
+              </h3>
 
-                {needsExplanation && record.documentId && (
-                  <ExplanationLoader documentId={record.documentId} />
-                )}
-
-                {medicationsWithId.length === 0 ? (
-                  <div className="bg-surface-subtle rounded-2xl p-4 text-center">
-                    <p className="text-sm text-text-secondary">No medication details available.</p>
-                  </div>
-                ) : hasRichMedications ? (
-                  <div className="space-y-4">
-                    {medicationsWithId.map((med) => (
-                      <MedicationCard key={med.id} medication={med} />
-                    ))}
-                  </div>
-                ) : (
-                  /* Fallback: plain list when only raw OCR data stored (legacy records) */
-                  <ul className="space-y-3">
-                    {medicationsWithId.map((med) => (
-                      <li
-                        key={med.id}
-                        className="bg-surface-container-lowest rounded-2xl p-4"
-                        style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm font-semibold text-text-primary">{med.name}</p>
-                          {med.dosage && (
-                            <span className="text-xs text-text-muted shrink-0 mt-0.5">{med.dosage}</span>
-                          )}
-                        </div>
-                        {med.frequency && (
-                          <p className="text-xs text-text-secondary mt-1">{med.frequency}</p>
+              {medicationsWithId.length === 0 ? (
+                <div className="bg-surface-subtle rounded-2xl p-4 text-center">
+                  <p className="text-sm text-text-secondary">No medication details available.</p>
+                </div>
+              ) : hasRichMedications ? (
+                <div className="space-y-4">
+                  {medicationsWithId.map((med) => (
+                    <MedicationCard key={med.id} medication={med} />
+                  ))}
+                </div>
+              ) : (
+                /* Fallback: plain list when only raw OCR data stored (legacy records) */
+                <ul className="space-y-3">
+                  {medicationsWithId.map((med) => (
+                    <li
+                      key={med.id}
+                      className="bg-surface-container-lowest rounded-2xl p-4"
+                      style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-sm font-semibold text-text-primary">{med.name}</p>
+                        {med.dosage && (
+                          <span className="text-xs text-text-muted shrink-0 mt-0.5">{med.dosage}</span>
                         )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
+                      </div>
+                      {med.frequency && (
+                        <p className="text-xs text-text-secondary mt-1">{med.frequency}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
 
-              {/* Right column  doctor notes + doc link + share */}
-              <div className="space-y-5 mt-5 md:mt-0">
-                {/* Doctor notes */}
-                {hasRecommendations && (
-                  <DoctorNotes notes={recommendations} title="Things to tell your doctor" />
-                )}
+            {/* Doctor notes */}
+            {hasRecommendations && (
+              <DoctorNotes notes={recommendations} title="Things to tell your doctor" />
+            )}
 
-                {/* Original document link */}
-                {signedFileUrl && (
-                  <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} documentType={documentType} />
-                )}
+            {/* Original document link */}
+            {signedFileUrl && (
+              <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} documentType={documentType} />
+            )}
 
-                {/* WhatsApp share  full button */}
-                {hasAnyMedications && (
-                  <ShareButton
-                    doctorName={doctorName}
-                    patientName={displayName}
-                    date={documentDate ? formatDate(documentDate) : null}
-                    medications={medications}
-                    doctorNotes={recommendations}
-                    variant="full"
-                  />
-                )}
-              </div>
-
-            </div>
+            {/* WhatsApp share */}
+            {hasAnyMedications && (
+              <ShareButton
+                doctorName={doctorName}
+                patientName={displayName}
+                date={documentDate ? formatDate(documentDate) : null}
+                medications={medications}
+                doctorNotes={recommendations}
+                variant="full"
+              />
+            )}
           </>
         )}
 

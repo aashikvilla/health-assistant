@@ -32,6 +32,7 @@ import {
   ExplanationActions,
   AbnormalMarkerCard,
 } from '@/components/features/explanation'
+import { ShareButton } from '@/components/features/share/ShareButton'
 import { savePrescription, saveLabReport } from './actions'
 
 const BUCKET = 'medical-documents'
@@ -443,6 +444,16 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
               <MedicationCard key={med.id} medication={med} />
             ))}
             <DoctorNotes notes={explanation.doctorNotes} />
+            {explanation.medications.length > 0 && (
+              <ShareButton
+                doctorName={explanation.doctorName}
+                patientName={explanation.patientName}
+                date={explanation.date}
+                medications={explanation.medications}
+                doctorNotes={explanation.doctorNotes}
+                variant="full"
+              />
+            )}
           </section>
 
           <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface-container-lowest/80 backdrop-blur-lg px-5 py-4 pb-safe">

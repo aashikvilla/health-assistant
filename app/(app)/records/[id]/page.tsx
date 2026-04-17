@@ -38,7 +38,8 @@ export default async function RecordPage({
   const needsExplanation =
     record.documentType === 'prescription' &&
     !hasRichMedications &&
-    !!record.documentId
+    !!record.documentId &&
+    record.medications.length > 0
 
   // ── Signed URL for the original uploaded file (1-hour expiry) ───────────────
   let signedFileUrl: string | null = null
