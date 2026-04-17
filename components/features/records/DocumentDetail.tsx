@@ -92,7 +92,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
 
       {/* ── Sticky nav ── */}
       <nav className="sticky top-0 z-40 bg-surface-container-lowest/80 backdrop-blur-lg pt-safe">
-        <div className="flex items-center justify-between px-4 h-14">
+        <div className="flex items-center justify-between px-4 h-14 max-w-4xl mx-auto">
           <Link
             href="/dashboard"
             className="touch-target flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary hover:bg-surface-subtle transition-colors"
@@ -107,22 +107,11 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
             {navTitle}
           </h1>
 
-          {/* WhatsApp share in nav  visible whenever there are medications */}
-          {isPrescription && hasAnyMedications ? (
-            <ShareButton
-              doctorName={doctorName}
-              patientName={displayName}
-              date={documentDate ? formatDate(documentDate) : null}
-              medications={medications}
-              doctorNotes={recommendations}
-            />
-          ) : (
-            <div className="w-10" aria-hidden="true" />
-          )}
+          <div className="w-10" aria-hidden="true" />
         </div>
       </nav>
 
-      <div className="px-5 pt-4 pb-8 space-y-5 max-w-2xl mx-auto">
+      <div className="px-5 pt-4 pb-8 space-y-5 max-w-2xl md:max-w-4xl mx-auto">
 
         {/* ── Meta header ── */}
         <div>

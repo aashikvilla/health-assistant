@@ -85,7 +85,7 @@ export function AppDrawerNav() {
         aria-expanded={open}
         className="fixed top-[10px] right-5 z-100 w-9 h-9 rounded-xl items-center justify-center flex-col gap-[5px] transition-opacity hover:opacity-80"
         style={{
-          display: isDesktop ? 'flex' : 'none',
+          display: isDesktop && !open ? 'flex' : 'none',
           background: 'rgba(255,255,255,.22)',
           border: '1px solid rgba(255,255,255,.4)',
           backdropFilter: 'blur(8px)',

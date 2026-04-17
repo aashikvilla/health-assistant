@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import type { Medication } from '@/types/prescription'
 
 interface Props {
@@ -7,11 +10,13 @@ interface Props {
 }
 
 export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Props) {
+  const [expanded, setExpanded] = useState(false)
+
   if (medications.length === 0) return null
 
   const label = isSelf ? 'Your' : `${profileName.split(' ')[0]}'s`
   const MAX_DISPLAY = 4
-  const displayedMeds = medications.slice(0, MAX_DISPLAY)
+  const displayedMeds = expanded ? medications : medications.slice(0, MAX_DISPLAY)
 
   // Helper to detect generic frequency strings that add no information
   function isGenericFrequency(value: string): boolean {
@@ -102,15 +107,15 @@ export function ActiveMedicationsStrip({ medications, profileName, isSelf }: Pro
           })}
         </div>
 
-        {/* View all link when there are more than MAX_DISPLAY medications */}
+        {/* Expand / collapse when there are more than MAX_DISPLAY medications */}
         {medications.length > MAX_DISPLAY && (
           <div className="px-4 pb-3 pt-1">
-            <a
-              href="/timeline"
+            <button
+              onClick={() => setExpanded((v) => !v)}
               className="text-xs font-semibold text-primary hover:underline"
             >
-              View all {medications.length} →
-            </a>
+              {expanded ? 'Show less ↑' : `View all ${medications.length} →`}
+            </button>
           </div>
         )}
       </div>
