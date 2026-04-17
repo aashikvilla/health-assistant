@@ -70,8 +70,7 @@ function isMedicationActive(
   const startStr = med.start_date ?? med.created_at
   if (!startStr) return true // no date at all → assume still active
 
-  const durationDays = parseDurationDays(med.frequency)
-  if (durationDays === null) return true // no duration → ongoing → active
+  const durationDays = parseDurationDays(med.frequency) ?? 30 // default: 30-day course
 
   const endDate = new Date(startStr)
   endDate.setDate(endDate.getDate() + durationDays)
