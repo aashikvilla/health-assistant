@@ -130,6 +130,7 @@ async function fetchActiveMedications(
     .map((m) => ({
       name:       m.name,
       dosage:     m.dosage ?? '',
+      frequency:  m.frequency ?? '',
       duration:   m.frequency ?? '',
       confidence: 'high' as const,
     }))

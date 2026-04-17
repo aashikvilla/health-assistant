@@ -352,6 +352,7 @@ export const recordsService = {
             rawMeds = (medRows ?? []).map((m) => ({
                 name: m.name,
                 dosage: m.dosage ?? '',
+                frequency: m.frequency ?? '',
                 duration: m.frequency ?? '',
                 confidence: 'high' as const,
             }))
@@ -367,6 +368,7 @@ export const recordsService = {
             medications: rawMeds.map((m) => ({
                 name: m.name,
                 dosage: m.dosage ?? '',
+                frequency: m.frequency ?? '',
                 duration: m.duration ?? '',
                 confidence: 'high' as const,
             })),
