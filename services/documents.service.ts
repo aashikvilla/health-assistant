@@ -188,7 +188,7 @@ export const documentsService = {
             profile_id: profileId,
             name: m.name,
             dosage: m.dosage ?? null,
-            frequency: (m as { frequency?: string }).frequency ?? null,
+            frequency: m.frequency ?? null,
             source_document_id: doc.id,
             status: 'active',
           }))

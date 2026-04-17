@@ -9,9 +9,10 @@ interface Props {
   confidence: Confidence
   onChange:   (val: string) => void
   required?:  boolean
+  onConfirm?: () => void
 }
 
-export default function FieldRow({ label, value, confidence, onChange, required = false }: Props) {
+export default function FieldRow({ label, value, confidence, onChange, required = false, onConfirm }: Props) {
   const isEmpty = !value?.trim()
   const [editing, setEditing] = useState(false)
   const [draft,   setDraft]   = useState(value)
@@ -46,6 +47,18 @@ export default function FieldRow({ label, value, confidence, onChange, required 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </span>
+        ) : onConfirm ? (
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-warning-subtle"
+            title="Tap to confirm this looks right"
+            aria-label="Confirm this value"
+          >
+            <svg className="w-3.5 h-3.5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v4m0 4h.01" />
+            </svg>
+          </button>
         ) : (
           <span
             className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-warning-subtle"

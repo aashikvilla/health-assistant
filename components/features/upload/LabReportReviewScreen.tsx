@@ -38,8 +38,17 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
     report.doctorNameConfidence  === 'low' ? 1 : 0,
   ].reduce((a, b) => a + b, 0)
 
+  type LabConfidenceKey = 'patientNameConfidence' | 'testDateConfidence' | 'labNameConfidence' | 'doctorNameConfidence'
+
+  function confirmField(key: LabConfidenceKey) {
+    setReport(r => ({ ...r, [key]: 'high' as Confidence }))
+  }
+
   const abnormalCount = report.tests.filter(t => t.status === 'high' || t.status === 'low' || t.status === 'critical').length
-  const missingRequired = report.tests.some((t) => !t.result?.trim())
+  const missingRequired =
+    !report.patientName.trim() ||
+    !report.testDate.trim()    ||
+    report.tests.some((t) => !t.result?.trim())
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
@@ -96,10 +105,10 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
           </h2>
           <div className="bg-surface-container-lowest rounded-2xl px-4 divide-y divide-border-subtle"
             style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}>
-            <FieldRow label="Patient Name" value={report.patientName}  confidence={report.patientNameConfidence}  onChange={(v) => updateField('patientName', 'patientNameConfidence', v)} />
-            <FieldRow label="Test Date"    value={report.testDate}     confidence={report.testDateConfidence}     onChange={(v) => updateField('testDate', 'testDateConfidence', v)} />
-            <FieldRow label="Lab / Hospital" value={report.labName}   confidence={report.labNameConfidence}      onChange={(v) => updateField('labName', 'labNameConfidence', v)} />
-            <FieldRow label="Referred by"  value={report.doctorName}  confidence={report.doctorNameConfidence}   onChange={(v) => updateField('doctorName', 'doctorNameConfidence', v)} />
+            <FieldRow label="Patient Name"   value={report.patientName} confidence={report.patientNameConfidence} onChange={(v) => updateField('patientName', 'patientNameConfidence', v)} required onConfirm={() => confirmField('patientNameConfidence')} />
+            <FieldRow label="Test Date"      value={report.testDate}    confidence={report.testDateConfidence}    onChange={(v) => updateField('testDate', 'testDateConfidence', v)}       required onConfirm={() => confirmField('testDateConfidence')} />
+            <FieldRow label="Lab / Hospital" value={report.labName}     confidence={report.labNameConfidence}     onChange={(v) => updateField('labName', 'labNameConfidence', v)}                   onConfirm={() => confirmField('labNameConfidence')} />
+            <FieldRow label="Referred by"    value={report.doctorName}  confidence={report.doctorNameConfidence}  onChange={(v) => updateField('doctorName', 'doctorNameConfidence', v)}             onConfirm={() => confirmField('doctorNameConfidence')} />
           </div>
         </section>
 
@@ -175,7 +184,12 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
         <div className="max-w-2xl mx-auto flex flex-col gap-3">
           {missingRequired && (
             <p className="text-sm text-error text-center font-medium">
-              Please fill in all test result values before continuing.
+              Please fill in all required fields before continuing.
+            </p>
+          )}
+          {!missingRequired && lowCount > 0 && (
+            <p className="text-sm text-error text-center font-medium">
+              Please verify the flagged fields before continuing.
             </p>
           )}
           <Button
@@ -183,7 +197,7 @@ export default function LabReportReviewScreen({ data, onConfirm, onRetry }: Prop
             variant="primary"
             size="lg"
             fullWidth
-            disabled={missingRequired}
+            disabled={missingRequired || lowCount > 0}
             className="min-h-[60px] text-xl rounded-2xl"
           >
             Confirm &amp; Get AI Analysis →

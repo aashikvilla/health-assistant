@@ -17,7 +17,7 @@ Return this exact shape:
   "medications": [
     {
       "name": string,
-      "dosage": string,
+      "frequency": string,
       "duration": string,
       "confidence": "high" | "low"
     }
@@ -29,6 +29,8 @@ Rules:
 - If a field is missing, illegible, or uncertain, use an empty string and set confidence "low".
 - Format date as DD MMM YYYY if possible (e.g., "10 Apr 2026").
 - List every distinct medication as a separate entry.
+- frequency must be in X-X-X format representing morning-afternoon-night doses (e.g. "1-0-1" means 1 in morning, 0 at noon, 1 at night; "0-0-1" means night only). Use 0 if not taken at that time. If unclear, use empty string and set confidence "low".
+- duration must be a plain number representing days only (e.g. "7", not "7 days" or "one week"). If unclear, use empty string and set confidence "low".
 - Never invent data. If something is not in the text, leave it empty with confidence "low".`
 
 const LAB_REPORT_PROMPT = `You are a medical data extraction assistant. Extract structured lab report data and return ONLY valid JSON  no markdown, no explanation, no code fences.

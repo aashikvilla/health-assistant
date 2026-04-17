@@ -4,10 +4,11 @@ export type Confidence = 'high' | 'low'
 
 /** Raw medication row as extracted from a prescription image/PDF (Stage 2). */
 export interface Medication {
-  id?: string
-  name: string
-  dosage: string
-  duration: string
+  id?:       string
+  name:      string
+  dosage?:   string      // legacy field — kept for display of old stored records
+  frequency: string      // X-X-X format: morning-afternoon-night, e.g. "1-0-1"
+  duration:  string      // numeric days only, e.g. "7"
   confidence: Confidence
 }
 

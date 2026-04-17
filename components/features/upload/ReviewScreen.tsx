@@ -44,6 +44,19 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
     }))
   }
 
+  function confirmDoctor()  { setPrescription(p => ({ ...p, doctorConfidence:  'high' as Confidence })) }
+  function confirmDate()    { setPrescription(p => ({ ...p, dateConfidence:    'high' as Confidence })) }
+  function confirmIllness() { setPrescription(p => ({ ...p, illnessConfidence: 'high' as Confidence })) }
+  function confirmMedication(index: number) {
+    setPrescription(p => {
+      const meds = [...p.medications]
+      meds[index] = { ...meds[index], confidence: 'high' as Confidence }
+      return { ...p, medications: meds }
+    })
+  }
+
+  const isFrequencyValid = (f: string) => /^\d-\d-\d$/.test(f)
+
   const lowCount = [
     prescription.doctorConfidence  === 'low' ? 1 : 0,
     prescription.dateConfidence    === 'low' ? 1 : 0,
@@ -51,7 +64,13 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
     ...prescription.medications.map((m) => (m.confidence === 'low' ? 1 : 0)),
   ].reduce((a, b) => a + b, 0)
 
-  const missingRequired = prescription.medications.some((m) => !m.name?.trim())
+  const missingRequired =
+    !prescription.doctor.trim()  ||
+    !prescription.date.trim()    ||
+    !prescription.illness.trim() ||
+    prescription.medications.some(
+      (m) => !m.name?.trim() || !isFrequencyValid(m.frequency ?? '') || !m.duration?.trim()
+    )
 
   // Compute duplicate medication names (case-insensitive, trimmed)
   const duplicateNames = new Set<string>()
@@ -122,9 +141,9 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
           </h2>
           <div className="bg-surface-container-lowest rounded-2xl px-4 divide-y divide-border-subtle"
             style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}>
-            <FieldRow label="Doctor"              value={prescription.doctor}  confidence={prescription.doctorConfidence}  onChange={updateDoctor} />
-            <FieldRow label="Date"                value={prescription.date}    confidence={prescription.dateConfidence}    onChange={updateDate} />
-            <FieldRow label="Illness / Diagnosis" value={prescription.illness} confidence={prescription.illnessConfidence} onChange={updateIllness} />
+            <FieldRow label="Doctor"              value={prescription.doctor}  confidence={prescription.doctorConfidence}  onChange={updateDoctor}  required onConfirm={confirmDoctor} />
+            <FieldRow label="Date"                value={prescription.date}    confidence={prescription.dateConfidence}    onChange={updateDate}    required onConfirm={confirmDate} />
+            <FieldRow label="Illness / Diagnosis" value={prescription.illness} confidence={prescription.illnessConfidence} onChange={updateIllness} required onConfirm={confirmIllness} />
           </div>
         </section>
 
@@ -192,13 +211,76 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                     >
                       {i + 1}
                     </div>
-                    <p className="text-sm font-semibold text-text-primary truncate">{medName}</p>
+                    <p className="text-sm font-semibold text-text-primary truncate flex-1">{medName}</p>
+                    <button
+                      onClick={() => removeMedication(i)}
+                      className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg text-text-muted hover:text-error hover:bg-error-subtle transition-colors"
+                      aria-label={`Remove ${medName}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                   {/* Fields */}
                   <div className="px-4 divide-y divide-border-subtle">
-                    <FieldRow label="Name"     value={med.name}     confidence={med.confidence} onChange={(v) => updateMedication(i, 'name', v)} required />
-                    <FieldRow label="Dosage"   value={med.dosage}   confidence={med.confidence} onChange={(v) => updateMedication(i, 'dosage', v)} />
-                    <FieldRow label="Duration" value={med.duration} confidence={med.confidence} onChange={(v) => updateMedication(i, 'duration', v)} />
+                    <FieldRow label="Name" value={med.name} confidence={med.confidence} onChange={(v) => updateMedication(i, 'name', v)} required onConfirm={() => confirmMedication(i)} />
+
+                    {/* Frequency — M / A / N inputs */}
+                    <div className="flex items-start gap-3 py-4 min-h-[64px]">
+                      <div className="flex-shrink-0 mt-1">
+                        {!isFrequencyValid(med.frequency ?? '') ? (
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-error-subtle" title="Required — fill in frequency" aria-label="Required field">
+                            <svg className="w-3.5 h-3.5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v4m0 4h.01" />
+                            </svg>
+                          </span>
+                        ) : med.confidence === 'high' ? (
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-subtle" title="Looks good" aria-label="High confidence">
+                            <svg className="w-3.5 h-3.5 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                        ) : (
+                          <button type="button" onClick={() => confirmMedication(i)} className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-warning-subtle" title="Tap to confirm this looks right" aria-label="Confirm frequency">
+                            <svg className="w-3.5 h-3.5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v4m0 4h.01" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-text-muted mb-2">Frequency</p>
+                        <div className="flex items-end gap-2">
+                          {(['M', 'A', 'N'] as const).map((slot, si) => {
+                            const parts = (med.frequency || '').split('-')
+                            const val = parts[si] ?? ''
+                            return (
+                              <div key={slot} className="flex flex-col items-center gap-1">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="9"
+                                  inputMode="numeric"
+                                  value={val}
+                                  onChange={(e) => {
+                                    const newParts = (med.frequency || '').split('-')
+                                    while (newParts.length < 3) newParts.push('')
+                                    newParts[si] = e.target.value.replace(/\D/g, '').slice(0, 1)
+                                    updateMedication(i, 'frequency', newParts.join('-'))
+                                  }}
+                                  className="w-12 h-12 text-center text-lg font-bold rounded-xl bg-surface-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors"
+                                />
+                                <span className="text-[10px] text-text-muted font-semibold">{slot}</span>
+                              </div>
+                            )
+                          })}
+                          <span className="text-text-muted text-sm pb-1 ml-1">×/day</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <FieldRow label="Duration (days)" value={med.duration} confidence={med.confidence} onChange={(v) => updateMedication(i, 'duration', v.replace(/\D/g, ''))} required onConfirm={() => confirmMedication(i)} />
                   </div>
                   </div>
                 </div>
@@ -214,7 +296,12 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
         <div className="max-w-2xl mx-auto flex flex-col gap-3">
           {missingRequired && (
             <p className="text-sm text-error text-center font-medium">
-              Please fill in all medicine names before continuing.
+              Please fill in all required fields before continuing.
+            </p>
+          )}
+          {!missingRequired && lowCount > 0 && (
+            <p className="text-sm text-error text-center font-medium">
+              Please verify the flagged fields before continuing.
             </p>
           )}
           <Button
@@ -222,7 +309,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
             variant="primary"
             size="lg"
             fullWidth
-            disabled={missingRequired}
+            disabled={missingRequired || lowCount > 0}
             className="min-h-[60px] text-xl rounded-2xl"
           >
             Yes, This Looks Right →

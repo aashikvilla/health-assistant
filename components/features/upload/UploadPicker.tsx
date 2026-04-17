@@ -5,9 +5,9 @@ import type { PrescriptionData } from '@/types/prescription'
 import { Button } from '@/components/ui'
 
 interface ManualMed {
-  name:     string
-  dosage:   string
-  duration: string
+  name:      string
+  frequency: string  // X-X-X format
+  duration:  string  // numeric days
 }
 
 interface Props {
@@ -22,7 +22,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
   const [doctor,      setDoctor]      = useState('')
   const [illness,     setIllness]     = useState('')
   const [date,        setDate]        = useState('')
-  const [medications, setMedications] = useState<ManualMed[]>([{ name: '', dosage: '', duration: '' }])
+  const [medications, setMedications] = useState<ManualMed[]>([{ name: '', frequency: '', duration: '' }])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -218,24 +218,58 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                         </button>
                       )}
                     </div>
-                    {[
-                      { field: 'name'     as const, placeholder: 'Medicine name (required)' },
-                      { field: 'dosage'   as const, placeholder: 'Dosage e.g. 1 tablet twice daily' },
-                      { field: 'duration' as const, placeholder: 'Duration e.g. 5 days' },
-                    ].map(({ field, placeholder }) => (
-                      <input
-                        key={field}
-                        type="text"
-                        value={med[field]}
-                        onChange={(e) => updateMed(i, field, e.target.value)}
-                        placeholder={placeholder}
-                        className="w-full bg-surface-container-lowest rounded-lg px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
-                      />
-                    ))}
+                    {/* Name */}
+                    <input
+                      type="text"
+                      value={med.name}
+                      onChange={(e) => updateMed(i, 'name', e.target.value)}
+                      placeholder="Medicine name (required)"
+                      className="w-full bg-surface-container-lowest rounded-lg px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+                    />
+                    {/* Frequency M-A-N */}
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-text-muted">Frequency (M – A – N)</p>
+                      <div className="flex items-end gap-2">
+                        {(['M', 'A', 'N'] as const).map((slot, si) => {
+                          const parts = (med.frequency || '').split('-')
+                          const val = parts[si] ?? ''
+                          return (
+                            <div key={slot} className="flex flex-col items-center gap-0.5">
+                              <input
+                                type="number"
+                                min="0"
+                                max="9"
+                                inputMode="numeric"
+                                value={val}
+                                onChange={(e) => {
+                                  const newParts = (med.frequency || '').split('-')
+                                  while (newParts.length < 3) newParts.push('')
+                                  newParts[si] = e.target.value.replace(/\D/g, '').slice(0, 1)
+                                  updateMed(i, 'frequency', newParts.join('-'))
+                                }}
+                                className="w-12 h-10 text-center font-bold rounded-lg bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+                              />
+                              <span className="text-[10px] text-text-muted font-semibold">{slot}</span>
+                            </div>
+                          )
+                        })}
+                        <span className="text-text-muted text-xs pb-4 ml-1">×/day</span>
+                      </div>
+                    </div>
+                    {/* Duration */}
+                    <input
+                      type="number"
+                      min="1"
+                      inputMode="numeric"
+                      value={med.duration}
+                      onChange={(e) => updateMed(i, 'duration', e.target.value.replace(/\D/g, ''))}
+                      placeholder="Duration (days)"
+                      className="w-full bg-surface-container-lowest rounded-lg px-3 py-2.5 text-base text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+                    />
                   </div>
                 ))}
                 <button
-                  onClick={() => setMedications((p) => [...p, { name: '', dosage: '', duration: '' }])}
+                  onClick={() => setMedications((p) => [...p, { name: '', frequency: '', duration: '' }])}
                   className="w-full py-3 rounded-xl text-base font-medium text-teal bg-teal-subtle min-h-[48px]"
                 >
                   + Add another medicine
