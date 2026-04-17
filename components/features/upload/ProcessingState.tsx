@@ -120,7 +120,7 @@ export default function ProcessingState({ label, documentType }: ProcessingState
 
         {/* ── Text ─────────────────────────────────────────────── */}
         <h2 className="text-2xl font-bold text-text-primary text-center leading-tight">
-          {label ?? (documentType === 'lab_report' ? 'Reading your report…' : 'Reading your prescription…')}
+          {label ?? 'Reading the uploaded health record…'}
         </h2>
         <p className="text-base text-text-muted mt-1.5 text-center">
           {estimateText}
