@@ -2,22 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { LabReportData, LabReportExplanation } from '@/types/lab-report'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
-
-const FREE_MODELS = [
-  'google/gemma-4-31b-it:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
-  'nvidia/nemotron-3-super-120b-a12b:free',
-  'openai/gpt-oss-120b:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-3-27b-it:free',
-]
-
-function stripJsonFences(text: string): string {
-  return text
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/, '')
-    .trim()
-}
+import { callGemini, stripJsonFences, GeminiError } from '@/lib/gemini'
 
 function buildPrompt(report: LabReportData): string {
   return `You are a patient-friendly lab report interpreter. Given this lab report data, identify ONLY the parameters that are OUT OF RANGE (low, high, or critical) and explain each in plain English.
@@ -54,33 +39,6 @@ Rules:
 - doctorNotes should be specific to the abnormal findings, not generic.`
 }
 
-async function callModel(apiKey: string, model: string, prompt: string): Promise<string> {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://nuskha.app',
-      'X-Title': 'Vitae',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 4096,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  })
-
-  if (!res.ok) {
-    const err = await res.text()
-    throw Object.assign(new Error(`OpenRouter error ${res.status}: ${err}`), { code: res.status })
-  }
-
-  const data = await res.json()
-  const raw: string = data.choices?.[0]?.message?.content ?? ''
-  if (!raw) throw new Error('Empty response from model')
-  return raw
-}
-
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (!checkRateLimit(ip, RATE_LIMIT, RATE_WINDOW_MS)) {
@@ -93,36 +51,33 @@ export async function POST(req: NextRequest) {
   try {
     const report: LabReportData = await req.json()
 
-    const apiKey = process.env.OPENROUTER_API_KEY
-    if (!apiKey) throw new Error('OPENROUTER_API_KEY is not set')
+    const apiKey = process.env.GEMINI_API_KEY_EXPLAIN
+    if (!apiKey) throw new Error('GEMINI_API_KEY_EXPLAIN is not set')
 
-    const prompt = buildPrompt(report)
-    let lastError = ''
+    const raw = await callGemini({
+      apiKey,
+      prompt: buildPrompt(report),
+      maxTokens: 4096,
+      jsonMode: true,
+    })
 
-    for (const model of FREE_MODELS) {
-      try {
-        const raw = await callModel(apiKey, model, prompt)
-        const cleaned = stripJsonFences(raw)
-        try {
-          const parsed = JSON.parse(cleaned) as LabReportExplanation
-          return NextResponse.json(parsed)
-        } catch {
-          lastError = 'AI response was incomplete. Retrying with another model.'
-          continue
-        }
-      } catch (err) {
-        const e = err as Error & { code?: number }
-        lastError = e.message
-        if (e.code === 429 || e.code === 402) continue
-        throw err
-      }
+    try {
+      const parsed = JSON.parse(stripJsonFences(raw)) as LabReportExplanation
+      return NextResponse.json(parsed)
+    } catch {
+      return NextResponse.json(
+        { error: 'AI returned malformed response. Please try again.' },
+        { status: 502 }
+      )
     }
-
-    return NextResponse.json(
-      { error: 'All AI models are currently rate-limited. Please try again in a minute.' },
-      { status: 429 }
-    )
   } catch (err) {
+    if (err instanceof GeminiError) {
+      const status = err.status === 429 ? 429 : 502
+      const message = err.status === 429
+        ? 'AI is currently rate-limited. Please try again in a minute.'
+        : err.message
+      return NextResponse.json({ error: message }, { status })
+    }
     const message = err instanceof Error ? err.message : 'Internal server error'
     return NextResponse.json({ error: message }, { status: 500 })
   }

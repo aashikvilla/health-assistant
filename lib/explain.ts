@@ -5,22 +5,7 @@
  */
 
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
-
-const FREE_MODELS = [
-  'google/gemma-4-31b-it:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
-  'nvidia/nemotron-3-super-120b-a12b:free',
-  'openai/gpt-oss-120b:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-3-27b-it:free',
-]
-
-function stripJsonFences(text: string): string {
-  return text
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/, '')
-    .trim()
-}
+import { callGemini, stripJsonFences, GeminiError } from '@/lib/gemini'
 
 export function buildExplainPrompt(prescription: PrescriptionData): string {
   return `You are a patient-friendly medical explanation assistant. Given this prescription data, return a plain-language explanation.
@@ -51,56 +36,28 @@ Return ONLY valid JSON  no markdown, no code fences:
 }`
 }
 
-async function tryModel(apiKey: string, model: string, prompt: string): Promise<string> {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://nuskha.app',
-      'X-Title': 'Vitae',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 4096,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  })
-
-  if (!res.ok) {
-    const err = await res.text()
-    throw Object.assign(new Error(`OpenRouter ${res.status}: ${err}`), { status: res.status })
-  }
-
-  const data = await res.json()
-  const raw: string = data.choices?.[0]?.message?.content ?? ''
-  if (!raw) throw new Error('Empty response from model')
-  return raw
-}
-
 /**
- * Generate a plain-language prescription explanation via OpenRouter free model pool.
- * Tries each model in order, skipping on 429/402. Returns null if all fail.
+ * Generate a plain-language prescription explanation via Gemini 2.5 Flash-Lite.
+ * Returns null on rate-limit (429); throws on other errors.
  */
 export async function generateExplanation(
   prescription: PrescriptionData,
   apiKey: string
 ): Promise<PrescriptionExplanation | null> {
-  const prompt = buildExplainPrompt(prescription)
-
-  for (const model of FREE_MODELS) {
+  try {
+    const raw = await callGemini({
+      apiKey,
+      prompt: buildExplainPrompt(prescription),
+      maxTokens: 4096,
+      jsonMode: true,
+    })
     try {
-      const raw = await tryModel(apiKey, model, prompt)
-      try {
-        return JSON.parse(stripJsonFences(raw)) as PrescriptionExplanation
-      } catch {
-        continue // malformed JSON  try next model
-      }
-    } catch (err) {
-      const e = err as Error & { status?: number }
-      if (e.status === 429 || e.status === 402) continue
-      throw err
+      return JSON.parse(stripJsonFences(raw)) as PrescriptionExplanation
+    } catch {
+      return null
     }
+  } catch (err) {
+    if (err instanceof GeminiError && err.status === 429) return null
+    throw err
   }
-  return null
 }

@@ -151,7 +151,7 @@ export const documentsService = {
         user_id: userId,
         document_type_detected: type,
         summary,
-        llm_model_used: process.env.OPENROUTER_API_KEY ? 'openrouter' : 'mock',
+        llm_model_used: process.env.GEMINI_API_KEY_EXTRACT ? 'gemini-2.5-flash-lite' : 'mock',
         ...analysisPayload,
       })
 
