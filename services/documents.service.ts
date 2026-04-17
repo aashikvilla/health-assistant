@@ -207,19 +207,26 @@ export const documentsService = {
    */
   async saveExplanationToAnalysis(
     documentId: string,
-    userId: string,
+    _userId: string,
     medications: MedicationExplanation[],
     doctorNotes: string[]
-  ): Promise<void> {
+  ): Promise<{ error: string | null }> {
     const supabase = await createClient()
-    await supabase
+    // Filter on document_id only (UNIQUE) — RLS USING (auth.uid() = user_id)
+    // already enforces ownership. Adding a user_id equality filter causes silent
+    // zero-row matches when the stored user_id differs from auth.uid() (session
+    // edge cases), making the update silently discard the save.
+    const { data: updated, error } = await supabase
       .from('document_analyses')
-      .upsert({
-        document_id: documentId,
-        user_id: userId,
-        summary: '',
+      .update({
         medications_found: medications as unknown as Json,
         recommendations: doctorNotes as Json,
-      }, { onConflict: 'document_id' })
+      })
+      .eq('document_id', documentId)
+      .select('document_id')
+
+    if (error) return { error: error.message }
+    if (!updated || updated.length === 0) return { error: 'No matching analysis row — document may not have an analysis record' }
+    return { error: null }
   },
 }

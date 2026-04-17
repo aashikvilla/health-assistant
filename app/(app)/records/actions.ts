@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath }     from 'next/cache'
 import { createClient }       from '@/lib/supabase/server'
 import { recordsService }     from '@/services/records.service'
 import { documentsService }   from '@/services/documents.service'
@@ -38,12 +39,15 @@ export async function generateRecordExplanation(
   const hasRichResponse = generated.medications.some((m) => m.treats)
   if (!hasRichResponse) return { success: false }
 
-  await documentsService.saveExplanationToAnalysis(
+  const saveResult = await documentsService.saveExplanationToAnalysis(
     documentId,
     user.id,
     generated.medications.map(({ id: _id, ...m }) => m),
     generated.doctorNotes,
   )
 
+  if (saveResult.error) return { success: false }
+
+  revalidatePath(`/records/${documentId}`)
   return { success: true }
 }

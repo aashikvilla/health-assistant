@@ -140,7 +140,7 @@ export const recordsService = {
             // rich format has 'treats'; raw OCR format has 'duration'/'confidence'.
             const isRichExplanation =
                 storedMeds.length > 0 &&
-                'treats' in (storedMeds[0] as Record<string, unknown>)
+                !!(storedMeds[0] as { treats?: string }).treats
 
             let meds: MedicationExplanation[] = isRichExplanation
                 ? (storedMeds as MedicationExplanation[])
