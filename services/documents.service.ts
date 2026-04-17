@@ -181,17 +181,31 @@ export const documentsService = {
     // 4. Write individual medication rows (best-effort  non-fatal)
     if (type === 'prescription') {
       const meds = prescriptionMeds ?? (data as PrescriptionData).medications
+      const docDate = buildDocDate(data, type) // prescription date for end_date calc
       if (meds && meds.length > 0) {
         await supabase.from('medications').insert(
-          meds.map((m) => ({
-            user_id: userId,
-            profile_id: profileId,
-            name: m.name,
-            dosage: m.dosage ?? null,
-            frequency: m.frequency ?? null,
-            source_document_id: doc.id,
-            status: 'active',
-          }))
+          meds.map((m) => {
+            // Raw Medication objects carry a numeric `duration` field (e.g. "7").
+            // MedicationExplanation objects don't — they get no end_date (ongoing).
+            const durationStr = (m as { duration?: string }).duration
+            const durationDays = durationStr ? parseInt(durationStr, 10) : null
+            let endDate: string | null = null
+            if (durationDays && !isNaN(durationDays) && docDate) {
+              const d = new Date(docDate)
+              d.setDate(d.getDate() + durationDays)
+              endDate = d.toISOString().split('T')[0]
+            }
+            return {
+              user_id: userId,
+              profile_id: profileId,
+              name: m.name,
+              dosage: (m as { dosage?: string }).dosage ?? null,
+              frequency: m.frequency ?? null,
+              end_date: endDate,
+              source_document_id: doc.id,
+              status: 'active',
+            }
+          })
         )
       }
     }
