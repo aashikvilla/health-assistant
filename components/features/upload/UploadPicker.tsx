@@ -1,8 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { PrescriptionData } from '@/types/prescription'
 import { Button } from '@/components/ui'
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const MONTH_LABELS: Record<string, string> = {
+  Jan:'January', Feb:'February', Mar:'March',    Apr:'April',
+  May:'May',     Jun:'June',     Jul:'July',      Aug:'August',
+  Sep:'September',Oct:'October', Nov:'November',  Dec:'December',
+}
+
+function useDatePicker() {
+  const [day,   setDay]   = useState('')
+  const [month, setMonth] = useState('')
+  const [year,  setYear]  = useState('')
+
+  const iso = useMemo(() => {
+    if (!day || !month || year.length !== 4) return ''
+    const idx = MONTHS.indexOf(month)
+    if (idx < 0) return ''
+    const d = new Date(+year, idx, +day)
+    if (isNaN(d.getTime()) || d.getDate() !== +day) return ''
+    return d.toISOString().split('T')[0]
+  }, [day, month, year])
+
+  return { day, setDay, month, setMonth, year, setYear, iso }
+}
 
 interface ManualMed {
   name:      string
@@ -21,7 +45,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
 
   const [doctor,      setDoctor]      = useState('')
   const [illness,     setIllness]     = useState('')
-  const [date,        setDate]        = useState('')
+  const datePicker = useDatePicker()
   const [medications, setMedications] = useState<ManualMed[]>([{ name: '', frequency: '', duration: '' }])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -43,11 +67,11 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
   function handleSubmit() {
     onManualData({
       doctor,
-      doctorConfidence:  doctor.trim()  ? 'high' : 'low',
+      doctorConfidence:  doctor.trim()        ? 'high' : 'low',
       illness,
-      illnessConfidence: illness.trim() ? 'high' : 'low',
-      date,
-      dateConfidence:    date.trim()    ? 'high' : 'low',
+      illnessConfidence: illness.trim()       ? 'high' : 'low',
+      date:              datePicker.iso,
+      dateConfidence:    datePicker.iso       ? 'high' : 'low',
       medications: medications
         .filter((m) => m.name.trim())
         .map((m)   => ({ ...m, confidence: 'high' as const })),
@@ -182,9 +206,8 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
               </p>
 
               {[
-                { label: 'Doctor Name',          value: doctor,   setter: setDoctor,  placeholder: 'e.g. Dr. Priya Sharma' },
-                { label: 'Illness / Diagnosis',  value: illness,  setter: setIllness, placeholder: 'e.g. Cold and Cough' },
-                { label: 'Date on Prescription', value: date,     setter: setDate,    placeholder: 'e.g. 15 Apr 2026' },
+                { label: 'Doctor Name',         value: doctor,  setter: setDoctor,  placeholder: 'e.g. Dr. Priya Sharma' },
+                { label: 'Illness / Diagnosis', value: illness, setter: setIllness, placeholder: 'e.g. Cold and Cough' },
               ].map(({ label, value, setter, placeholder }) => (
                 <div key={label} className="space-y-1.5">
                   <label className="text-sm font-medium text-text-secondary block">{label}</label>
@@ -197,6 +220,68 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                   />
                 </div>
               ))}
+
+              {/* Date picker — Day / Month / Year */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-text-secondary block">
+                  Date on Prescription
+                </label>
+                <div className="flex gap-2">
+                  {/* Day */}
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    inputMode="numeric"
+                    placeholder="DD"
+                    value={datePicker.day}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, '').slice(0, 2)
+                      datePicker.setDay(v)
+                    }}
+                    className="w-16 bg-surface-subtle rounded-xl px-3 py-3 text-base text-center text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-surface-container-lowest transition-colors"
+                  />
+                  {/* Month */}
+                  <div className="relative flex-1">
+                    <select
+                      value={datePicker.month}
+                      onChange={(e) => datePicker.setMonth(e.target.value)}
+                      className="w-full appearance-none bg-surface-subtle rounded-xl px-4 py-3 text-base text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-surface-container-lowest transition-colors pr-8"
+                      style={{ color: datePicker.month ? undefined : 'var(--color-text-muted)' }}
+                    >
+                      <option value="" disabled>Month</option>
+                      {MONTHS.map((m) => (
+                        <option key={m} value={m}>{MONTH_LABELS[m]}</option>
+                      ))}
+                    </select>
+                    <svg
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {/* Year */}
+                  <input
+                    type="number"
+                    min="1900"
+                    max="2099"
+                    inputMode="numeric"
+                    placeholder="YYYY"
+                    value={datePicker.year}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, '').slice(0, 4)
+                      datePicker.setYear(v)
+                    }}
+                    className="w-24 bg-surface-subtle rounded-xl px-3 py-3 text-base text-center text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-surface-container-lowest transition-colors"
+                  />
+                </div>
+                {datePicker.iso && (
+                  <p className="text-xs text-teal font-medium px-1">
+                    {new Date(datePicker.iso + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <p className="text-sm font-medium text-text-secondary">Medicines</p>
