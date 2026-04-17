@@ -8,12 +8,14 @@ import { MedicationCard } from '@/components/features/explanation/MedicationCard
 import { AbnormalMarkerCard } from '@/components/features/explanation/AbnormalMarkerCard'
 import { DoctorNotes } from '@/components/features/explanation/DoctorNotes'
 import { ShareButton } from '@/components/features/share/ShareButton'
+import { ExplanationLoader } from '@/components/features/records/ExplanationLoader'
 
 interface DocumentDetailProps {
-  record:        RecordDetail
-  profileName:   string
-  signedFileUrl: string | null
-  isOwnProfile:  boolean
+  record:           RecordDetail
+  profileName:      string
+  signedFileUrl:    string | null
+  isOwnProfile:     boolean
+  needsExplanation?: boolean
 }
 
 function formatDate(iso: string | null): string {
@@ -58,7 +60,7 @@ function LabTestRow({ test }: { test: LabTest }) {
   )
 }
 
-export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfile }: DocumentDetailProps) {
+export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfile, needsExplanation }: DocumentDetailProps) {
   const {
     documentType,
     doctorName,
@@ -150,6 +152,10 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
                 <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
                   Medications · {medicationCount ?? medications.length}
                 </h3>
+
+                {needsExplanation && record.documentId && (
+                  <ExplanationLoader documentId={record.documentId} />
+                )}
 
                 {medicationsWithId.length === 0 ? (
                   <div className="bg-surface-subtle rounded-2xl p-4 text-center">
