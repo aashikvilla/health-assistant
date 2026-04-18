@@ -105,7 +105,7 @@ export async function classifyDocument(input: ImageInput | TextInput): Promise<'
     apiKey: getExtractKey(),
     prompt,
     image: input.type === 'image' ? { base64: input.base64, mimeType: input.mimeType } : undefined,
-    maxTokens: 10,
+    maxTokens: 100,
     jsonMode: false,
   })
 

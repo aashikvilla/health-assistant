@@ -57,7 +57,15 @@ export async function callGemini(opts: GeminiCallOptions): Promise<string> {
   }
 
   const data = await res.json()
-  const text: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+
+  const candidate = data.candidates?.[0]
+  if (!candidate) throw new GeminiError('No candidates in response', 502)
+  if (candidate.finishReason === 'SAFETY') throw new GeminiError('Response blocked by safety filter', 502)
+
+  // Gemma 4 prefixes thinking parts (thought: true) before the actual response
+  const responseParts: Array<{ text?: string; thought?: boolean }> = candidate.content?.parts ?? []
+  const text: string = responseParts.find(p => !p.thought)?.text ?? ''
+
   if (!text) throw new GeminiError('Empty response from Gemini', 502)
   return text
 }
