@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { extractPrescriptionData, classifyDocument, extractLabReportData } from '@/lib/extract'
+import { extractPrescriptionData, classifyAndExtract } from '@/lib/extract'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 import { createClient } from '@/lib/supabase/server'
 import { usageService } from '@/services/usage.service'
+
+export const maxDuration = 60
 
 export const USAGE_LIMIT_ERROR = 'USAGE_LIMIT_REACHED'
 
@@ -66,36 +68,23 @@ export async function POST(req: NextRequest) {
           if (user) await usageService.incrementInvalid(user.id)
           return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
         }
-        const docType = await classifyDocument({ type: 'text', content: text })
-        if (docType === 'other') {
+        const result = await classifyAndExtract({ type: 'text', content: text })
+        if (result.documentType === 'other') {
           if (user) await usageService.incrementInvalid(user.id)
           return NextResponse.json({ error: 'This doesn\'t look like a prescription or lab report. Please upload a medical document.' }, { status: 422 })
         }
-        if (docType === 'lab_report') {
-          const report = await extractLabReportData({ type: 'text', content: text })
-          if (user) await usageService.incrementSuccessful(user.id)
-          return NextResponse.json({ documentType: 'lab_report', data: report })
-        }
-        const prescription = await extractPrescriptionData({ type: 'text', content: text })
         if (user) await usageService.incrementSuccessful(user.id)
-        return NextResponse.json({ documentType: 'prescription', data: prescription })
+        return NextResponse.json({ documentType: result.documentType, data: result.data })
       }
 
       const base64 = Buffer.from(arrayBuffer).toString('base64')
-      const imageInput = { type: 'image' as const, base64, mimeType: file.type }
-      const docType = await classifyDocument(imageInput)
-      if (docType === 'other') {
+      const result = await classifyAndExtract({ type: 'image', base64, mimeType: file.type })
+      if (result.documentType === 'other') {
         if (user) await usageService.incrementInvalid(user.id)
         return NextResponse.json({ error: 'This doesn\'t look like a prescription or lab report. Please upload a medical document.' }, { status: 422 })
       }
-      if (docType === 'lab_report') {
-        const report = await extractLabReportData(imageInput)
-        if (user) await usageService.incrementSuccessful(user.id)
-        return NextResponse.json({ documentType: 'lab_report', data: report })
-      }
-      const prescription = await extractPrescriptionData(imageInput)
       if (user) await usageService.incrementSuccessful(user.id)
-      return NextResponse.json({ documentType: 'prescription', data: prescription })
+      return NextResponse.json({ documentType: result.documentType, data: result.data })
     }
 
     return NextResponse.json({ error: 'Unsupported content type' }, { status: 415 })

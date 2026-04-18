@@ -4,6 +4,8 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 import { callGemini, stripJsonFences, GeminiError } from '@/lib/gemini'
 
+export const maxDuration = 60
+
 function buildPrompt(report: LabReportData): string {
   return `You are a patient-friendly lab report interpreter. Given this lab report data, identify ONLY the parameters that are OUT OF RANGE (low, high, or critical) and explain each in plain English.
 

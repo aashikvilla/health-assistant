@@ -186,3 +186,75 @@ export async function extractLabReportData(input: ImageInput | TextInput): Promi
     throw new Error(`Model returned invalid JSON: ${raw.slice(0, 200)}`)
   }
 }
+
+const COMBINED_PROMPT = `You are a medical document extractor. Classify the document type and extract all data in a single JSON response — no markdown, no code fences, no null values.
+
+If this is a PRESCRIPTION return:
+{
+  "documentType": "prescription",
+  "doctor": string,
+  "doctorConfidence": "high" | "low",
+  "date": string,
+  "dateConfidence": "high" | "low",
+  "illness": string,
+  "illnessConfidence": "high" | "low",
+  "medications": [{ "name": string, "frequency": string, "duration": string, "confidence": "high" | "low" }]
+}
+
+If this is a LAB REPORT return:
+{
+  "documentType": "lab_report",
+  "patientName": string,
+  "patientNameConfidence": "high" | "low",
+  "testDate": string,
+  "testDateConfidence": "high" | "low",
+  "labName": string,
+  "labNameConfidence": "high" | "low",
+  "doctorName": string,
+  "doctorNameConfidence": "high" | "low",
+  "tests": [{ "testName": string, "result": string, "unit": string, "referenceRange": string, "status": "normal" | "low" | "high" | "critical" | "", "confidence": "high" | "low" }]
+}
+
+If NEITHER return:
+{ "documentType": "other" }
+
+Rules:
+- ALL fields must be present. Never omit a field. Never use null — use "" for missing values.
+- If clearly readable set confidence "high", otherwise use "" and confidence "low".
+- Format dates as DD MMM YYYY (e.g. "17 Jul 2024").
+- frequency in X-X-X format (morning-afternoon-night). E.g. "1-0-1", "0-0-1". Use "" if unclear.
+- duration as plain integer days. Convert: "1 week"→"7", "1 month"→"30". Apply global prescription duration to all medications if stated. Use "" if unclear.
+- For lab status: "normal" within range, "low" below, "high" above, "critical" if flagged, "" if unclear.
+- Never invent data not visible in the document.`
+
+export type ClassifyAndExtractResult =
+  | { documentType: 'prescription'; data: PrescriptionData }
+  | { documentType: 'lab_report';   data: LabReportData }
+  | { documentType: 'other';        data: null }
+
+export async function classifyAndExtract(input: ImageInput | TextInput): Promise<ClassifyAndExtractResult> {
+  const prompt = input.type === 'text'
+    ? `${COMBINED_PROMPT}\n\nDocument text:\n${input.content}`
+    : COMBINED_PROMPT
+
+  const raw = await callGemini({
+    apiKey: getExtractKey(),
+    prompt,
+    image: input.type === 'image' ? { base64: input.base64, mimeType: input.mimeType } : undefined,
+    maxTokens: 4096,
+    jsonMode: true,
+  })
+
+  let parsed: Record<string, unknown>
+  try {
+    const json = JSON.parse(stripJsonFences(raw))
+    parsed = (Array.isArray(json) ? json[0] ?? {} : json) as Record<string, unknown>
+  } catch {
+    throw new Error(`Model returned invalid JSON: ${raw.slice(0, 200)}`)
+  }
+
+  const docType = parsed.documentType
+  if (docType === 'prescription') return { documentType: 'prescription', data: normalizePrescription(parsed) }
+  if (docType === 'lab_report')   return { documentType: 'lab_report',   data: normalizeLabReport(parsed) }
+  return { documentType: 'other', data: null }
+}

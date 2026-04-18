@@ -69,9 +69,10 @@ export default function PublicUploadPage() {
         : await fetch('/api/ocr', { method: 'POST', body })
 
       if (!res.ok) {
-        const { error: msg } = await res.json()
+        let msg: string | undefined
+        try { msg = (await res.json()).error } catch { /* non-JSON timeout response */ }
         if (msg === NOT_MEDICAL_MSG) { setStep('pick'); setShowNotMedicalModal(true); return }
-        throw new Error(msg ?? 'Something went wrong')
+        throw new Error(msg ?? 'Something went wrong. Please try again.')
       }
 
       const { documentType: docType, data } = await res.json()
@@ -93,8 +94,9 @@ export default function PublicUploadPage() {
             body: JSON.stringify(labData),
           })
           if (!analyseRes.ok) {
-            const { error: msg } = await analyseRes.json()
-            throw new Error(msg ?? 'Failed to analyse lab report')
+            let msg: string | undefined
+            try { msg = (await analyseRes.json()).error } catch { /* non-JSON timeout response */ }
+            throw new Error(msg ?? 'Failed to analyse lab report. Please try again.')
           }
           setLabExplanation(await analyseRes.json() as LabReportExplanation)
           setStep('explaining') // Jump to insight screen with results ready

@@ -106,18 +106,11 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
       }
 
       if (!res.ok) {
-        const { error: msg } = await res.json()
-        if (msg === 'USAGE_LIMIT_REACHED') {
-          setStep('pick')
-          setShowUsageWallModal(true)
-          return
-        }
-        if (msg === NOT_MEDICAL_MSG) {
-          setStep('pick')
-          setShowNotMedicalModal(true)
-          return
-        }
-        throw new Error(msg ?? 'Something went wrong')
+        let msg: string | undefined
+        try { msg = (await res.json()).error } catch { /* non-JSON timeout response */ }
+        if (msg === 'USAGE_LIMIT_REACHED') { setStep('pick'); setShowUsageWallModal(true); return }
+        if (msg === NOT_MEDICAL_MSG) { setStep('pick'); setShowNotMedicalModal(true); return }
+        throw new Error(msg ?? 'Something went wrong. Please try again.')
       }
 
       const { documentType: docType, data } = await res.json()
