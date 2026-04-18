@@ -209,8 +209,9 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
       })
 
       if (!res.ok) {
-        const { error: msg } = await res.json()
-        throw new Error(msg ?? 'Failed to analyse lab report')
+        let msg: string | undefined
+        try { msg = (await res.json()).error } catch { /* non-JSON timeout response */ }
+        throw new Error(msg ?? 'Failed to analyse lab report. Please try again.')
       }
 
       setLabExplanation(await res.json() as LabReportExplanation)

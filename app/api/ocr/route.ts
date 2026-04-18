@@ -5,7 +5,7 @@ import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 import { createClient } from '@/lib/supabase/server'
 import { usageService } from '@/services/usage.service'
 
-export const maxDuration = 60
+export const maxDuration = 300
 
 export const USAGE_LIMIT_ERROR = 'USAGE_LIMIT_REACHED'
 

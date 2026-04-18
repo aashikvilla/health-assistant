@@ -4,13 +4,26 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { RATE_LIMIT, RATE_WINDOW_MS } from '@/lib/rate-limit-config'
 import { callGemini, stripJsonFences, GeminiError } from '@/lib/gemini'
 
-export const maxDuration = 60
+export const maxDuration = 300
 
 function buildPrompt(report: LabReportData): string {
+  // Send only abnormal tests to the model — reduces input size and thinking time.
+  // Keep patient/lab metadata so the model has context for doctor notes.
+  const abnormalTests = report.tests.filter(
+    t => t.status === 'low' || t.status === 'high' || t.status === 'critical'
+  )
+  const compactReport = {
+    patientName:  report.patientName,
+    testDate:     report.testDate,
+    labName:      report.labName,
+    doctorName:   report.doctorName,
+    tests: abnormalTests.length > 0 ? abnormalTests : report.tests,
+  }
+
   return `You are a patient-friendly lab report interpreter. Given this lab report data, identify ONLY the parameters that are OUT OF RANGE (low, high, or critical) and explain each in plain English.
 
 Lab Report:
-${JSON.stringify(report, null, 2)}
+${JSON.stringify(compactReport, null, 2)}
 
 Return ONLY valid JSON  no markdown, no code fences:
 {

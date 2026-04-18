@@ -79,31 +79,8 @@ export default function PublicUploadPage() {
       setDocumentType(docType)
 
       if (docType === 'lab_report') {
-        // Lab reports skip review → stay on processing while AI analyses
-        const labData = data as LabReportData
-        setLabReport(labData)
-        setLabExplainError(null)
-        setLabExplanation(null)
-        // Stay on 'processing'  documentType is now 'lab_report' so
-        // ProcessingState will show "Reading your report..." with lab steps
-
-        try {
-          const analyseRes = await fetch('/api/analyse', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(labData),
-          })
-          if (!analyseRes.ok) {
-            let msg: string | undefined
-            try { msg = (await analyseRes.json()).error } catch { /* non-JSON timeout response */ }
-            throw new Error(msg ?? 'Failed to analyse lab report. Please try again.')
-          }
-          setLabExplanation(await analyseRes.json() as LabReportExplanation)
-          setStep('explaining') // Jump to insight screen with results ready
-        } catch (err) {
-          setLabExplainError(err instanceof Error ? err.message : 'Something went wrong')
-          setStep('explaining') // Show error state
-        }
+        setLabReport(data as LabReportData)
+        setStep('review')
       } else {
         setPrescription(data as PrescriptionData)
         setStep('review')
@@ -240,6 +217,10 @@ export default function PublicUploadPage() {
 
       {step === 'review' && documentType === 'prescription' && prescription && (
         <ReviewScreen data={prescription} onConfirm={handleConfirmPrescription} onRetry={handleRetry} />
+      )}
+
+      {step === 'review' && documentType === 'lab_report' && labReport && (
+        <LabReportReviewScreen data={labReport} onConfirm={handleConfirmLabReport} onRetry={handleRetry} />
       )}
 
       {/* ── AI Explanation/Analysis loading ── */}
