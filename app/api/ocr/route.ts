@@ -62,8 +62,13 @@ export async function POST(req: NextRequest) {
       const arrayBuffer = await file.arrayBuffer()
 
       if (file.type === 'application/pdf') {
-        const base64 = Buffer.from(arrayBuffer).toString('base64')
-        const result = await classifyAndExtract({ type: 'image', base64, mimeType: 'application/pdf' })
+        const { extractTextFromPDF } = await import('@/lib/pdf-utils')
+        const text = await extractTextFromPDF(arrayBuffer)
+        if (!text.trim()) {
+          if (user) await usageService.incrementInvalid(user.id)
+          return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
+        }
+        const result = await classifyAndExtract({ type: 'text', content: text })
         if (result.documentType === 'other') {
           if (user) await usageService.incrementInvalid(user.id)
           return NextResponse.json({ error: 'This doesn\'t look like a prescription or lab report. Please upload a medical document.' }, { status: 422 })
