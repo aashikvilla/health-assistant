@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { ServiceWorkerRegistration } from "@/components/layout/ServiceWorkerRegistration";
 import { PWAInstallBanner } from "@/components/layout/PWAInstallBanner";
 import "./globals.css";
@@ -80,6 +81,7 @@ export default function RootLayout({
         <ServiceWorkerRegistration />
         <PWAInstallBanner />
         {children}
+        <Analytics />
       </body>
     </html>
   );
