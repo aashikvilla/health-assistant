@@ -151,7 +151,7 @@ export const documentsService = {
         user_id: userId,
         document_type_detected: type,
         summary,
-        llm_model_used: process.env.GEMINI_API_KEY_EXTRACT ? 'gemma-4-26b-a4b' : 'mock',
+        llm_model_used: process.env.GEMINI_API_KEY_EXTRACT ? 'gemma-4-26b' : 'mock',
         ...analysisPayload,
       })
 
