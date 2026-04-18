@@ -29,7 +29,9 @@ Return ONLY valid JSON  no markdown, no code fences:
       "explanation": string (2-3 sentences in plain English: what this marker does in the body, what this result means for the patient, and whether it is mildly or significantly off. Be reassuring but honest. Use simple language an Indian family member would understand.)
     }
   ],
-  "doctorNotes": string[] (3-5 specific follow-up points the patient should raise with their doctor based on the abnormal results)
+  "doctorNotes": string[] (3-5 specific follow-up points the patient should raise with their doctor based on the abnormal results),
+  "summary": string (2-3 sentences in plain English connecting the key findings holistically — not per-marker explanations, but what the overall pattern means together for this patient. Synthesise, do not repeat. Be honest but reassuring. If all results are normal, write one sentence confirming that.),
+  "connectionTags": string[] (3-5 short phrases, max 5 words each, showing meaningful links between findings — e.g. "TSH worsens LDL & energy", "Anaemia + Vit D + B12 linked". Only include if a real clinical connection exists. Return an empty array if findings are unrelated or all normal.)
 }
 
 Rules:
@@ -38,7 +40,9 @@ Rules:
 - Never diagnose. Say "this may suggest..." or "this marker is linked to..."  never "you have..."
 - Be reassuring in tone. Most abnormal values are mildly off and manageable.
 - Give India-relevant context in doctorNotes where useful (e.g., dietary tips with Indian foods, sunlight advice).
-- doctorNotes should be specific to the abnormal findings, not generic.`
+- doctorNotes should be specific to the abnormal findings, not generic.
+- summary must synthesise across findings, not restate individual explanations.
+- connectionTags must reflect real clinical relationships — no generic or obvious tags.`
 }
 
 export async function POST(req: NextRequest) {

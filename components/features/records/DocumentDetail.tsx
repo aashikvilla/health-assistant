@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import type { RecordDetail } from '@/services/records.service'
-import type { LabTest } from '@/types/lab-report'
 import { Badge } from '@/components/ui'
 import { MedicationCard } from '@/components/features/explanation/MedicationCard'
-import { AbnormalMarkerCard } from '@/components/features/explanation/AbnormalMarkerCard'
 import { DoctorNotes } from '@/components/features/explanation/DoctorNotes'
 import { ShareButton } from '@/components/features/share/ShareButton'
 import { ExplanationLoader } from '@/components/features/records/ExplanationLoader'
+import { LabReportDetail } from '@/components/features/records/LabReportDetail'
+import { DocumentLink } from '@/components/features/records/DocumentLink'
 
 interface DocumentDetailProps {
   record:           RecordDetail
@@ -25,40 +25,6 @@ function formatDate(iso: string | null): string {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-const STATUS_BADGE: Record<string, 'error' | 'warning' | 'success' | 'default'> = {
-  critical: 'error',
-  high:     'warning',
-  low:      'warning',
-  normal:   'success',
-}
-
-function LabTestRow({ test }: { test: LabTest }) {
-  const variant = STATUS_BADGE[test.status] ?? 'default'
-  const isAbnormal = test.status === 'high' || test.status === 'low' || test.status === 'critical'
-  return (
-    <li className={[
-      'flex items-center justify-between gap-2 py-3 border-b border-border-subtle last:border-0',
-      isAbnormal ? 'bg-transparent' : '',
-    ].join(' ')}>
-      <div className="min-w-0">
-        <p className={['text-sm font-medium', isAbnormal ? 'text-text-primary' : 'text-text-secondary'].join(' ')}>
-          {test.testName}
-        </p>
-        {test.referenceRange && (
-          <p className="text-xs text-text-muted mt-0.5">Ref: {test.referenceRange}</p>
-        )}
-      </div>
-      <div className="shrink-0 flex items-center gap-2">
-        <span className={['text-sm font-semibold', isAbnormal ? 'text-text-primary' : 'text-text-muted'].join(' ')}>
-          {test.result}{test.unit ? ` ${test.unit}` : ''}
-        </span>
-        {test.status && test.status !== 'normal' && (
-          <Badge variant={variant} size="sm">{test.status}</Badge>
-        )}
-      </div>
-    </li>
-  )
-}
 
 export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfile, needsExplanation }: DocumentDetailProps) {
   const {
@@ -214,62 +180,11 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
 
         {/* ══════════════ LAB REPORT ══════════════ */}
         {!isPrescription && (
-          <>
-            {/* Abnormal markers */}
-            {abnormalMarkers.length > 0 ? (
-              <section>
-                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-                  Parameters Outside Normal Range · {abnormalMarkers.length}
-                </h3>
-                <div className="space-y-4">
-                  {abnormalMarkers.map((marker, i) => (
-                    <AbnormalMarkerCard key={marker.id ?? i} marker={marker} />
-                  ))}
-                </div>
-              </section>
-            ) : (
-              <div className="bg-success-subtle rounded-2xl p-5 flex items-start gap-3">
-                <svg className="w-6 h-6 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <p className="font-display text-base font-semibold text-success">All Clear</p>
-                  <p className="font-body text-sm text-text-secondary mt-1 leading-relaxed">
-                    All test results are within normal range.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Full test results table */}
-            {labTests && labTests.length > 0 && (
-              <section>
-                <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-                  All Results · {labTests.length}
-                </h3>
-                <div
-                  className="bg-surface-container-lowest rounded-2xl px-4"
-                  style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}
-                >
-                  <ul>
-                    {labTests.map((test, i) => (
-                      <LabTestRow key={i} test={test} />
-                    ))}
-                  </ul>
-                </div>
-              </section>
-            )}
-
-            {/* Doctor notes */}
-            {hasRecommendations && (
-              <DoctorNotes notes={recommendations} title="Things to follow" />
-            )}
-
-            {/* Original document link */}
-            {signedFileUrl && (
-              <DocumentLink url={signedFileUrl} fileUrl={record.fileUrl} documentType={documentType} />
-            )}
-          </>
+          <LabReportDetail
+            record={record}
+            profileName={displayName}
+            signedFileUrl={signedFileUrl}
+          />
         )}
 
       </div>
@@ -277,41 +192,3 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
   )
 }
 
-// ── Subcomponent  original document link ────────────────────────────────────
-
-function DocumentLink({ url, fileUrl, documentType }: { url: string; fileUrl: string | null; documentType: string }) {
-  const isPdf = fileUrl?.toLowerCase().endsWith('.pdf')
-  const ctaText = documentType === 'prescription'
-    ? 'View your original prescription →'
-    : 'View your original lab report →'
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-3 bg-surface-subtle hover:bg-surface-container-lowest rounded-2xl px-4 py-3.5 transition-colors"
-      style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.04)' }}
-    >
-      <div className="w-9 h-9 rounded-xl bg-primary-subtle flex items-center justify-center shrink-0">
-        {isPdf ? (
-          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-          </svg>
-        ) : (
-          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-text-primary">{ctaText}</p>
-        <p className="text-xs text-text-muted mt-0.5">{isPdf ? 'PDF' : 'Image'} · Opens in new tab</p>
-      </div>
-      <svg className="w-4 h-4 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-      </svg>
-    </a>
-  )
-}

@@ -40,4 +40,6 @@ export interface LabReportExplanation {
   doctorName: string
   abnormalMarkers: AbnormalMarker[]
   doctorNotes: string[]
+  summary?: string
+  connectionTags?: string[]
 }

@@ -45,6 +45,10 @@ export interface RecordDetail {
     labTests: LabTest[] | null
     /** AI-explained out-of-range markers with plain-language explanation text */
     abnormalMarkers: AbnormalMarker[]
+    /** AI-generated holistic narrative (stored in key_findings, not the summary column) */
+    aiSummary?: string | null
+    /** Short connection chips e.g. "TSH worsens LDL & energy" */
+    connectionTags?: string[]
 }
 
 export interface TimelineDocument {
@@ -187,6 +191,9 @@ export const recordsService = {
                         explanation: '',
                     }))
 
+            const aiSummary      = (keyFindings?.aiSummary as string | null) ?? null
+            const connectionTags = (keyFindings?.connectionTags as string[] | null) ?? []
+
             return {
                 data: {
                     profileId: d.profile_id,
@@ -203,6 +210,8 @@ export const recordsService = {
                     recommendations: (analysis?.recommendations as string[]) ?? [],
                     labTests,
                     abnormalMarkers,
+                    aiSummary,
+                    connectionTags,
                 },
                 error: null,
                 success: true,

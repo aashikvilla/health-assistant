@@ -128,10 +128,18 @@ export const documentsService = {
           medications_found: [] as Json,
           recommendations: (labExplanation?.doctorNotes ?? []) as Json,
           // Store full abnormalMarkers (with explanation text) so /records/[id] never needs to re-call the LLM
-          key_findings: {
-            tests: (data as LabReportData).tests,
-            abnormalMarkers: labExplanation?.abnormalMarkers ?? [],
-          } as unknown as Json,
+          key_findings: (() => {
+            const rawTags = labExplanation?.connectionTags
+            const connectionTags = Array.isArray(rawTags)
+              ? rawTags.filter((t): t is string => typeof t === 'string').slice(0, 5)
+              : []
+            return {
+              tests: (data as LabReportData).tests,
+              abnormalMarkers: labExplanation?.abnormalMarkers ?? [],
+              aiSummary: labExplanation?.summary?.trim() || null,
+              connectionTags,
+            }
+          })() as unknown as Json,
           risk_flags: (data as LabReportData).tests
             .filter((t) => t.status === 'critical')
             .map((t) => `${t.testName} is critical`) as Json,
