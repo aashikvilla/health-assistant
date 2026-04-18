@@ -1,5 +1,5 @@
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models'
-const GEMINI_MODEL = 'gemma-4-26b'
+const GEMINI_MODEL = 'gemma-4-26b-a4b-it'
 
 export type GeminiImage = { base64: string; mimeType: string }
 
