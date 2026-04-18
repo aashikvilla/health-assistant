@@ -138,9 +138,10 @@ export const recordsService = {
 
             // Detect rich MedicationExplanation[] vs raw OCR Medication[]:
             // rich format has 'treats'; raw OCR format has 'duration'/'confidence'.
+            // Use .some() so a single medication with empty treats doesn't fool the check.
             const isRichExplanation =
                 storedMeds.length > 0 &&
-                !!(storedMeds[0] as { treats?: string }).treats
+                (storedMeds as { treats?: string }[]).some((m) => !!m.treats)
 
             let meds: MedicationExplanation[] = isRichExplanation
                 ? (storedMeds as MedicationExplanation[])
@@ -301,9 +302,11 @@ export const recordsService = {
         const analysis = d.document_analyses?.[0] ?? null
         const storedMeds = (analysis?.medications_found as unknown[]) ?? []
 
-        // Detect rich vs raw: MedicationExplanation has a non-empty 'treats' value
+        // Detect rich vs raw: MedicationExplanation has a non-empty 'treats' value.
+        // Use .some() so a single medication with empty treats doesn't fool the check.
         const hasExplanation =
-            storedMeds.length > 0 && !!(storedMeds[0] as { treats?: string }).treats
+            storedMeds.length > 0 &&
+            (storedMeds as { treats?: string }[]).some((m) => !!m.treats)
 
         // Fetch profile name for the "For <name>" context line
         const { data: profile } = await supabase
