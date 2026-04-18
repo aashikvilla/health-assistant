@@ -88,7 +88,8 @@ export async function extractPrescriptionData(
   })
 
   try {
-    return JSON.parse(stripJsonFences(raw)) as PrescriptionData
+    const parsed = JSON.parse(stripJsonFences(raw)) as PrescriptionData
+    return { ...parsed, medications: parsed.medications ?? [] }
   } catch {
     throw new Error(`Model returned invalid JSON: ${raw.slice(0, 200)}`)
   }
@@ -129,7 +130,8 @@ export async function extractLabReportData(input: ImageInput | TextInput): Promi
   })
 
   try {
-    return JSON.parse(stripJsonFences(raw)) as LabReportData
+    const parsed = JSON.parse(stripJsonFences(raw)) as LabReportData
+    return { ...parsed, tests: parsed.tests ?? [] }
   } catch {
     throw new Error(`Model returned invalid JSON: ${raw.slice(0, 200)}`)
   }
