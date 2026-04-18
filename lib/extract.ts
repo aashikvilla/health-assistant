@@ -1,6 +1,6 @@
 import type { PrescriptionData, Medication } from '@/types/prescription'
 import type { LabReportData, LabTest } from '@/types/lab-report'
-import { callGemini, stripJsonFences } from '@/lib/gemini'
+import { callGemini, stripJsonFences, GEMINI_PDF_MODEL } from '@/lib/gemini'
 
 type ImageInput = { type: 'image'; base64: string; mimeType: string }
 type TextInput = { type: 'text'; content: string }
@@ -237,12 +237,14 @@ export async function classifyAndExtract(input: ImageInput | TextInput): Promise
     ? `${COMBINED_PROMPT}\n\nDocument text:\n${input.content}`
     : COMBINED_PROMPT
 
+  const isPdf = input.type === 'image' && input.mimeType === 'application/pdf'
   const raw = await callGemini({
     apiKey: getExtractKey(),
     prompt,
     image: input.type === 'image' ? { base64: input.base64, mimeType: input.mimeType } : undefined,
     maxTokens: 4096,
     jsonMode: true,
+    ...(isPdf ? { model: GEMINI_PDF_MODEL } : {}),
   })
 
   let parsed: Record<string, unknown>

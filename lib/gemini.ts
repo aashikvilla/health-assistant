@@ -1,5 +1,7 @@
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models'
 const GEMINI_MODEL = 'gemma-4-26b-a4b-it'
+// Gemma 4 doesn't support application/pdf inline_data — use a Gemini model for PDFs
+const GEMINI_PDF_MODEL = 'gemini-2.0-flash'
 
 export type GeminiImage = { base64: string; mimeType: string }
 
@@ -10,6 +12,7 @@ export type GeminiCallOptions = {
   maxTokens?: number
   jsonMode?: boolean
   temperature?: number
+  model?: string
 }
 
 export class GeminiError extends Error {
@@ -23,8 +26,10 @@ export class GeminiError extends Error {
 
 type Part = { text: string } | { inline_data: { mime_type: string; data: string } }
 
+export { GEMINI_PDF_MODEL }
+
 export async function callGemini(opts: GeminiCallOptions): Promise<string> {
-  const { apiKey, prompt, image, maxTokens = 4096, jsonMode = true, temperature = 0 } = opts
+  const { apiKey, prompt, image, maxTokens = 4096, jsonMode = true, temperature = 0, model = GEMINI_MODEL } = opts
 
   if (!apiKey) throw new GeminiError('Gemini API key missing', 500)
 
@@ -43,7 +48,7 @@ export async function callGemini(opts: GeminiCallOptions): Promise<string> {
     },
   }
 
-  const url = `${GEMINI_ENDPOINT}/${GEMINI_MODEL}:generateContent?key=${apiKey}`
+  const url = `${GEMINI_ENDPOINT}/${model}:generateContent?key=${apiKey}`
 
   const res = await fetch(url, {
     method: 'POST',

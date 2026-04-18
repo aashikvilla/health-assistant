@@ -9,7 +9,7 @@ interface ProcessingStateProps {
 
 const PRESCRIPTION_STEPS = [
   'Reading your document',
-  'Finding your medications',
+  'Finding relevant information',
   'Checking all the details',
   'Writing your plain-English summary',
 ]
