@@ -30,13 +30,13 @@ export default async function TimelinePage() {
     <>
       {/* ── Gradient Hero  full bleed ─────────────────────────── */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8 gradient-hero">
-        <div className="px-5 pt-6 pb-8 relative overflow-hidden">
+        <div className="relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none"
             style={{ background: 'radial-gradient(circle at 70% 30%, rgba(168,85,247,.4) 0%, transparent 55%)' }}
           />
           {/* Nav bar */}
-          <div className="relative flex items-center justify-between pt-safe h-14">
+          <div className="relative flex items-center justify-between px-5 pt-safe h-14">
             <span
               className="font-display text-xl font-extrabold tracking-tight"
               style={{
@@ -64,42 +64,52 @@ export default async function TimelinePage() {
               </button>
             </form>
           </div>
-          <p className="font-body text-[11px] font-semibold text-white/60 uppercase tracking-widest relative mb-1 pt-2">
-            Health Records
-          </p>
-          <h1 className="font-display text-[28px] font-extrabold text-white tracking-tight leading-none relative mb-4">
-            Timeline
-          </h1>
-          <p className="font-body text-sm text-white/70 relative">
-            {count > 0
-              ? `${count} record${count === 1 ? '' : 's'} across your family`
-              : "All your family's health records in one place"}
-          </p>
+          
+          {/* Heading section */}
+          <div className="relative px-5 pt-6 pb-10">
+            <p className="font-body text-[11px] font-semibold text-white/60 uppercase tracking-widest mb-1">
+              Health Records
+            </p>
+            <h1 className="font-display text-[30px] font-extrabold text-white tracking-tight leading-none mb-2">
+              Timeline
+            </h1>
+            <p className="font-body text-sm text-white/70">
+              {count > 0
+                ? `${count} record${count === 1 ? '' : 's'} across your family`
+                : "All your family's health records in one place"}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* ── Content ────────────────────────────────────────────── */}
-      <div className="pt-5 pb-4">
-        {documents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-5 text-center">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center bg-accent-subtle border border-border">
-              <svg className="w-7 h-7 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+      {/* ── White content sheet  overlaps gradient ─────────────── */}
+      <div
+        className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 relative z-10 bg-surface rounded-[28px_28px_0_0]"
+        style={{
+          boxShadow: '0 -4px 24px rgba(29,78,216,.12)',
+        }}
+      >
+        <div className="px-5 pt-5 pb-6">
+          {documents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-5 text-center">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-accent-subtle border border-border">
+                <svg className="w-7 h-7 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-display text-base font-semibold text-text-primary">No records yet</p>
+                <p className="font-body text-sm text-text-muted mt-1 leading-relaxed max-w-xs">
+                  Upload a prescription or lab report from the dashboard to see your family&apos;s health history here.
+                </p>
+              </div>
+              <Button href="/dashboard" size="md" variant="secondary">Go to Dashboard</Button>
             </div>
-            <div>
-              <p className="font-display text-base font-semibold text-text-primary">No records yet</p>
-              <p className="font-body text-sm text-text-muted mt-1 leading-relaxed max-w-xs">
-                Upload a prescription or lab report from the dashboard to see your family&apos;s health history here.
-              </p>
-            </div>
-            <Button href="/dashboard" size="md" variant="secondary">Go to Dashboard</Button>
-          </div>
-        ) : (
-          <TimelineView documents={documents} profiles={profiles} />
-        )}
+          ) : (
+            <TimelineView documents={documents} profiles={profiles} />
+          )}
+        </div>
       </div>
     </>
   );
