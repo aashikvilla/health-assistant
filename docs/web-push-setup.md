@@ -128,24 +128,39 @@ When deploying to Vercel, add these environment variables in the Vercel dashboar
 
 ## Cron Job Configuration
 
-The push notification dispatcher runs as a cron job that checks for due notifications every minute.
+The push notification dispatcher runs as a cron job that checks for due notifications.
 
 ### Vercel Configuration
 
-The `vercel.json` file already includes the cron configuration:
+The `vercel.json` file includes the cron configuration:
 
 ```json
 {
   "crons": [
     {
       "path": "/api/push/send",
-      "schedule": "* * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
 ```
 
-This runs every minute (`* * * * *` = every minute of every hour of every day).
+**⚠️ Hobby Plan Limitation:**
+- Vercel Hobby plan only allows cron jobs that run **once per day**
+- Current schedule: `0 0 * * *` (midnight UTC daily)
+- Timing precision: ±59 minutes (could trigger 12:00 AM - 12:59 AM)
+
+**Impact:**
+- Push notifications are sent in batch once per day
+- In-app notifications still work via 60-second polling
+- For per-minute execution, upgrade to Vercel Pro ($20/month)
+
+**For Real-Time Push Notifications:**
+- Upgrade to Vercel Pro plan
+- Change schedule to `* * * * *` (every minute)
+- OR integrate Firebase Cloud Messaging (free alternative)
+
+See `VERCEL_DEPLOYMENT.md` for detailed workarounds and alternatives.
 
 ### Manual Testing
 
