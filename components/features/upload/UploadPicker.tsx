@@ -124,6 +124,7 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp,image/*"
+              capture="environment"
               className="hidden"
               onChange={handleFileChange}
             />

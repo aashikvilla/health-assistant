@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { PrescriptionData, Medication, Confidence } from '@/types/prescription'
 import { Button } from '@/components/ui'
 import FieldRow from './FieldRow'
+import RxImageSlot from './RxImageSlot'
 
 interface Props {
   data:      PrescriptionData
@@ -205,6 +206,7 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                     className="flex items-center gap-3 px-4 py-3"
                     style={{ borderLeft: `3px solid ${accent}` }}
                   >
+                    <RxImageSlot medicineName={medName} width={56} height={64} className="rounded-xl shrink-0" />
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                       style={{ background: accent }}

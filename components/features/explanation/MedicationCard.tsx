@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { MedicationExplanation } from '@/types'
 import { stripMedicationPrefix } from '@/lib/utils/string'
+import RxImageSlot from '@/components/features/upload/RxImageSlot'
 
 interface MedicationCardProps {
   medication: MedicationExplanation & { id: string }
@@ -45,7 +46,7 @@ function extractDosageFromName(name: string): string | null {
 }
 
 /** Medicine packet box illustration  looks like actual product packaging */
-function MedicinePacket({ name, dosage }: { name: string; dosage: string }) {
+export function MedicinePacket({ name, dosage }: { name: string; dosage: string }) {
   const p = getPalette(name)
   const genericName = extractGenericName(name)
   const dosageStr = extractDosageFromName(name) ?? dosage
@@ -109,7 +110,7 @@ function MedicationCard({ medication, className = '' }: MedicationCardProps) {
 
         {/* Medicine packet illustration */}
         <div className="shrink-0 w-[88px] h-[100px] rounded-2xl overflow-hidden">
-          <MedicinePacket name={displayName} dosage={medication.dosage} />
+          <RxImageSlot medicineName={displayName} width={88} height={100} />
         </div>
 
         {/* Info card */}
