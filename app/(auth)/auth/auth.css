@@ -310,6 +310,29 @@
   .ap .ap-tab { padding: 12px 0; min-height: 44px }
 }
 
+/* ── SPINNER ── */
+.ap .ap-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-surface-subtle);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: ap-spin 0.8s linear infinite;
+}
+
+.ap .ap-spinner-sm {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: ap-spin 0.6s linear infinite;
+}
+
+@keyframes ap-spin {
+  to { transform: rotate(360deg) }
+}
+
 /* ── STANDALONE PWA ── */
 @media (display-mode: standalone) {
   .ap { padding-top: env(safe-area-inset-top, 20px) }

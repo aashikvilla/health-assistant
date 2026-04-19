@@ -1,14 +1,20 @@
 // lib/frequency.ts
 // M/A/N frequency parser and time calculation functions
 
-/** The three default reminder time slots in HH:MM format (UTC). */
+/** 
+ * The three default reminder time slots in HH:MM format (IST - Indian Standard Time).
+ * These are the user-facing times in IST timezone.
+ */
 export const DEFAULT_TIMES = {
-  morning:   '08:00',
-  afternoon: '13:00',
-  night:     '21:00',
+  morning:   '08:00',  // 8:00 AM IST
+  afternoon: '13:00',  // 1:00 PM IST
+  night:     '21:00',  // 9:00 PM IST
 } as const
 
 export type TimeSlot = 'morning' | 'afternoon' | 'night'
+
+/** IST timezone offset in minutes (UTC+5:30) */
+const IST_OFFSET_MINUTES = 330 // 5 hours 30 minutes = 330 minutes
 
 /**
  * Parse an M/A/N frequency string into reminder times.
@@ -41,29 +47,38 @@ export function parseFrequency(frequency: string): string[] {
 }
 
 /**
- * Given a reminder time string (HH:MM) and a reference Date (defaults to now),
+ * Given a reminder time string (HH:MM in IST) and a reference Date (defaults to now),
  * return the next future Date at which that time occurs.
  *
- * If the time has already passed today (UTC), returns tomorrow at that time.
- * If the time is still in the future today (UTC), returns today at that time.
+ * The input time is interpreted as IST (UTC+5:30), and the returned Date is in UTC
+ * for storage in the database.
  *
- * @param timeStr   e.g. '08:00'
+ * If the time has already passed today (in IST), returns tomorrow at that time.
+ * If the time is still in the future today (in IST), returns today at that time.
+ *
+ * @param timeStr   e.g. '08:00' (interpreted as 8:00 AM IST)
  * @param now       Reference point (default: new Date())
- * @returns         Next future Date for this time slot (UTC)
+ * @returns         Next future Date for this time slot (in UTC for database storage)
  */
 export function computeNextOccurrence(timeStr: string, now: Date = new Date()): Date {
   const [hours, minutes] = timeStr.split(':').map(Number)
   
-  // Create a date for today at the specified time (UTC)
-  const nextOccurrence = new Date(now)
-  nextOccurrence.setUTCHours(hours, minutes, 0, 0)
-
-  // If the time has already passed today, move to tomorrow
-  if (nextOccurrence <= now) {
-    nextOccurrence.setUTCDate(nextOccurrence.getUTCDate() + 1)
+  // Convert current UTC time to IST for comparison
+  const nowInIST = new Date(now.getTime() + IST_OFFSET_MINUTES * 60 * 1000)
+  
+  // Create a date for today at the specified time in IST
+  const nextOccurrenceIST = new Date(nowInIST)
+  nextOccurrenceIST.setHours(hours, minutes, 0, 0)
+  
+  // If the time has already passed today in IST, move to tomorrow
+  if (nextOccurrenceIST <= nowInIST) {
+    nextOccurrenceIST.setDate(nextOccurrenceIST.getDate() + 1)
   }
-
-  return nextOccurrence
+  
+  // Convert back to UTC for database storage
+  const nextOccurrenceUTC = new Date(nextOccurrenceIST.getTime() - IST_OFFSET_MINUTES * 60 * 1000)
+  
+  return nextOccurrenceUTC
 }
 
 /**
@@ -98,4 +113,40 @@ export function timeToSlotLabel(timeStr: string): string {
     default:
       return 'Unknown'
   }
+}
+
+/**
+ * Convert a UTC Date to IST time string (HH:MM format).
+ * Useful for displaying scheduled times to users in IST.
+ *
+ * @param date  Date object in UTC
+ * @returns     Time string in IST (e.g., '08:00')
+ */
+export function formatTimeInIST(date: Date): string {
+  const istDate = new Date(date.getTime() + IST_OFFSET_MINUTES * 60 * 1000)
+  const hours = istDate.getUTCHours().toString().padStart(2, '0')
+  const minutes = istDate.getUTCMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+/**
+ * Convert a UTC Date to a human-readable IST datetime string.
+ * Useful for displaying scheduled times to users.
+ *
+ * @param date  Date object in UTC
+ * @returns     Formatted string like "Apr 19, 2026 at 8:00 AM IST"
+ */
+export function formatDateTimeInIST(date: Date): string {
+  const istDate = new Date(date.getTime() + IST_OFFSET_MINUTES * 60 * 1000)
+  
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }
+  
+  return istDate.toLocaleString('en-IN', options) + ' IST'
 }
