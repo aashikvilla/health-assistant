@@ -2,6 +2,7 @@
 
 import Link     from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useNotifications } from '@/hooks/useNotifications'
 
 interface NavItem {
   label: string
@@ -21,6 +22,12 @@ const TimelineIcon = ({ active }: { active: boolean }) => (
   </svg>
 )
 
+const BellIcon = ({ active }: { active: boolean }) => (
+  <svg className="w-5 h-5" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={active ? 0 : 1.75} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+  </svg>
+)
+
 const ProfileIcon = ({ active }: { active: boolean }) => (
   <svg className="w-5 h-5" fill={active ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={active ? 0 : 1.75} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -28,18 +35,30 @@ const ProfileIcon = ({ active }: { active: boolean }) => (
 )
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Home',     href: '/dashboard',      icon: (a) => <HomeIcon     active={a} /> },
-  { label: 'Timeline', href: '/timeline', icon: (a) => <TimelineIcon active={a} /> },
-  { label: 'Profile',  href: '/settings', icon: (a) => <ProfileIcon  active={a} /> },
+  { label: 'Home',          href: '/dashboard',      icon: (a) => <HomeIcon     active={a} /> },
+  { label: 'Timeline',      href: '/timeline',       icon: (a) => <TimelineIcon active={a} /> },
+  { label: 'Notifications', href: '/notifications',  icon: (a) => <BellIcon     active={a} /> },
+  { label: 'Profile',       href: '/settings',       icon: (a) => <ProfileIcon  active={a} /> },
 ]
 
 // Show BottomNav only on primary (top-level) screens.
 // Sub-routes (add-member, upload, explanation) are focused flows and should
 // feel separate from the global nav  they have their own back buttons.
-const PRIMARY_PATHS = ['/dashboard', '/timeline', '/settings']
+const PRIMARY_PATHS = ['/dashboard', '/timeline', '/notifications', '/settings']
 
-export function BottomNav() {
+interface BottomNavProps {
+  unreadCount?: number
+  userId?: string
+}
+
+export function BottomNav({ unreadCount: initialCount = 0, userId }: BottomNavProps) {
   const pathname = usePathname()
+
+  // Use the polling hook to get real-time unread count
+  // Only initialize if userId is provided (authenticated context)
+  const { unreadCount } = userId 
+    ? useNotifications(userId, initialCount)
+    : { unreadCount: initialCount }
 
   // Exact match only  /hub shows nav, /dashboard/add-member does not
   const visible = PRIMARY_PATHS.some((p) => pathname === p)
@@ -59,6 +78,7 @@ export function BottomNav() {
       <div className="flex items-center h-16 px-2">
         {NAV_ITEMS.map(({ label, href, icon }) => {
           const active = pathname === href
+          const isNotifications = href === '/notifications'
           return (
             <Link
               key={href}
@@ -68,12 +88,21 @@ export function BottomNav() {
             >
               {/* Icon container */}
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all relative"
                 style={active ? { background: 'rgba(29,78,216,.09)' } : {}}
               >
                 <span className={active ? 'text-primary' : 'text-text-muted'}>
                   {icon(active)}
                 </span>
+                {/* Badge for notifications tab */}
+                {isNotifications && unreadCount > 0 && (
+                  <span
+                    className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-white text-[10px] font-semibold flex items-center justify-center"
+                    aria-label={`${unreadCount} unread notifications`}
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </div>
               <span
                 className={`font-body text-[10px] font-semibold ${active ? 'text-primary' : 'text-text-muted'}`}

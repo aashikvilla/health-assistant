@@ -13,6 +13,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { familyService } from '@/services/family.service'
+import { notificationsService } from '@/services/notifications.service'
 import { PageLayout, BottomNav, AppDrawerNav } from '@/components/layout'
 
 export default async function AppLayout({
@@ -48,6 +49,9 @@ export default async function AppLayout({
     redirect('/onboarding')
   }
 
+  // Fetch initial unread count for BottomNav badge
+  const { data: initialCount } = await notificationsService.getUnreadCount(user.id)
+
   return (
     <PageLayout
       header={null}
@@ -55,7 +59,7 @@ export default async function AppLayout({
       className="pb-20 sm:pb-0"
     >
       {children}
-      <BottomNav />
+      <BottomNav unreadCount={initialCount ?? 0} userId={user.id} />
       <AppDrawerNav />
     </PageLayout>
   )

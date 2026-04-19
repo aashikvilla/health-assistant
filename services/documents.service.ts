@@ -16,6 +16,7 @@ import type { Json } from '@/types'
 import type { PrescriptionData, PrescriptionExplanation } from '@/types/prescription'
 import type { LabReportData, LabReportExplanation } from '@/types/lab-report'
 import type { MedicationExplanation } from '@/types/analysis'
+import { parseFrequency } from '@/lib/frequency'
 
 export type DocumentType = 'prescription' | 'lab_report'
 
@@ -191,7 +192,7 @@ export const documentsService = {
       const meds = prescriptionMeds ?? (data as PrescriptionData).medications
       const docDate = buildDocDate(data, type) // prescription date for end_date calc
       if (meds && meds.length > 0) {
-        await supabase.from('medications').insert(
+        const { data: insertedMeds } = await supabase.from('medications').insert(
           meds.map((m) => {
             // Raw Medication objects carry a numeric `duration` field (e.g. "7").
             // MedicationExplanation objects don't — they get no end_date (ongoing).
@@ -203,18 +204,46 @@ export const documentsService = {
               d.setDate(d.getDate() + durationDays)
               endDate = d.toISOString().split('T')[0]
             }
+
+            // Parse frequency to determine reminder fields
+            const frequencyStr = m.frequency ?? ''
+            const reminderTimes = parseFrequency(frequencyStr)
+            const reminderEnabled = reminderTimes.length > 0
+
             return {
               user_id: userId,
               profile_id: profileId,
               name: m.name,
               dosage: (m as { dosage?: string }).dosage ?? null,
-              frequency: m.frequency ?? null,
+              frequency: frequencyStr || null,
               end_date: endDate,
               source_document_id: doc.id,
               status: 'active',
+              reminder_enabled: reminderEnabled,
+              timing: reminderEnabled ? reminderTimes : null,
+              reminder_times: reminderEnabled ? reminderTimes : null,
             }
           })
-        )
+        ).select('id, name, dosage, reminder_enabled, reminder_times')
+
+        // 5. Schedule notifications for medications with reminders (best-effort  non-fatal)
+        if (insertedMeds && insertedMeds.length > 0) {
+          const { notificationsService } = await import('./notifications.service')
+          for (const med of insertedMeds) {
+            if (med.reminder_enabled && med.reminder_times && med.reminder_times.length > 0) {
+              await notificationsService.scheduleReminders({
+                userId,
+                profileId,
+                medicationId: med.id,
+                medicationName: med.name,
+                dosage: med.dosage,
+                reminderTimes: med.reminder_times,
+              }).catch((err) => {
+                console.error('Failed to schedule reminders for medication', med.id, err)
+              })
+            }
+          }
+        }
       }
     }
 

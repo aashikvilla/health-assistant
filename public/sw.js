@@ -1,112 +1,50 @@
-/**
- * Vitae  Service Worker
- *
- * Strategy:
- *   - Static assets (JS, CSS, fonts, images) → Cache-first
- *   - Navigation (HTML pages)                → Network-first, fall back to cache
- *   - API / Supabase                         → Network-only (never cache auth data)
- *
- * Update the CACHE_VERSION whenever you make breaking changes to cached content.
- */
+// public/sw.js — Service Worker for Web Push Notifications
 
-const CACHE_VERSION = 'v1'
-const CACHE_STATIC  = `health-static-${CACHE_VERSION}`
-const CACHE_PAGES   = `health-pages-${CACHE_VERSION}`
-
-// Routes to precache on install so the app works offline from the first visit
-const PRECACHE_PAGES = ['/', '/auth']
-
-// ─── Install ──────────────────────────────────────────────────────────────────
-
+// Install event — cache static assets (optional, not required for push)
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_PAGES)
-      .then((cache) => cache.addAll(PRECACHE_PAGES))
-      .then(() => self.skipWaiting())
-  )
+  self.skipWaiting()
 })
 
-// ─── Activate ─────────────────────────────────────────────────────────────────
-
+// Activate event — clean up old caches (optional)
 self.addEventListener('activate', (event) => {
-  const KNOWN_CACHES = [CACHE_STATIC, CACHE_PAGES]
+  event.waitUntil(self.clients.claim())
+})
+
+// Push event — show notification
+self.addEventListener('push', (event) => {
+  if (!event.data) return
+
+  const payload = event.data.json()
+  const { title, body, icon, badge, data } = payload
 
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => !KNOWN_CACHES.includes(key))
-            .map((key) => caches.delete(key))
-        )
-      )
-      .then(() => self.clients.claim())
+    self.registration.showNotification(title, {
+      body,
+      icon: icon || '/icons/icon-192.png',
+      badge: badge || '/icons/badge-72.png',
+      data,
+      tag: data?.medication_id || 'medication-reminder',
+      requireInteraction: true,  // notification stays until user interacts
+    })
   )
 })
 
-// ─── Fetch ────────────────────────────────────────────────────────────────────
+// Notification click event — open or focus app
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
 
-self.addEventListener('fetch', (event) => {
-  const { request } = event
-  const url = new URL(request.url)
-
-  // Never intercept non-GET, cross-origin API calls, or Supabase
-  if (
-    request.method !== 'GET' ||
-    url.pathname.startsWith('/api/') ||
-    url.hostname.includes('supabase.co') ||
-    url.hostname.includes('googleapis.com')
-  ) {
-    return
-  }
-
-  // Static assets → Cache-first
-  if (isStaticAsset(url.pathname)) {
-    event.respondWith(cacheFirst(request, CACHE_STATIC))
-    return
-  }
-
-  // HTML navigation → Network-first with cache fallback
-  if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, CACHE_PAGES))
-    return
-  }
-})
-
-// ─── Strategies ───────────────────────────────────────────────────────────────
-
-async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request)
-  if (cached) return cached
-
-  const response = await fetch(request)
-  if (response.ok) {
-    const cache = await caches.open(cacheName)
-    cache.put(request, response.clone())
-  }
-  return response
-}
-
-async function networkFirst(request, cacheName) {
-  try {
-    const response = await fetch(request)
-    if (response.ok) {
-      const cache = await caches.open(cacheName)
-      cache.put(request, response.clone())
-    }
-    return response
-  } catch {
-    const cached = await caches.match(request)
-    return cached ?? new Response('Offline  please reconnect.', {
-      status: 503,
-      headers: { 'Content-Type': 'text/plain' },
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // If app is already open, focus it
+      for (const client of clientList) {
+        if (client.url.includes('/notifications') && 'focus' in client) {
+          return client.focus()
+        }
+      }
+      // Otherwise, open a new window
+      if (self.clients.openWindow) {
+        return self.clients.openWindow('/notifications')
+      }
     })
-  }
-}
-
-function isStaticAsset(pathname) {
-  return /\.(?:js|css|woff2?|ttf|otf|png|jpg|jpeg|webp|svg|ico|gif)$/.test(pathname) ||
-    pathname.startsWith('/_next/static/')
-}
+  )
+})

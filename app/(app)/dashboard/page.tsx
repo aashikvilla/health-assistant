@@ -7,6 +7,7 @@ import { PrescriptionActions }        from '@/components/features/family/Prescri
 import { EmptyPrescriptions }         from '@/components/features/family/EmptyPrescriptions'
 import { RecordCard }                 from '@/components/features/records/RecordCard'
 import { PendingUploadBanner }        from '@/components/features/upload/PendingUploadBanner'
+import { PushPermissionBannerWrapper } from '@/components/features/notifications/PushPermissionBannerWrapper'
 import { ActiveMedicationsStrip }     from '@/components/features/hub/ActiveMedicationsStrip'
 import { LabAlertCard }               from '@/components/features/hub/LabAlertCard'
 import { Button }    from '@/components/ui'
@@ -213,6 +214,7 @@ export default async function HubPage({ searchParams }: HubPageProps) {
   return (
     <>
       <PendingUploadBanner />
+      <PushPermissionBannerWrapper userId={user.id} prescriptionCount={documents.length} />
 
       {/* ── Gradient Hero  full bleed, owns its own nav ────────── */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8 gradient-hero">
