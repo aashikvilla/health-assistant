@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import type { PrescriptionData } from '@/types/prescription'
 import { Button } from '@/components/ui'
+import { compressImage } from '@/lib/utils/image-compress'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const MONTH_LABELS: Record<string, string> = {
@@ -42,22 +43,35 @@ interface Props {
 export default function UploadPicker({ onFileSelected, onManualData }: Props) {
   const [showManual, setShowManual] = useState(false)
   const [fileError,  setFileError]  = useState<string | null>(null)
+  const [processing, setProcessing] = useState(false)
 
   const [doctor,      setDoctor]      = useState('')
   const [illness,     setIllness]     = useState('')
   const datePicker = useDatePicker()
   const [medications, setMedications] = useState<ManualMed[]>([{ name: '', frequency: '', duration: '' }])
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const input = e.target
+    const selected = input.files?.[0]
+    if (!selected) return
+    if (processing) return
     setFileError(null)
-    if (file.size > 6 * 1024 * 1024) {
-      setFileError('This file is too large. Please use a file under 6 MB.')
-      e.target.value = ''
-      return
+    setProcessing(true)
+
+    try {
+      const file = selected.type.startsWith('image/')
+        ? await compressImage(selected)
+        : selected
+
+      if (file.size > 6 * 1024 * 1024) {
+        setFileError('This file is too large. Please use a file under 6 MB.')
+        input.value = ''
+        return
+      }
+      onFileSelected(file)
+    } finally {
+      setProcessing(false)
     }
-    onFileSelected(file)
   }
 
   function updateMed(index: number, field: keyof ManualMed, value: string) {
@@ -116,10 +130,21 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
           </div>
         )}
 
+        {/* ── Processing indicator ───────────────────────────── */}
+        {processing && (
+          <div className="flex items-center gap-3 px-4 py-3 bg-primary-subtle rounded-2xl border border-primary/20">
+            <svg className="w-5 h-5 text-primary animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            <p className="text-base text-text-primary">Preparing photo…</p>
+          </div>
+        )}
+
         {/* ── Upload options ─────────────────────────────────── */}
         <div className="flex flex-col gap-3">
 
-          {/* PRIMARY  Photo (camera / gallery) */}
+          {/* PRIMARY  Take a photo (camera) */}
           <label className="block cursor-pointer active:opacity-90 transition-opacity">
             <input
               type="file"
@@ -138,8 +163,8 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xl font-bold text-white leading-tight">Upload a Photo</p>
-                <p className="text-base text-white/80 mt-0.5">Upload a photo from your gallery</p>
+                <p className="text-xl font-bold text-white leading-tight">Take a Photo</p>
+                <p className="text-base text-white/80 mt-0.5">Use your phone's camera</p>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 px-1">
@@ -147,6 +172,29 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p className="text-sm text-text-muted">Works best with a steady, well-lit photo  no flash needed</p>
+            </div>
+          </label>
+
+          {/* SECONDARY  Upload from gallery */}
+          <label className="block cursor-pointer active:opacity-80 transition-opacity">
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <div className="flex items-center gap-4 bg-surface-container-lowest px-5 py-4 rounded-2xl min-h-[72px] border border-border"
+              style={{ boxShadow: '0 2px 12px rgba(24,28,33,0.06)' }}>
+              <div className="w-12 h-12 rounded-xl bg-primary-subtle flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-lg font-semibold text-text-primary">Upload from Gallery</p>
+                <p className="text-base text-text-muted mt-0.5">Choose an existing photo</p>
+              </div>
             </div>
           </label>
 
