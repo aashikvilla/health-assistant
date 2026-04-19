@@ -10,7 +10,7 @@ interface RxImageSlotProps {
   className?: string
 }
 
-export default function RxImageSlot({
+export function RxImageSlot({
   medicineName,
   width = 88,
   height = 100,
@@ -49,3 +49,5 @@ export default function RxImageSlot({
     </div>
   )
 }
+
+export default RxImageSlot
