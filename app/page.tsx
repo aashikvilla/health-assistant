@@ -48,7 +48,8 @@ export default function HomePage() {
           <a href="#footer">Get in touch</a>
         </div>
         <div className="nav-cta">
-          <Link href="/auth" className="btn-nav">Sign in</Link>
+          <Link href="/auth?mode=signin" className="btn-nav-signin">Sign in</Link>
+          <Link href="/auth?mode=signup" className="btn-nav">Sign up</Link>
         </div>
         <MobileNav />
       </nav>

@@ -4,6 +4,5 @@
       "path": "/api/push/send",
       "schedule": "0 0 * * *"
     }
-  ],
-  "_comment": "Hobby plan limitation: Cron runs once per day at midnight UTC. For per-minute execution (real-time push notifications), upgrade to Vercel Pro plan."
+  ]
 }
