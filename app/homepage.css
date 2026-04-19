@@ -389,7 +389,7 @@
 @media(max-width:1024px){
   .hp .hero{grid-template-columns:1fr;min-height:auto;padding:60px 40px}
   .hp .hero-visual{display:none}
-  .hp .hero-visual-mobile{display:block;margin-top:32px}
+  .hp .hero-visual-mobile{display:block;margin-bottom:32px;order:-1}
   .hp .feat-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:auto}
   .hp .steps-path{grid-template-columns:repeat(2,1fr)}
   .hp .steps-path::before{display:none}
@@ -421,7 +421,7 @@
   .hp .hp-cta-full{display:none}
   .hp .hp-cta-short{display:inline}
   /* Touch targets */
-  .hp .btn-cta{padding:16px 24px;font-size:14px;width:100%}
+  .hp .btn-cta{padding:16px 24px;font-size:14px}
   .hp .btn-outline{padding:14px 20px;min-height:44px}
   .hp .foot-newsletter-input{min-height:44px}
   .hp .foot-newsletter-btn{min-height:44px;padding:0 16px}
