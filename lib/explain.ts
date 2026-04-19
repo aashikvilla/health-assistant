@@ -32,7 +32,8 @@ Return ONLY valid JSON  no markdown, no code fences:
       "avoid": string (1-2 sentences  food/drink/activity interactions)
     }
   ],
-  "doctorNotes": string[] (3-5 follow-up points the patient should raise at next visit)
+  "doctorNotes": string[] (3-5 follow-up points the patient should raise at next visit),
+  "summary": string (2-3 sentences in plain English summarising what this prescription is treating and what the patient should know overall. Be reassuring and practical.)
 }`
 }
 

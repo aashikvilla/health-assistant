@@ -25,6 +25,7 @@ export interface PrescriptionExplanation {
   date: string
   medications: (MedicationExplanation & { id: string })[]
   doctorNotes: string[]
+  summary?: string
 }
 
 export interface PrescriptionData {

@@ -121,7 +121,7 @@ export const documentsService = {
         ? {
           medications_found: (prescriptionMeds ?? (data as PrescriptionData).medications) as unknown as Json,
           recommendations: (explanation?.doctorNotes ?? []) as Json,
-          key_findings: null,
+          key_findings: { aiSummary: explanation?.summary?.trim() || null } as unknown as Json,
           risk_flags: null,
           terms_explained: null,
         }

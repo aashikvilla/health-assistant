@@ -38,6 +38,7 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
     recommendations,
     labTests,
     abnormalMarkers,
+    aiSummary,
   } = record
 
   const isPrescription = documentType === 'prescription'
@@ -112,6 +113,11 @@ export function DocumentDetail({ record, profileName, signedFileUrl, isOwnProfil
           <>
             {needsExplanation && record.documentId && (
               <ExplanationLoader documentId={record.documentId} />
+            )}
+
+            {/* AI Summary */}
+            {!!aiSummary && (
+              <DoctorNotes notes={[aiSummary]} title="AI Summary" />
             )}
 
             {/* Medications */}
