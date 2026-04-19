@@ -54,6 +54,21 @@ export default async function SettingsPage() {
             >
               Vitae
             </span>
+            {/* Sign-out  hidden on desktop where AppDrawerNav's hamburger takes over */}
+            <form action={signOut} className="sm:hidden">
+              <button
+                type="submit"
+                aria-label="Sign out"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-opacity hover:opacity-80"
+                style={{ background: 'rgba(255,255,255,.15)', border: '1px solid rgba(255,255,255,.25)' }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </button>
+            </form>
           </div>
           <div
             className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-display text-[26px] font-extrabold text-white relative mb-3 gradient-brand-full"

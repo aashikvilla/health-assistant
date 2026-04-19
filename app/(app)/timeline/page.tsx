@@ -5,6 +5,7 @@ import { recordsService } from "@/services/records.service";
 import { familyService } from "@/services/family.service";
 import { TimelineView } from "@/components/features/records/TimelineView";
 import { Button } from "@/components/ui";
+import { signOut } from "@/app/actions";
 
 export const metadata: Metadata = { title: "Timeline | Vitae" };
 
@@ -47,6 +48,21 @@ export default async function TimelinePage() {
             >
               Vitae
             </span>
+            {/* Sign-out  hidden on desktop where AppDrawerNav's hamburger takes over */}
+            <form action={signOut} className="sm:hidden">
+              <button
+                type="submit"
+                aria-label="Sign out"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-opacity hover:opacity-80"
+                style={{ background: 'rgba(255,255,255,.15)', border: '1px solid rgba(255,255,255,.25)' }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </button>
+            </form>
           </div>
           <p className="font-body text-[11px] font-semibold text-white/60 uppercase tracking-widest relative mb-1 pt-2">
             Health Records

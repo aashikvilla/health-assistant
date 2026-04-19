@@ -2,9 +2,11 @@ import React from 'react'
 import Link from 'next/link'
 
 interface PageHeaderAction {
-  label: string
+  label: string | React.ReactNode
   href?: string
   onClick?: () => void
+  className?: string
+  ariaLabel?: string
 }
 
 interface PageHeaderProps {
@@ -29,11 +31,19 @@ export function PageHeader({ title, backHref, action }: PageHeaderProps) {
         <span className="font-display text-[15px] font-bold text-text-primary">{title}</span>
         {action ? (
           action.href ? (
-            <Link href={action.href} className="text-sm font-semibold text-primary hover:underline">
+            <Link 
+              href={action.href} 
+              className={`text-sm font-semibold text-primary hover:underline ${action.className || ''}`}
+              aria-label={action.ariaLabel}
+            >
               {action.label}
             </Link>
           ) : (
-            <button onClick={action.onClick} className="text-sm font-semibold text-primary hover:underline">
+            <button 
+              onClick={action.onClick} 
+              className={`text-sm font-semibold text-primary hover:underline ${action.className || ''}`}
+              aria-label={action.ariaLabel}
+            >
               {action.label}
             </button>
           )
