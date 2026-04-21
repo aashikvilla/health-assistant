@@ -115,6 +115,19 @@ export const documentsService = {
       ? explanation.medications.map(({ id: _id, ...rest }) => rest)
       : null
 
+    // [explain-debug] — temporary: verify rich explanation reaches save
+    if (type === 'prescription') {
+      console.log('[explain-debug] save', {
+        docId: doc.id,
+        explanationProvided: !!explanation,
+        medsInExplanation: explanation?.medications?.length ?? 0,
+        firstMedHasTreats: !!(explanation?.medications?.[0] as { treats?: string } | undefined)?.treats,
+        firstMedKeys: explanation?.medications?.[0] ? Object.keys(explanation.medications[0]) : null,
+        summaryLen: explanation?.summary?.trim().length ?? 0,
+        prescriptionMedsFirstTreats: (prescriptionMeds?.[0] as { treats?: string } | undefined)?.treats ?? null,
+      })
+    }
+
     // Supabase JSON columns require the Json type  cast structured objects explicitly
     const analysisPayload =
       type === 'prescription'
@@ -163,6 +176,24 @@ export const documentsService = {
         llm_model_used: process.env.GEMINI_API_KEY_EXTRACT ? 'gemma-4-26b-a4b-it' : 'mock',
         ...analysisPayload,
       })
+
+    // [explain-debug] — confirm what actually landed in document_analyses
+    if (type === 'prescription') {
+      const { data: verify } = await supabase
+        .from('document_analyses')
+        .select('medications_found, key_findings')
+        .eq('document_id', doc.id)
+        .maybeSingle()
+      const storedMeds = (verify?.medications_found as Array<{ treats?: string }> | null) ?? []
+      console.log('[explain-debug] post-insert', {
+        docId: doc.id,
+        analysisError: analysisError?.message ?? null,
+        storedMedsLen: storedMeds.length,
+        storedFirstHasTreats: !!storedMeds[0]?.treats,
+        storedFirstKeys: storedMeds[0] ? Object.keys(storedMeds[0]) : null,
+        keyFindings: verify?.key_findings ?? null,
+      })
+    }
 
     if (analysisError) {
       // Analysis write failed  roll back the document row to avoid orphan

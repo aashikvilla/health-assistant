@@ -147,6 +147,18 @@ export const recordsService = {
                 storedMeds.length > 0 &&
                 (storedMeds as { treats?: string }[]).some((m) => !!m.treats)
 
+            // [explain-debug] — temporary: verify what the read sees
+            if (d.document_type === 'prescription') {
+                console.log('[explain-debug] read', {
+                    docId: d.id,
+                    storedMedsLen: storedMeds.length,
+                    isRichExplanation,
+                    firstKeys: storedMeds[0] ? Object.keys(storedMeds[0] as object) : null,
+                    firstTreats: (storedMeds[0] as { treats?: string } | undefined)?.treats ?? null,
+                    keyFindings: analysis?.key_findings ?? null,
+                })
+            }
+
             let meds: MedicationExplanation[] = isRichExplanation
                 ? (storedMeds as MedicationExplanation[])
                 : []
