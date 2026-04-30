@@ -268,7 +268,7 @@ export default function AuthenticatedUploadPage({ params }: PageProps) {
               {error}
             </div>
           )}
-          <UploadPicker onFileSelected={handleFileSelected} onManualData={handleManualData} />
+          <UploadPicker onFileSelected={handleFileSelected} onManualData={handleManualData} onClose={() => router.back()} />
         </>
       )}
 

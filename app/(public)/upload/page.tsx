@@ -209,7 +209,7 @@ export default function PublicUploadPage() {
               <p className="text-base text-error">{error}</p>
             </div>
           )}
-          <UploadPicker onFileSelected={handleFileSelected} onManualData={handleManualData} />
+          <UploadPicker onFileSelected={handleFileSelected} onManualData={handleManualData} onClose={() => router.back()} />
         </div>
       )}
 

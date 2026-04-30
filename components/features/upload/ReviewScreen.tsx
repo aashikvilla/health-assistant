@@ -252,7 +252,21 @@ export default function ReviewScreen({ data, onConfirm, onRetry }: Props) {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-text-muted mb-2">Frequency</p>
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <p className="text-sm font-medium text-text-muted">Frequency</p>
+                          <div className="relative group">
+                            <button type="button" className="flex items-center justify-center w-5 h-5 rounded-full text-text-muted hover:text-primary transition-colors" aria-label="What is M / A / N?">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block bg-surface-container-lowest border border-border rounded-xl px-3 py-2 shadow-md text-xs text-text-secondary whitespace-nowrap z-10">
+                              <span className="font-semibold text-text-primary">M</span> Morning ·{' '}
+                              <span className="font-semibold text-text-primary">A</span> Afternoon ·{' '}
+                              <span className="font-semibold text-text-primary">N</span> Night
+                            </div>
+                          </div>
+                        </div>
                         <div className="flex items-end gap-2">
                           {(['M', 'A', 'N'] as const).map((slot, si) => {
                             const parts = (med.frequency || '').split('-')

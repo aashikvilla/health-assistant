@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-const DISMISSED_KEY = "pwa-install-dismissed";
-
 type Platform = "android" | "ios" | null;
 
 function detectPlatform(): Platform {
@@ -30,7 +28,20 @@ export function PWAInstallBanner() {
 
   useEffect(() => {
     if (isInStandaloneMode()) return;
-    if (localStorage.getItem(DISMISSED_KEY)) return;
+    if (localStorage.getItem("pwa-installed")) return;
+
+    // Track visits once per browser session
+    if (!sessionStorage.getItem("pwa-session-started")) {
+      sessionStorage.setItem("pwa-session-started", "1");
+      const prev = parseInt(localStorage.getItem("pwa-visit-count") ?? "0", 10);
+      localStorage.setItem("pwa-visit-count", String(prev + 1));
+    }
+
+    const visitCount = parseInt(localStorage.getItem("pwa-visit-count") ?? "0", 10);
+    const showCount  = parseInt(localStorage.getItem("pwa-show-count")  ?? "0", 10);
+
+    // Show only from 2nd visit onwards, stop after 3 impressions, respect session dismissal
+    if (visitCount < 2 || showCount >= 3 || sessionStorage.getItem("pwa-dismissed-session")) return;
 
     const detected = detectPlatform();
     if (!detected) return;
@@ -40,21 +51,24 @@ export function PWAInstallBanner() {
       const handler = (e: Event) => {
         e.preventDefault();
         setDeferredPrompt(e);
+        localStorage.setItem("pwa-show-count", String(showCount + 1));
         setShow(true);
       };
       window.addEventListener("beforeinstallprompt", handler);
       return () => window.removeEventListener("beforeinstallprompt", handler);
     }
 
-    // iOS  no beforeinstallprompt, show manual instructions
     if (detected === "ios") {
-      const timer = setTimeout(() => setShow(true), 3000);
+      const timer = setTimeout(() => {
+        localStorage.setItem("pwa-show-count", String(showCount + 1));
+        setShow(true);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, []);
 
   function dismiss() {
-    localStorage.setItem(DISMISSED_KEY, "1");
+    sessionStorage.setItem("pwa-dismissed-session", "1");
     setShow(false);
   }
 
@@ -62,7 +76,11 @@ export function PWAInstallBanner() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") localStorage.setItem(DISMISSED_KEY, "1");
+    if (outcome === "accepted") {
+      localStorage.setItem("pwa-installed", "1");
+      localStorage.removeItem("pwa-visit-count");
+      localStorage.removeItem("pwa-show-count");
+    }
     setShow(false);
     setDeferredPrompt(null);
   }

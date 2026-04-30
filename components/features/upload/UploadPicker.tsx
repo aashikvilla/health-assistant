@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { PrescriptionData } from '@/types/prescription'
 import { Button } from '@/components/ui'
 import { compressImage } from '@/lib/utils/image-compress'
@@ -38,12 +38,20 @@ interface ManualMed {
 interface Props {
   onFileSelected: (file: File) => void
   onManualData:   (data: PrescriptionData) => void
+  onClose?:       () => void
 }
 
-export default function UploadPicker({ onFileSelected, onManualData }: Props) {
+export default function UploadPicker({ onFileSelected, onManualData, onClose }: Props) {
   const [showManual, setShowManual] = useState(false)
   const [fileError,  setFileError]  = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
+  const [isMobile,   setIsMobile]   = useState(false)
+
+  useEffect(() => {
+    setIsMobile(
+      navigator.maxTouchPoints > 0 || /Mobi|Android/i.test(navigator.userAgent)
+    )
+  }, [])
 
   const [doctor,      setDoctor]      = useState('')
   const [illness,     setIllness]     = useState('')
@@ -98,6 +106,19 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="flex-1 px-5 pt-7 pb-6 flex flex-col gap-6 max-w-2xl mx-auto w-full">
 
+        {/* ── Close button ───────────────────────────────────── */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="self-start flex items-center justify-center w-11 h-11 rounded-xl text-text-muted hover:text-text-primary hover:bg-surface-subtle transition-colors -ml-2"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+
         {/* ── Step indicator ─────────────────────────────────── */}
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-primary bg-primary-subtle px-3 py-1 rounded-full">
@@ -144,36 +165,38 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
         {/* ── Upload options ─────────────────────────────────── */}
         <div className="flex flex-col gap-3">
 
-          {/* PRIMARY  Take a photo (camera) */}
-          <label className="block cursor-pointer active:opacity-90 transition-opacity">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/*"
-              capture="environment"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <div className="flex items-center gap-4 bg-primary px-5 py-5 rounded-2xl min-h-[80px]"
-              style={{ boxShadow: '0 4px 20px rgba(0,88,189,0.25)' }}>
-              <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          {/* PRIMARY  Take a photo (camera) — mobile only */}
+          {isMobile && (
+            <label className="block cursor-pointer active:opacity-90 transition-opacity">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <div className="flex items-center gap-4 bg-primary px-5 py-5 rounded-2xl min-h-[80px]"
+                style={{ boxShadow: '0 4px 20px rgba(0,88,189,0.25)' }}>
+                <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xl font-bold text-white leading-tight">Take a Photo</p>
+                  <p className="text-base text-white/80 mt-0.5">Use your phone&apos;s camera</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mt-2 px-1">
+                <svg className="w-3.5 h-3.5 text-text-muted flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
+                <p className="text-sm text-text-muted">Works best with a steady, well-lit photo  no flash needed</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xl font-bold text-white leading-tight">Take a Photo</p>
-                <p className="text-base text-white/80 mt-0.5">Use your phone's camera</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 mt-2 px-1">
-              <svg className="w-3.5 h-3.5 text-text-muted flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-sm text-text-muted">Works best with a steady, well-lit photo  no flash needed</p>
-            </div>
-          </label>
+            </label>
+          )}
 
           {/* SECONDARY  Upload from gallery */}
           <label className="block cursor-pointer active:opacity-80 transition-opacity">
@@ -362,7 +385,21 @@ export default function UploadPicker({ onFileSelected, onManualData }: Props) {
                     />
                     {/* Frequency M-A-N */}
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-text-muted">Frequency (Morning – Afternoon – Night)</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-xs font-medium text-text-muted">Frequency</p>
+                        <div className="relative group">
+                          <button type="button" className="flex items-center justify-center w-5 h-5 rounded-full text-text-muted hover:text-primary transition-colors" aria-label="What is M / A / N?">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block bg-surface-container-lowest border border-border rounded-xl px-3 py-2 shadow-md text-xs text-text-secondary whitespace-nowrap z-10">
+                            <span className="font-semibold text-text-primary">M</span> Morning ·{' '}
+                            <span className="font-semibold text-text-primary">A</span> Afternoon ·{' '}
+                            <span className="font-semibold text-text-primary">N</span> Night
+                          </div>
+                        </div>
+                      </div>
                       <div className="flex items-end gap-2">
                         {(['M', 'A', 'N'] as const).map((slot, si) => {
                           const parts = (med.frequency || '').split('-')
