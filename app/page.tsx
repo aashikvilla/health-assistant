@@ -1,7 +1,6 @@
 "use client";
 
 import Link from 'next/link'
-import { MobileNav } from '@/components/layout/MobileNav'
 import { ContactModal } from '@/components/layout/ContactModal'
 import { NewsletterForm } from '@/components/layout/NewsletterForm'
 import './homepage.css'
@@ -51,7 +50,6 @@ export default function HomePage() {
           <Link href="/auth?mode=signin" className="btn-nav-signin">Sign in</Link>
           <Link href="/auth?mode=signup" className="btn-nav">Sign up</Link>
         </div>
-        <MobileNav />
       </nav>
 
       {/* ── HERO ── */}
@@ -75,7 +73,7 @@ export default function HomePage() {
             explanation of every medication, dosage and test result instantly.
           </p>
           <div className="hero-actions fi4">
-            <Link href="/upload" className="btn-cta">Try for Free →</Link>
+            <Link href="/upload" className="btn-cta">Start for Free →</Link>
             <Link href="/auth" className="btn-outline">Sign up</Link>
           </div>
           <p className="cta-sub fi4">
@@ -331,7 +329,7 @@ export default function HomePage() {
               use your <em className="hl">health records</em>
             </h2>
             <p className="s-sub" style={{ maxWidth: 480, margin: "0 auto" }}>
-              Not just extraction. Every feature is designed
+              Not just extraction, but real understanding. Every feature is designed
               around a real moment of confusion.
             </p>
           </div>
@@ -933,7 +931,7 @@ export default function HomePage() {
             Plain-language explanation in under 60 seconds.
           </p>
           <div className="cta-btns">
-            <Link href="/upload" className="cta-btn-w">Try for Free →</Link>
+            <Link href="/upload" className="cta-btn-w">Start for Free →</Link>
             <Link href="/auth" className="cta-btn-o">Create Account</Link>
           </div>
           <p className="cta-fine">
