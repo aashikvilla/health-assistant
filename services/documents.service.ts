@@ -107,7 +107,10 @@ export const documentsService = {
     }
 
     // 2. Write the analysis row
-    const summary = buildSummary(type, data)
+    // For lab reports use AI-generated summary (connection insight); fall back to count string
+    const summary = (type === 'lab_report' && labExplanation?.summary)
+      ? labExplanation.summary
+      : buildSummary(type, data)
 
     // When an AI explanation is available (public upload flow), use its richer
     // medication data (treats, how_to_take, side_effects, avoid) and doctor notes.

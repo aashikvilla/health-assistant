@@ -40,7 +40,8 @@ const NAV_ITEMS = [
 ]
 
 // Only show the hamburger on top-level screens  same rule as BottomNav.
-const PRIMARY_PATHS = ['/dashboard', '/timeline', '/settings']
+// Dashboard has its own inline nav, so exclude it here.
+const PRIMARY_PATHS = ['/timeline', '/settings']
 
 // ── Component ─────────────────────────────────────────────────────────────────
 

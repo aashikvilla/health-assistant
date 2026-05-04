@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vitae — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ─── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  background: #eef2ff;
+  color: #07071a;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+svg { display: block; }
+
+/* ─── Tokens ─────────────────────────────────────────────── */
+:root {
+  --blue:        #1d4ed8;
+  --blue-hover:  #1e40af;
+  --blue-light:  #dbeafe;
+  --blue-xlight: #eff6ff;
+  --teal:        #006a66;
+  --teal-light:  #dff4f2;
+  --violet:      #7c3aed;
+  --violet-light:#ede9fe;
+  --amber:       #b45309;
+  --amber-light: #fef3c7;
+  --red:         #be123c;
+  --red-light:   #ffe4e6;
+  --page-bg:     #eef2ff;
+  --white:       #ffffff;
+  --border:      rgba(29,78,216,0.09);
+  --border-med:  rgba(29,78,216,0.14);
+  --t1:          #07071a;
+  --t2:          #374151;
+  --t3:          #6b7280;
+  --shadow:      0 1px 3px rgba(0,0,0,.06), 0 1px 8px rgba(29,78,216,.05);
+  --shadow-md:   0 4px 16px rgba(29,78,216,.08), 0 1px 4px rgba(0,0,0,.04);
+  --radius:      14px;
+  --display:     'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* ─── Shared ─────────────────────────────────────────────── */
+.d  { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.caps {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--t3);
+}
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+  font-family: 'Manrope', sans-serif;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════════════ */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(29,78,216,.04);
+}
+.nav-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.logo { display: flex; align-items: center; gap: 9px; }
+.logo-mark {
+  width: 28px; height: 28px; border-radius: 8px; background: var(--blue);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.logo-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px; font-weight: 800; color: var(--t1); letter-spacing: -.3px;
+}
+.nav-links { display: flex; align-items: center; gap: 2px; }
+.nav-link {
+  padding: 5px 13px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: var(--t3); transition: all 110ms;
+}
+.nav-link:hover { color: var(--t1); background: var(--page-bg); }
+.nav-link.on { color: var(--blue); background: var(--blue-light); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: var(--blue-light); color: var(--blue);
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.signout-btn {
+  font-size: 12px; font-weight: 600; color: var(--t3);
+  display: flex; align-items: center; gap: 4px; transition: color 110ms;
+  padding: 4px 2px;
+}
+.signout-btn:hover { color: var(--red); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   GREETING BAR
+═══════════════════════════════════════════════════════════ */
+.greeting-bar {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+.greeting-inner {
+  max-width: 1140px; margin: 0 auto;
+  height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.greeting-left { display: flex; flex-direction: column; justify-content: center; gap: 1px; }
+.greeting-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px; font-weight: 800; color: var(--t1); letter-spacing: -.3px; line-height: 1;
+}
+.greeting-sub { font-size: 12px; color: var(--t3); }
+.family-strip { display: flex; align-items: center; gap: 6px; }
+.family-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 10px 5px 6px; border-radius: 99px;
+  border: 1.5px solid var(--border-med);
+  background: var(--white); cursor: pointer; transition: all 110ms;
+}
+.family-chip:hover { border-color: var(--blue); }
+.family-chip.active { background: var(--blue-light); border-color: var(--blue); }
+.chip-av {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.chip-av.blue { background: var(--blue); color: #fff; }
+.chip-av.grey { background: #e5e7eb; color: var(--t3); }
+.chip-label { font-size: 12px; font-weight: 700; }
+.family-chip.active .chip-label { color: var(--blue); }
+.chip-add {
+  width: 32px; height: 32px; border-radius: 99px;
+  border: 1.5px dashed var(--border-med); background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t3); font-size: 16px; cursor: pointer; transition: all 110ms;
+}
+.chip-add:hover { border-color: var(--blue); color: var(--blue); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   STAT STRIP
+═══════════════════════════════════════════════════════════ */
+.stat-strip {
+  background: var(--white); border-bottom: 1px solid var(--border);
+}
+.stat-strip-inner {
+  max-width: 1140px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: stretch; gap: 0;
+}
+.stat-tile {
+  flex: 1; padding: 12px 20px; display: flex; align-items: center; gap: 12px;
+  border-right: 1px solid var(--border); cursor: pointer; transition: background 110ms;
+}
+.stat-tile:last-child { border-right: none; }
+.stat-tile:hover { background: var(--blue-xlight); }
+.stat-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.stat-body {}
+.stat-num {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px; font-weight: 800; line-height: 1; color: var(--t1);
+}
+.stat-lbl { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.stat-tile.alert-tile .stat-num { color: var(--amber); }
+.stat-tile.blood-tile .stat-num { color: var(--red); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN GRID
+═══════════════════════════════════════════════════════════ */
+.main {
+  max-width: 1140px; margin: 0 auto; padding: 16px 24px 24px;
+  display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start;
+}
+.col-left  { display: flex; flex-direction: column; gap: 12px; }
+.col-right { display: flex; flex-direction: column; gap: 12px; }
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px 0;
+}
+.card-link {
+  font-size: 11px; font-weight: 700; color: var(--blue);
+  display: flex; align-items: center; gap: 3px; transition: opacity 110ms;
+}
+.card-link:hover { opacity: .7; }
+
+
+/* ─── Medications card ───────────────────────────────── */
+.meds-body { padding: 10px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
+.slot-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 12px; border-radius: 10px;
+}
+.slot-row.morning { background: #fffbeb; }
+.slot-row.night   { background: #f0f4ff; }
+.slot-icon {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.slot-icon.morning { background: #fef3c7; }
+.slot-icon.night   { background: #dbeafe; }
+.slot-content { flex: 1; min-width: 0; }
+.slot-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px; font-weight: 700; color: var(--t3); text-transform: uppercase;
+  letter-spacing: .06em; margin-bottom: 4px;
+}
+.slot-meds { display: flex; flex-wrap: wrap; gap: 5px; }
+.med-pill {
+  font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px;
+  background: rgba(255,255,255,.85); border: 1px solid rgba(0,0,0,.07);
+  color: var(--t2);
+}
+.slot-count {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px; font-weight: 700; color: var(--t3); margin-top: 2px; flex-shrink: 0;
+}
+
+/* Empty meds */
+.meds-empty {
+  text-align: center; padding: 20px 16px 22px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.empty-icon-wrap {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--blue-light); color: var(--blue);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 2px;
+}
+.empty-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--t1); }
+.empty-sub   { font-size: 12px; color: var(--t3); line-height: 1.5; max-width: 220px; }
+.empty-cta {
+  margin-top: 4px; padding: 7px 18px; border-radius: 99px;
+  background: var(--blue); color: #fff;
+  font-size: 12px; font-weight: 700; transition: opacity 110ms;
+}
+.empty-cta:hover { opacity: .88; }
+
+/* ─── Records card ───────────────────────────────────── */
+.records-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+.rec {
+  display: flex; align-items: center; gap: 0; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--white); transition: box-shadow 120ms;
+}
+.rec:hover { box-shadow: 0 2px 12px rgba(29,78,216,.10); }
+.rec-stripe { width: 3px; flex-shrink: 0; align-self: stretch; }
+.rec-stripe.rx  { background: linear-gradient(180deg, var(--blue), var(--violet)); }
+.rec-stripe.lab { background: linear-gradient(180deg, var(--teal), #0891b2); }
+.rec-icon { padding: 10px 10px 10px 10px; flex-shrink: 0; }
+.rec-icon-box {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.rec-icon-box.rx  { background: var(--blue-light);  color: var(--blue); }
+.rec-icon-box.lab { background: var(--teal-light); color: var(--teal); }
+.rec-body { flex: 1; min-width: 0; padding: 9px 6px 9px 0; }
+.rec-dr { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rec-sub { font-size: 10px; color: var(--t3); margin-top: 1px; }
+.rec-tag {
+  display: inline-flex; margin-top: 4px;
+  font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 99px;
+}
+.rec-tag.rx  { background: var(--blue-light); color: var(--blue); }
+.rec-tag.lab { background: var(--teal-light); color: var(--teal); }
+.rec-date { padding: 0 12px; text-align: center; flex-shrink: 0; }
+.rec-day { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; line-height: 1; }
+.rec-day.rx  { color: var(--blue); }
+.rec-day.lab { color: var(--teal); }
+.rec-mon { font-size: 9px; font-weight: 700; color: var(--t3); text-transform: uppercase; }
+
+/* Empty records */
+.records-empty {
+  padding: 20px 16px 22px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+
+/* ─── Upload button ──────────────────────────────────── */
+.upload-btn {
+  width: 100%; height: 46px; border-radius: 12px;
+  background: var(--blue); color: #fff; border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  box-shadow: 0 3px 12px rgba(29,78,216,.22); transition: all 140ms;
+}
+.upload-btn:hover { background: var(--blue-hover); transform: translateY(-1px); box-shadow: 0 5px 20px rgba(29,78,216,.28); }
+
+
+/* ─── Health snapshot ────────────────────────────────── */
+.snapshot-grid { padding: 10px 16px 14px; display: flex; flex-direction: column; gap: 0; }
+.snap-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.snap-row:last-child { border-bottom: none; }
+.snap-left { display: flex; align-items: center; gap: 8px; }
+.snap-dot  { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.snap-key  { font-size: 12px; color: var(--t3); }
+.snap-val  { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--t1); }
+.snap-val.red    { color: var(--red); }
+.snap-val.muted  { color: var(--t3); font-weight: 500; }
+.snap-val.orange { color: #d97706; }
+.snap-edit {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700; color: var(--blue); transition: opacity 110ms;
+}
+.snap-edit:hover { opacity: .7; }
+
+/* Incomplete profile banner */
+.profile-incomplete {
+  margin: 0 16px 12px; padding: 10px 12px; border-radius: 10px;
+  background: #fffbeb; border: 1px solid #fcd34d;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.incomplete-text { font-size: 12px; color: #92400e; font-weight: 600; line-height: 1.4; }
+.incomplete-cta  { font-size: 11px; font-weight: 700; color: #b45309; white-space: nowrap; text-decoration: underline; background: none; border: none; cursor: pointer; }
+.progress-bar { height: 3px; background: #fde68a; border-radius: 99px; margin-top: 4px; width: 100%; }
+.progress-fill { height: 100%; background: #f59e0b; border-radius: 99px; }
+
+
+/* ─── Lab alerts ─────────────────────────────────────── */
+.alert-header {
+  display: flex; align-items: center; gap: 10px; padding: 11px 16px;
+  border-radius: 13px 13px 0 0; overflow: hidden;
+}
+.alert-header.warning { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.alert-header.critical { background: linear-gradient(135deg, #be123c, #e11d48); }
+.alert-icon-box {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.alert-heading { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: #fff; }
+.alert-subhead  { font-size: 10px; color: rgba(255,255,255,.7); margin-top: 1px; }
+.alert-rows { border-top: none; }
+.alert-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 16px; border-top: 1px solid rgba(253,230,138,.5); background: var(--white);
+}
+.alert-row:last-child { border-radius: 0 0 13px 13px; }
+.alert-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--t1); }
+.alert-right { display: flex; align-items: center; gap: 6px; }
+.alert-num  { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: #b45309; }
+.alert-badge.warning { background: var(--amber-light); color: var(--amber); }
+.alert-badge.critical { background: var(--red-light); color: var(--red); }
+.alert-view {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 9px 16px; background: var(--white); border-top: 1px solid var(--border);
+  border-radius: 0 0 13px 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--blue);
+  transition: background 110ms;
+}
+.alert-view:hover { background: var(--blue-xlight); }
+
+/* Lab empty */
+.lab-empty {
+  padding: 20px 16px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+
+
+/* ─── Quick links ────────────────────────────────────── */
+.qlink {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px; border-top: 1px solid var(--border); transition: background 110ms;
+}
+.qlink:first-child { border-top: none; }
+.qlink:hover { background: var(--blue-xlight); }
+.qlink-left { display: flex; align-items: center; gap: 9px; color: var(--t2); }
+.qlink-icon { color: var(--t3); }
+.qlink-label { font-size: 13px; font-weight: 600; }
+.qlink-chevron { color: var(--t3); }
+
+
+/* ─── State toggle ───────────────────────────────────── */
+.toggle-bar {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; background: var(--white); border: 1px solid var(--border);
+  border-radius: 99px; padding: 4px; gap: 2px; z-index: 99;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12);
+}
+.toggle-btn {
+  padding: 6px 16px; border-radius: 99px;
+  font-size: 12px; font-weight: 700; color: var(--t3); transition: all 120ms; white-space: nowrap;
+}
+.toggle-btn.active { background: var(--blue); color: #fff; }
+
+
+/* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .nav-links, .signout-btn { display: none; }
+  .nav-inner, .greeting-inner, .stat-strip-inner { padding: 0 16px; }
+  .greeting-inner { flex-direction: column; align-items: flex-start; height: auto; padding: 12px 16px; gap: 8px; }
+  .stat-strip-inner { flex-wrap: wrap; }
+  .stat-tile { min-width: 50%; border-right: none; border-bottom: 1px solid var(--border); flex: none; }
+  .main { grid-template-columns: 1fr; padding: 12px 16px 80px; }
+  .col-right { order: -1; }
+  .toggle-bar { bottom: 72px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     NAV
+══════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="14" height="14" viewBox="0 0 30 30" fill="none">
+          <path d="M4 15L8.5 15L10.5 10L15 21L19.5 10L21.5 15L26 15" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="logo-name">Vitae</span>
+    </div>
+
+    <div class="nav-links">
+      <a href="#" class="nav-link on">Home</a>
+      <a href="#" class="nav-link">Timeline</a>
+      <a href="#" class="nav-link">Profile</a>
+    </div>
+
+    <div class="nav-right">
+      <div class="avatar">P</div>
+      <button class="signout-btn">
+        Sign out
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ══════════════════════════════════════════
+     GREETING + FAMILY SWITCHER
+══════════════════════════════════════════ -->
+<div class="greeting-bar">
+  <div class="greeting-inner">
+    <div class="greeting-left">
+      <div class="greeting-name">Good morning, Preeti</div>
+      <div class="greeting-sub">Thursday, 17 April 2026</div>
+    </div>
+    <div class="family-strip">
+      <div class="family-chip active">
+        <div class="chip-av blue">P</div>
+        <span class="chip-label">Me</span>
+      </div>
+      <div class="family-chip">
+        <div class="chip-av grey">P</div>
+        <span class="chip-label" style="color:var(--t2)">Papa</span>
+      </div>
+      <div class="chip-add" title="Add family member">+</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     STAT STRIP
+══════════════════════════════════════════ -->
+<div class="stat-strip">
+  <div class="stat-strip-inner">
+
+    <div class="stat-tile">
+      <div class="stat-icon" style="background:#eff6ff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num">6</div>
+        <div class="stat-lbl">Active Meds</div>
+      </div>
+    </div>
+
+    <div class="stat-tile alert-tile">
+      <div class="stat-icon" style="background:#fef3c7">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num">2</div>
+        <div class="stat-lbl">Lab Alerts</div>
+      </div>
+    </div>
+
+    <div class="stat-tile">
+      <div class="stat-icon" style="background:#dff4f2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#006a66" stroke-width="2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num">5</div>
+        <div class="stat-lbl">Records</div>
+      </div>
+    </div>
+
+    <div class="stat-tile blood-tile">
+      <div class="stat-icon" style="background:#ffe4e6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#be123c" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2C9.5 6 6 9.5 6 13a6 6 0 0012 0c0-3.5-3.5-7-6-11z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num">A+</div>
+        <div class="stat-lbl">Blood Group</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     MAIN GRID
+══════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- ── LEFT COLUMN ── -->
+  <div class="col-left">
+
+    <!-- Today's medications -->
+    <div class="card" id="meds-card">
+      <div class="card-head">
+        <span class="caps">Today's Medications</span>
+        <a href="#" class="card-link">Full schedule →</a>
+      </div>
+      <!-- FILLED STATE -->
+      <div class="meds-body" id="meds-filled">
+        <div class="slot-row morning">
+          <div class="slot-icon morning">🌅</div>
+          <div class="slot-content">
+            <div class="slot-label">Morning</div>
+            <div class="slot-meds">
+              <span class="med-pill">Sinarest 500mg</span>
+              <span class="med-pill">Monovance 250mg</span>
+              <span class="med-pill">Clanam 625mg</span>
+            </div>
+          </div>
+          <div class="slot-count">3</div>
+        </div>
+        <div class="slot-row night">
+          <div class="slot-icon night">🌙</div>
+          <div class="slot-content">
+            <div class="slot-label">Night</div>
+            <div class="slot-meds">
+              <span class="med-pill">Sinarest 500mg</span>
+              <span class="med-pill">Havrys Plus 10mg</span>
+              <span class="med-pill">Clanam 625mg</span>
+            </div>
+          </div>
+          <div class="slot-count">3</div>
+        </div>
+      </div>
+      <!-- EMPTY STATE -->
+      <div class="meds-empty" id="meds-empty" style="display:none">
+        <div class="empty-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="empty-title">No active medications</div>
+        <div class="empty-sub">Upload a prescription and your medications will appear here, grouped by when to take them.</div>
+        <a href="#" class="empty-cta">Upload a prescription</a>
+      </div>
+    </div>
+
+    <!-- Recent records -->
+    <div class="card" id="records-card">
+      <div class="card-head">
+        <span class="caps">Recent Records</span>
+        <a href="#" class="card-link">View all →</a>
+      </div>
+      <!-- FILLED STATE -->
+      <div class="records-list" id="records-filled">
+        <a href="#" class="rec">
+          <div class="rec-stripe rx"></div>
+          <div class="rec-icon">
+            <div class="rec-icon-box rx">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+              </svg>
+            </div>
+          </div>
+          <div class="rec-body">
+            <div class="rec-dr">Dr. L. Ravinder Reddy</div>
+            <div class="rec-sub">Prescription · Me</div>
+            <span class="rec-tag rx">6 medications</span>
+          </div>
+          <div class="rec-date">
+            <div class="rec-day rx">18</div>
+            <div class="rec-mon">Apr</div>
+          </div>
+        </a>
+        <a href="#" class="rec">
+          <div class="rec-stripe lab"></div>
+          <div class="rec-icon">
+            <div class="rec-icon-box lab">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="rec-body">
+            <div class="rec-dr">Dr. K. Mishra</div>
+            <div class="rec-sub">Lab Report · Papa</div>
+            <span class="rec-tag lab">blood work</span>
+          </div>
+          <div class="rec-date">
+            <div class="rec-day lab">14</div>
+            <div class="rec-mon">Jul</div>
+          </div>
+        </a>
+        <a href="#" class="rec">
+          <div class="rec-stripe rx"></div>
+          <div class="rec-icon">
+            <div class="rec-icon-box rx">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+              </svg>
+            </div>
+          </div>
+          <div class="rec-body">
+            <div class="rec-dr">City Health Clinic</div>
+            <div class="rec-sub">Prescription · Me</div>
+            <span class="rec-tag rx">cough · cold</span>
+          </div>
+          <div class="rec-date">
+            <div class="rec-day rx">02</div>
+            <div class="rec-mon">Nov</div>
+          </div>
+        </a>
+      </div>
+      <!-- EMPTY STATE -->
+      <div class="records-empty" id="records-empty" style="display:none">
+        <div class="empty-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          </svg>
+        </div>
+        <div class="empty-title">No records yet</div>
+        <div class="empty-sub">Your prescriptions and lab reports will appear here once you upload them.</div>
+      </div>
+    </div>
+
+    <!-- Upload CTA -->
+    <button class="upload-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Upload new record
+    </button>
+
+  </div><!-- /col-left -->
+
+
+  <!-- ── RIGHT COLUMN ── -->
+  <div class="col-right">
+
+    <!-- Health snapshot -->
+    <div class="card" id="snapshot-card">
+      <div class="card-head">
+        <span class="caps">Health Profile</span>
+        <button class="snap-edit">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Edit
+        </button>
+      </div>
+
+      <!-- Incomplete banner — shown in empty state -->
+      <div class="profile-incomplete" id="profile-banner" style="display:none; margin-top:10px;">
+        <div>
+          <div class="incomplete-text">Complete your health profile</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+          <div style="font-size:10px; color:#92400e; margin-top:3px;">2 of 5 fields filled</div>
+        </div>
+        <button class="incomplete-cta">Fill now →</button>
+      </div>
+
+      <!-- FILLED STATE -->
+      <div class="snapshot-grid" id="snapshot-filled">
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#be123c"></div>
+            <span class="snap-key">Blood group</span>
+          </div>
+          <span class="snap-val red">A+</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#1d4ed8"></div>
+            <span class="snap-key">Age</span>
+          </div>
+          <span class="snap-val">28 years</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#f59e0b"></div>
+            <span class="snap-key">Allergies</span>
+          </div>
+          <span class="snap-val muted">None known</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#7c3aed"></div>
+            <span class="snap-key">Conditions</span>
+          </div>
+          <span class="snap-val muted">—</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#006a66"></div>
+            <span class="snap-key">Doctor</span>
+          </div>
+          <span class="snap-val" style="font-size:12px;">Dr. A. Sharma</span>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="snapshot-grid" id="snapshot-empty" style="display:none">
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#e5e7eb"></div>
+            <span class="snap-key">Blood group</span>
+          </div>
+          <span class="snap-val muted" style="font-size:11px;">Not added</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#e5e7eb"></div>
+            <span class="snap-key">Age</span>
+          </div>
+          <span class="snap-val muted" style="font-size:11px;">Not added</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#e5e7eb"></div>
+            <span class="snap-key">Allergies</span>
+          </div>
+          <span class="snap-val muted" style="font-size:11px;">Not added</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#e5e7eb"></div>
+            <span class="snap-key">Conditions</span>
+          </div>
+          <span class="snap-val muted" style="font-size:11px;">Not added</span>
+        </div>
+        <div class="snap-row">
+          <div class="snap-left">
+            <div class="snap-dot" style="background:#e5e7eb"></div>
+            <span class="snap-key">Doctor</span>
+          </div>
+          <span class="snap-val muted" style="font-size:11px;">Not added</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lab alerts -->
+    <div id="lab-filled">
+      <span class="caps" style="display:block; margin-bottom:8px; padding-left:2px;">Lab Alerts</span>
+      <div style="border-radius:14px; overflow:hidden; border:1px solid rgba(217,119,6,.2); box-shadow:0 4px 16px rgba(217,119,6,.07)">
+        <div class="alert-header warning">
+          <div class="alert-icon-box">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <div>
+            <div class="alert-heading">2 values need attention</div>
+            <div class="alert-subhead">Last report · 14 Jul 2013 · Papa</div>
+          </div>
+        </div>
+        <div class="alert-row">
+          <span class="alert-name">Haemoglobin</span>
+          <div class="alert-right">
+            <span class="alert-num">9.8 g/dL ↓</span>
+            <span class="badge alert-badge warning">Low</span>
+          </div>
+        </div>
+        <div class="alert-row" style="border-radius:0 0 0 0">
+          <span class="alert-name">Platelet Count</span>
+          <div class="alert-right">
+            <span class="alert-num">420K ↑</span>
+            <span class="badge alert-badge warning">High</span>
+          </div>
+        </div>
+        <a href="#" class="alert-view">
+          View full report
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Lab empty state -->
+    <div id="lab-empty" style="display:none">
+      <span class="caps" style="display:block; margin-bottom:8px; padding-left:2px;">Lab Alerts</span>
+      <div class="card">
+        <div class="lab-empty">
+          <div class="empty-icon-wrap" style="background:#fef3c7;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round">
+              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div class="empty-title">No lab reports yet</div>
+          <div class="empty-sub">Upload a blood test or pathology report to track values over time.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="card" style="overflow:hidden;">
+      <a href="#" class="qlink">
+        <div class="qlink-left">
+          <span class="qlink-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </span>
+          <span class="qlink-label">Full timeline</span>
+        </div>
+        <span class="qlink-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </a>
+      <a href="#" class="qlink">
+        <div class="qlink-left">
+          <span class="qlink-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <span class="qlink-label">Profile settings</span>
+        </div>
+        <span class="qlink-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+      </a>
+    </div>
+
+  </div><!-- /col-right -->
+</div><!-- /main -->
+
+
+<!-- ══════════════════════════════════════════
+     STATE TOGGLE (preview only)
+══════════════════════════════════════════ -->
+<div class="toggle-bar">
+  <button class="toggle-btn active" onclick="setState('filled')">With data</button>
+  <button class="toggle-btn" onclick="setState('empty')">Empty state</button>
+</div>
+
+<script>
+function setState(mode) {
+  const filled = mode === 'filled'
+
+  // Toggle buttons
+  document.querySelectorAll('.toggle-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0) === filled)
+  })
+
+  // Medications
+  document.getElementById('meds-filled').style.display = filled ? '' : 'none'
+  document.getElementById('meds-empty').style.display  = filled ? 'none' : ''
+
+  // Records
+  document.getElementById('records-filled').style.display = filled ? '' : 'none'
+  document.getElementById('records-empty').style.display  = filled ? 'none' : ''
+
+  // Health snapshot
+  document.getElementById('snapshot-filled').style.display = filled ? '' : 'none'
+  document.getElementById('snapshot-empty').style.display  = filled ? 'none' : ''
+  document.getElementById('profile-banner').style.display  = filled ? 'none' : ''
+
+  // Lab alerts
+  document.getElementById('lab-filled').style.display = filled ? '' : 'none'
+  document.getElementById('lab-empty').style.display  = filled ? 'none' : ''
+
+  // Stat strip — grey out values in empty state
+  document.querySelectorAll('.stat-num').forEach((el, i) => {
+    if (!filled) {
+      el.dataset.orig = el.textContent
+      el.textContent = i === 3 ? '—' : '0'
+      el.style.color = '#9ca3af'
+    } else {
+      if (el.dataset.orig) el.textContent = el.dataset.orig
+      el.style.color = ''
+    }
+  })
+}
+</script>
+</body>
+</html>

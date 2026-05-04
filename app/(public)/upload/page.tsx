@@ -25,9 +25,9 @@ import {
   MedicationCard,
   DoctorNotes,
   DisclaimerBanner,
-  AbnormalMarkerCard,
 } from '@/components/features/explanation'
 import { Button } from '@/components/ui'
+import { LabReportView } from '@/components/features/records/LabReportView'
 
 type Step         = 'pick' | 'processing' | 'review' | 'explaining'
 type DocumentType = 'prescription' | 'lab_report'
@@ -355,21 +355,8 @@ export default function PublicUploadPage() {
           </div>
 
           {/* ── Sticky Save CTA ─────────────────────────────────── */}
-          <div className="fixed bottom-0 inset-x-0 z-30 pb-safe">
-            <div className="bg-surface-container-lowest border-t border-border-subtle px-5 pt-4 pb-5 max-w-lg mx-auto">
-
-              {/* Value prop */}
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex gap-1">
-                  {['📋', '👨‍👩‍👧‍👦', '🔒'].map((e) => (
-                    <span key={e} className="text-base">{e}</span>
-                  ))}
-                </div>
-                <p className="text-sm text-text-secondary leading-tight">
-                  Save this · Add your family · Stay private
-                </p>
-              </div>
-
+          <div className="fixed bottom-0 inset-x-0 z-30 pb-safe bg-surface-container-lowest border-t border-border-subtle">
+            <div className="px-5 pt-4 pb-5 max-w-lg mx-auto">
               <Button
                 onClick={handleSaveFromExplanation}
                 variant="primary"
@@ -377,11 +364,8 @@ export default function PublicUploadPage() {
                 fullWidth
                 className="min-h-[60px] text-xl rounded-2xl"
               >
-                Save to My Account  Free
+                Save to My Account — Free
               </Button>
-              <p className="text-sm text-text-muted text-center mt-2">
-                Create a free account in 30 seconds · No credit card needed
-              </p>
             </div>
           </div>
 
@@ -390,100 +374,26 @@ export default function PublicUploadPage() {
 
       {/* ── Lab Report Analysis screen (Step 3) ── */}
       {step === 'explaining' && documentType === 'lab_report' && labExplanation && (
-        <div className="min-h-screen bg-surface flex flex-col">
-
-          {/* Sticky header */}
-          <nav className="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm border-b border-border-subtle pt-safe">
-            <div className="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto w-full">
-              <button
-                onClick={() => setStep('review')}
-                className="flex items-center justify-center -ml-2 p-2 rounded-xl text-text-primary min-w-[44px] min-h-[44px]"
-                aria-label="Go back"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-              <div className="text-center">
-                <p className="text-base font-bold text-text-primary">Your Lab Report</p>
-                <p className="text-xs text-text-muted">
-                  {labExplanation.labName}{labExplanation.testDate ? ` · ${labExplanation.testDate}` : ''}
-                </p>
-              </div>
-              <div className="w-10" />
-            </div>
-          </nav>
-
-          {/* Step indicator */}
-          <div className="px-5 pt-4 pb-2 max-w-2xl mx-auto w-full">
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-primary bg-primary-subtle px-3 py-1 rounded-full">
-                Step 3 of 3
-              </span>
-              <div className="flex gap-1.5">
-                <div className="w-8 h-1.5 rounded-full bg-primary" />
-                <div className="w-8 h-1.5 rounded-full bg-primary" />
-                <div className="w-8 h-1.5 rounded-full bg-primary" />
-              </div>
-            </div>
-          </div>
-
-          {/* Context line */}
-          <div className="px-5 pt-2 pb-1 max-w-2xl mx-auto w-full">
-            <p className="font-body text-sm text-text-muted">
-              {labExplanation.doctorName ? `Referred by ${labExplanation.doctorName} · ` : ''}
-              For {labExplanation.patientName || 'You'}
-            </p>
-          </div>
-
-          {/* Disclaimer */}
-          <div className="px-5 pt-2 pb-1 max-w-2xl mx-auto w-full">
-            <DisclaimerBanner doctorName={labExplanation.doctorName || 'your doctor'} />
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 px-5 pt-4 pb-56 space-y-4 max-w-2xl mx-auto w-full">
-
-            {/* Abnormal markers */}
-            {labExplanation.abnormalMarkers.length > 0 ? (
-              <>
-                <h2 className="font-display text-lg font-semibold text-text-primary">
-                  Parameters Outside Normal Range ({labExplanation.abnormalMarkers.length})
-                </h2>
-                {labExplanation.abnormalMarkers.map((marker) => (
-                  <AbnormalMarkerCard key={marker.id} marker={marker} />
-                ))}
-              </>
-            ) : (
-              <div className="bg-success-subtle rounded-2xl p-5 flex items-start gap-3">
-                <svg className="w-6 h-6 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <p className="font-display text-base font-semibold text-success">All Clear</p>
-                  <p className="font-body text-sm text-text-secondary mt-1 leading-relaxed">
-                    All your test results are within normal range. Great news!
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Doctor notes */}
-            <DoctorNotes notes={labExplanation.doctorNotes} title="Things to follow" />
-          </div>
-
+        <>
+          <LabReportView
+            profileName={labExplanation.patientName || 'You'}
+            documentDate={labExplanation.testDate}
+            doctorName={labExplanation.labName || labExplanation.doctorName}
+            conditionTags={[]}
+            abnormalMarkers={labExplanation.abnormalMarkers}
+            labTests={null}
+            recommendations={labExplanation.doctorNotes}
+            summary={null}
+            signedFileUrl={null}
+            fileUrl={null}
+            isOwnProfile={true}
+            onBack={() => setStep('review')}
+          />
           {/* Sticky Save CTA */}
-          <div className="fixed bottom-0 inset-x-0 z-30 pb-safe">
-            <div className="bg-surface-container-lowest border-t border-border-subtle px-5 pt-4 pb-5 max-w-lg mx-auto">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex gap-1">
-                  {['📋', '👨\u200D👩\u200D👧\u200D👦', '🔒'].map((e) => (
-                    <span key={e} className="text-base">{e}</span>
-                  ))}
-                </div>
-                <p className="text-sm text-text-secondary leading-tight">
-                  Save this · Add your family · Stay private
-                </p>
+          <div className="fixed bottom-0 inset-x-0 z-30 pb-safe bg-surface-container-lowest border-t border-border-subtle">
+            <div className="px-5 pt-3 pb-4 max-w-lg mx-auto">
+              <div className="flex gap-3 items-center mb-2.5 justify-center text-xs text-text-muted font-body">
+                <span>🔒 Save this · Add your family · Stay private</span>
               </div>
               <Button
                 onClick={handleSaveLabReport}
@@ -492,15 +402,12 @@ export default function PublicUploadPage() {
                 fullWidth
                 className="min-h-[60px] text-xl rounded-2xl"
               >
-                Save to My Account  Free
+                Save to My Account Free
               </Button>
-              <p className="text-sm text-text-muted text-center mt-2">
-                Create a free account in 30 seconds · No credit card needed
-              </p>
+              <p className="text-center text-xs text-text-muted mt-2 font-body">Create a free account in 30 seconds · No credit card needed</p>
             </div>
           </div>
-
-        </div>
+        </>
       )}
 
       {/* ── Not a medical document modal ── */}

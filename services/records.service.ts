@@ -187,6 +187,8 @@ export const recordsService = {
                 ? (keyFindings.tests as LabTest[])
                 : null
 
+            const connectionTags = (keyFindings?.connectionTags as string[] | null) ?? []
+
             // abnormalMarkers: prefer stored AI-explained version; fall back to deriving from raw tests
             const storedAbnormal = keyFindings?.abnormalMarkers as AbnormalMarker[] | null
             const abnormalMarkers: AbnormalMarker[] = storedAbnormal?.length
@@ -203,8 +205,7 @@ export const recordsService = {
                         explanation: '',
                     }))
 
-            const aiSummary      = (keyFindings?.aiSummary as string | null) ?? null
-            const connectionTags = (keyFindings?.connectionTags as string[] | null) ?? []
+            const aiSummary = (keyFindings?.aiSummary as string | null) ?? null
 
             return {
                 data: {
@@ -285,6 +286,7 @@ export const recordsService = {
                     recommendations,
                     labTests: null,
                     abnormalMarkers: [],
+                    connectionTags: [],
                 },
                 error: null,
                 success: true,

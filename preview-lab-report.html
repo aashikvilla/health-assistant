@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vitae — Lab Report Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  font-family:'Manrope',system-ui,sans-serif;
+  background:#0f1629;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;-webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+
+/* ─── Tokens ────────────────────────────────────────────── */
+:root{
+  --blue:#1d4ed8; --blue-h:#1e40af;
+  --blue-s:#dbeafe; --blue-xs:#eff6ff;
+  --teal:#006a66; --teal-s:#dff4f2;
+  --violet:#7c3aed; --violet-s:#ede9fe;
+  --error:#ab2653; --error-s:#ffd9e2;
+  --warn:#7b5800; --warn-s:#ffefd6;
+  --green:#166534; --green-s:#dcfce7;
+  --t1:#07071a; --t2:#16163a; --t3:#6b7280;
+  --border:rgba(29,78,216,0.10);
+  --border-m:rgba(29,78,216,0.15);
+  --page:#eef2ff; --white:#fff;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 1px 8px rgba(29,78,216,.06);
+  --shadow-md:0 4px 16px rgba(29,78,216,.09),0 1px 4px rgba(0,0,0,.04);
+  --r:14px;
+}
+
+/* ─── Outer layout ──────────────────────────────────────── */
+.wrap{display:flex;align-items:flex-start;gap:32px;max-width:900px;width:100%}
+
+/* ─── Demo bar ──────────────────────────────────────────── */
+.demo-bar{
+  position:fixed;top:0;left:0;right:0;
+  background:rgba(15,22,41,.95);backdrop-filter:blur(10px);
+  padding:10px 24px;display:flex;align-items:center;justify-content:space-between;
+  z-index:1000;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.demo-brand{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.demo-brand span{color:#60a5fa}
+.demo-badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(96,165,250,.12);color:#60a5fa;border:.5px solid rgba(96,165,250,.3)}
+
+/* ─── Phone ─────────────────────────────────────────────── */
+.phone{
+  width:390px;height:820px;background:var(--page);
+  border-radius:48px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;flex-shrink:0;
+  border:10px solid #1a1f3a;outline:2px solid rgba(255,255,255,.05);
+  margin-top:52px;
+}
+
+/* status bar */
+.status{
+  height:44px;background:var(--blue);
+  display:flex;align-items:flex-end;padding:0 24px 9px;
+  justify-content:space-between;flex-shrink:0;
+}
+.st{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:#fff}
+.si{display:flex;gap:5px;align-items:center}
+
+/* nav bar */
+.app-nav{
+  background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  height:52px;padding:0 16px;flex-shrink:0;
+}
+.nav-back{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t1);transition:background .12s;
+}
+.nav-back:hover{background:var(--blue-xs)}
+.nav-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--t1)}
+.nav-share{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--blue);transition:background .12s;
+}
+.nav-share:hover{background:var(--blue-xs)}
+
+/* report header */
+.rpt-hdr{
+  background:linear-gradient(135deg,#0f0f2d 0%,var(--blue) 60%,#7c3aed 100%);
+  padding:14px 20px 18px;flex-shrink:0;
+}
+.rh-lab{font-family:'Manrope',sans-serif;font-size:11px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.rh-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-top:2px;letter-spacing:-.3px}
+.rh-sub{font-family:'Manrope',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+.rpt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.rs{background:rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;text-align:center;border:1px solid rgba(255,255,255,.1)}
+.rsv{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1}
+.rsl{font-family:'Manrope',sans-serif;font-size:10px;color:rgba(255,255,255,.5);margin-top:3px}
+
+/* disclaimer */
+.disc{
+  margin:12px 16px 4px;padding:10px 13px;
+  background:#fffbeb;border-radius:10px;
+  border:1px solid #fcd34d;
+  display:flex;align-items:flex-start;gap:8px;
+}
+.disc-txt{font-size:11px;color:#92400e;line-height:1.5;font-weight:500}
+
+/* tabs */
+.top-tabs{
+  background:var(--white);display:flex;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.ttab{
+  flex:1;padding:12px 4px 10px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;
+  color:var(--t3);border:none;background:none;cursor:pointer;
+  border-bottom:2.5px solid transparent;transition:all .15s;letter-spacing:-.1px;
+}
+.ttab.on{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* screens */
+.screens{flex:1;overflow:hidden;position:relative;min-height:0}
+.screen{position:absolute;inset:0;overflow-y:auto;display:none;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{display:block}
+
+/* section label */
+.sec-lbl{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--t3);
+  padding:16px 20px 8px;
+}
+
+/* ── ALERT CARDS ───────────────────────────────────────── */
+.alert-card{
+  margin:0 16px 10px;background:var(--white);
+  border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--border);box-shadow:var(--shadow);
+  display:flex;
+}
+.alert-bar{width:4px;flex-shrink:0}
+.alert-inner{padding:12px 14px;flex:1;display:flex;gap:11px;align-items:flex-start}
+.alert-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.alert-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;line-height:1.3;color:var(--t1)}
+.alert-body{font-family:'Manrope',sans-serif;font-size:12px;margin-top:4px;line-height:1.6;color:var(--t3)}
+.alert-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;
+  margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;
+}
+
+/* ── SYNTHESIS ─────────────────────────────────────────── */
+.synthesis{
+  margin:0 16px 12px;background:var(--white);
+  border-radius:var(--r);padding:14px 16px;
+  border:1px solid var(--border);
+  border-left:3px solid var(--blue);
+  box-shadow:var(--shadow);
+}
+.syn-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:5px}
+.syn-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px}
+.syn-body{font-family:'Manrope',sans-serif;font-size:12px;color:var(--t2);line-height:1.7}
+
+/* ── COMING SOON ───────────────────────────────────────── */
+.cs-card{
+  margin:0 16px 12px;background:var(--white);
+  border-radius:var(--r);overflow:hidden;
+  border:1px dashed rgba(29,78,216,.25);
+}
+.cs-top{background:var(--blue-xs);padding:14px 16px;display:flex;align-items:flex-start;gap:12px}
+.cs-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--blue-s);color:var(--blue);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;
+  letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;
+}
+.cs-dot{width:5px;height:5px;border-radius:50%;background:var(--blue)}
+.cs-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:#1e3a8a;margin-bottom:4px;line-height:1.3}
+.cs-desc{font-family:'Manrope',sans-serif;font-size:12px;color:#374151;line-height:1.55}
+.cs-ico{width:44px;height:44px;border-radius:12px;background:var(--blue-s);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px}
+.cs-feats{padding:12px 16px 14px;display:flex;flex-direction:column;gap:9px}
+.cs-feat{display:flex;align-items:center;gap:10px}
+.cs-f-ico{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cs-f-txt{font-family:'Manrope',sans-serif;font-size:12px;color:#374151;line-height:1.4}
+.cs-btn{
+  margin:0 16px 16px;display:block;width:calc(100% - 32px);
+  padding:12px;background:var(--blue);color:#fff;border:none;
+  border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;text-align:center;
+  transition:background .14s;
+}
+.cs-btn:hover{background:var(--blue-h)}
+
+/* ── CATEGORY (My Results) ─────────────────────────────── */
+.cat-wrap{margin:0 16px 10px}
+.cat-hd{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  cursor:pointer;background:var(--white);transition:background .1s;
+  border-radius:var(--r);border:1px solid var(--border);
+}
+.cat-open .cat-hd{border-radius:var(--r) var(--r) 0 0;border-bottom-color:transparent}
+.cat-hd:hover{background:var(--blue-xs)}
+.c-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.c-nm{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--t1)}
+.c-sb{font-family:'Manrope',sans-serif;font-size:11px;color:var(--t3);margin-top:1px}
+.c-dots{display:flex;gap:3px;margin-left:auto;align-items:center}
+.cdot{width:7px;height:7px;border-radius:50%}
+.c-chv{width:14px;height:14px;color:var(--t3);transition:transform .18s;flex-shrink:0;margin-left:4px}
+.cat-open .c-chv{transform:rotate(180deg)}
+.cat-body{display:none;background:var(--white);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.cat-open .cat-body{display:block}
+
+/* ── BIOMARKER ROW ─────────────────────────────────────── */
+.bm-row{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;
+  border-bottom:.5px solid #f3f4f6;cursor:pointer;
+  background:var(--white);transition:background .1s;
+}
+.bm-row:last-child{border-bottom:none}
+.bm-row:hover{background:var(--blue-xs)}
+.bm-sig{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0}
+.bm-main{flex:1;min-width:0}
+.bm-nm{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--t1)}
+.bm-snip{font-family:'Manrope',sans-serif;font-size:11px;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
+.bm-rt{text-align:right;flex-shrink:0}
+.bm-vl{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;line-height:1}
+.bm-un{font-family:'Manrope',sans-serif;font-size:10px;color:var(--t3);margin-top:2px}
+.bm-pl{font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin-top:3px;letter-spacing:.03em}
+.pc{background:var(--error-s);color:var(--error)}
+.pw{background:var(--warn-s);color:var(--warn)}
+.pg{background:var(--green-s);color:var(--green)}
+
+/* range bar */
+.rng-wrap{position:relative;height:5px;background:#e5e7eb;border-radius:4px;margin:6px 0 2px;overflow:visible}
+.rng-zone{position:absolute;height:5px;border-radius:4px}
+.rng-pip{position:absolute;top:-5px;width:15px;height:15px;border-radius:50%;border:2.5px solid white;transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+
+/* ── BOTTOM SHEET ──────────────────────────────────────── */
+.sheet-bg{position:absolute;inset:0;background:rgba(7,7,26,.45);z-index:50;display:none;align-items:flex-end;backdrop-filter:blur(2px)}
+.sheet-bg.on{display:flex}
+.sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-height:84%;overflow-y:auto;scrollbar-width:none}
+.sheet::-webkit-scrollbar{display:none}
+.sh-handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 0}
+.sh-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:var(--t1);padding:13px 20px;border-bottom:.5px solid #f3f4f6;letter-spacing:-.3px}
+.sh-body{padding:16px 20px 28px}
+.sh-sec{font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin:16px 0 7px}
+.sh-sec:first-child{margin-top:0}
+.sh-plain{font-family:'Manrope',sans-serif;font-size:13px;color:#374151;line-height:1.7}
+.sh-chips{display:flex;flex-wrap:wrap;gap:6px}
+.sh-chip{font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--blue-xs);color:var(--blue)}
+.sh-habit{display:flex;gap:9px;align-items:flex-start;margin-bottom:9px}
+.sh-hd{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:7px}
+.sh-htxt{font-family:'Manrope',sans-serif;font-size:12px;color:#374151;line-height:1.6}
+.sh-dq{background:var(--blue-xs);border-radius:10px;padding:10px 12px;font-family:'Manrope',sans-serif;font-size:12px;color:#1e3a8a;line-height:1.55;margin-bottom:6px}
+
+/* ── TRENDS ─────────────────────────────────────────────── */
+.trend-chips{display:flex;gap:7px;padding:12px 16px 14px;overflow-x:auto;scrollbar-width:none}
+.trend-chips::-webkit-scrollbar{display:none}
+.t-chip{
+  padding:7px 15px;border-radius:99px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;
+  cursor:pointer;white-space:nowrap;transition:all .15s;
+}
+.t-chip.on{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(29,78,216,.3)}
+.t-chip:not(.on){background:var(--white);color:var(--t3);border:.5px solid var(--border)}
+.chart-card{margin:0 16px 12px;background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.chart-hdr{padding:13px 16px 10px;display:flex;align-items:baseline;justify-content:space-between}
+.chart-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 14px}
+.c-stat{background:var(--page);border-radius:10px;padding:10px 12px}
+.c-st-l{font-family:'Manrope',sans-serif;font-size:10px;color:var(--t3);margin-bottom:3px}
+.c-st-v{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:var(--t1)}
+.chart-insight{margin:0 16px 12px;background:var(--white);border-radius:var(--r);padding:13px 15px;border:1px solid var(--border);border-left:3px solid var(--blue)}
+.ci-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.ci-txt{font-family:'Manrope',sans-serif;font-size:12px;color:var(--t3);line-height:1.6}
+
+/* ── ACTIONS ────────────────────────────────────────────── */
+.ac-card{
+  margin:0 16px 10px;background:var(--white);
+  border-radius:var(--r);padding:13px 14px;
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--border);box-shadow:var(--shadow);
+}
+.ac-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ac-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.ac-desc{font-family:'Manrope',sans-serif;font-size:12px;color:var(--t3);line-height:1.55}
+.ac-tag{font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin-top:7px;letter-spacing:.03em;text-transform:uppercase}
+
+/* doctor questions */
+.dq-card{margin:0 16px 12px;background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.dq-row{display:flex;gap:9px;padding:11px 14px;border-bottom:.5px solid #f3f4f6;align-items:flex-start}
+.dq-row:last-child{border-bottom:none}
+.dq-tag{font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;flex-shrink:0;margin-top:2px;letter-spacing:.03em;text-transform:uppercase}
+.dq-txt{font-family:'Manrope',sans-serif;font-size:12px;color:#374151;line-height:1.55}
+
+/* ── SIDEBAR ────────────────────────────────────────────── */
+.sidebar{flex:1;color:rgba(255,255,255,.8);margin-top:52px}
+.sb-head{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:8px;letter-spacing:-.5px}
+.sb-sub{font-family:'Manrope',sans-serif;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:24px;line-height:1.6}
+.sb-cl{font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:8px}
+.change{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.07)}
+.change:last-child{border-bottom:none;padding-bottom:0}
+.chg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.chg-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:2px}
+.chg-desc{font-family:'Manrope',sans-serif;font-size:11px;color:rgba(255,255,255,.35);line-height:1.4}
+.sb-nav{margin-top:22px;display:flex;flex-direction:column;gap:4px}
+.snb{
+  background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.09);
+  border-radius:10px;padding:9px 13px;
+  font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;color:rgba(255,255,255,.55);
+  cursor:pointer;text-align:left;display:flex;align-items:center;gap:9px;transition:all .15s;
+}
+.snb:hover,.snb.on{background:rgba(255,255,255,.10);color:#fff;border-color:rgba(255,255,255,.15)}
+.snb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+@media(max-width:680px){.wrap{flex-direction:column;align-items:center}.sidebar{display:none}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <div class="demo-brand">Vitae<span>·ai</span></div>
+  <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase">Lab report preview</div>
+  <div class="demo-badge">Design review</div>
+</div>
+
+<div class="wrap">
+
+<!-- ── SIDEBAR ────────────────────────────────────────────── -->
+<div class="sidebar">
+  <div class="sb-head">Lab report,<br>explained<br>clearly.</div>
+  <div class="sb-sub">Every result in plain language. What it means, what to do, and the questions to ask your doctor.</div>
+
+  <div class="sb-cl">What's new in this design</div>
+  <div>
+    <div class="change"><div class="chg-dot" style="background:#34d399"></div><div><div class="chg-title">Dashboard tab — synthesis first</div><div class="chg-desc">Alerts grouped by urgency, then "how these are connected" so you see the full picture, not isolated numbers</div></div></div>
+    <div class="change"><div class="chg-dot" style="background:#34d399"></div><div><div class="chg-title">My results — expandable categories</div><div class="chg-desc">Vitamins, blood, heart, kidney — tap any biomarker to get the plain-language explanation in a bottom sheet</div></div></div>
+    <div class="change"><div class="chg-dot" style="background:#34d399"></div><div><div class="chg-title">Trends — 4 reports visualised</div><div class="chg-desc">Select a biomarker and see how it's changed over 15 months with a clean line chart</div></div></div>
+    <div class="change"><div class="chg-dot" style="background:#34d399"></div><div><div class="chg-title">Actions — prioritised plan</div><div class="chg-desc">Priority 1 actions to do this week, daily habits, and exact questions to ask your doctor</div></div></div>
+    <div class="change"><div class="chg-dot" style="background:#fbbf24"></div><div><div class="chg-title">Vitae visual language throughout</div><div class="chg-desc">Same white/blue tokens, fonts, and card patterns as the rest of the app — no dark themes</div></div></div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-cl" style="margin-top:6px">Jump to tab</div>
+    <button class="snb on" onclick="goTo('home')"><div class="snb-dot" style="background:#60a5fa"></div>Dashboard</button>
+    <button class="snb" onclick="goTo('report')"><div class="snb-dot" style="background:#34d399"></div>My results</button>
+    <button class="snb" onclick="goTo('trends')"><div class="snb-dot" style="background:#fbbf24"></div>Trends</button>
+    <button class="snb" onclick="goTo('actions')"><div class="snb-dot" style="background:#f87171"></div>Actions</button>
+  </div>
+</div>
+
+<!-- ── PHONE ────────────────────────────────────────────── -->
+<div class="phone">
+
+  <!-- status bar -->
+  <div class="status">
+    <span class="st">9:41</span>
+    <div class="si">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="white"><rect x="0" y="2" width="3" height="9" rx="1"/><rect x="4.5" y="1" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="2" height="11" rx="1" opacity="0.3"/></svg>
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="1" width="13" height="10" rx="1.5" stroke="white" stroke-width="1.5" fill="none"/><rect x="13.5" y="3.5" width="2.5" height="5" rx="1"/><rect x="1.5" y="2.5" width="9" height="7" rx="1"/></svg>
+    </div>
+  </div>
+
+  <!-- nav bar -->
+  <div class="app-nav">
+    <button class="nav-back" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="nav-title">Your Lab Report</span>
+    <button class="nav-share" aria-label="Share">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+  </div>
+
+  <!-- report header -->
+  <div class="rpt-hdr">
+    <div class="rh-lab">Care.fit Diagnostics</div>
+    <div class="rh-name">Preeti Singh · B Negative</div>
+    <div class="rh-sub">Apr 7, 2019 · 23 tests · 60+ markers</div>
+    <div class="rpt-stats">
+      <div class="rs"><div class="rsv" style="color:#fca5a5">3</div><div class="rsl">Critical</div></div>
+      <div class="rs"><div class="rsv" style="color:#fde68a">2</div><div class="rsl">Watch</div></div>
+      <div class="rs"><div class="rsv" style="color:#86efac">18</div><div class="rsl">Normal</div></div>
+    </div>
+  </div>
+
+  <!-- tabs -->
+  <div class="top-tabs">
+    <button class="ttab on" onclick="goTo('home')">Dashboard</button>
+    <button class="ttab" onclick="goTo('report')">My results</button>
+    <button class="ttab" onclick="goTo('trends')">Trends</button>
+    <button class="ttab" onclick="goTo('actions')">Actions</button>
+  </div>
+
+  <div class="screens">
+
+    <!-- ════════════ DASHBOARD ════════════ -->
+    <div class="screen active" id="s-home">
+      <div style="padding-top:4px">
+
+      <!-- AI disclaimer -->
+      <div class="disc">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="disc-txt">AI-generated summary. Do not adjust medication based on this. Consult your doctor before making any changes.</div>
+      </div>
+
+      <div class="sec-lbl">Needs your attention</div>
+
+      <!-- Critical: PCOD -->
+      <div class="alert-card">
+        <div class="alert-bar" style="background:var(--error)"></div>
+        <div class="alert-inner">
+          <div class="alert-ico" style="background:var(--error-s)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="1" fill="var(--error)"/></svg>
+          </div>
+          <div>
+            <div class="alert-pill" style="background:var(--error-s);color:var(--error)"><span style="width:5px;height:5px;border-radius:50%;background:var(--error);display:inline-block"></span>Critical</div>
+            <div class="alert-title">PCOD found on ultrasound</div>
+            <div class="alert-body">Both ovaries show a hormonal pattern. You need to see a gynaecologist — this is the most important next step.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical: Vitamin D -->
+      <div class="alert-card">
+        <div class="alert-bar" style="background:var(--error)"></div>
+        <div class="alert-inner">
+          <div class="alert-ico" style="background:var(--error-s)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+          </div>
+          <div>
+            <div class="alert-pill" style="background:var(--error-s);color:var(--error)"><span style="width:5px;height:5px;border-radius:50%;background:var(--error);display:inline-block"></span>Critical</div>
+            <div class="alert-title">Vitamin D very low — 4.9 ng/mL</div>
+            <div class="alert-body">Normal is 30–70. Yours is 84% below where it should be. Causes tiredness, bone aches, and worsens the PCOD.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical: B12 -->
+      <div class="alert-card">
+        <div class="alert-bar" style="background:var(--error)"></div>
+        <div class="alert-inner">
+          <div class="alert-ico" style="background:var(--error-s)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2" stroke-linecap="round"><path d="M9 3H5v4l7 7 7-7V3h-4"/><path d="M9 21H5v-4l7-7 7 7v4h-4"/></svg>
+          </div>
+          <div>
+            <div class="alert-pill" style="background:var(--error-s);color:var(--error)"><span style="width:5px;height:5px;border-radius:50%;background:var(--error);display:inline-block"></span>Critical</div>
+            <div class="alert-title">Vitamin B12 below normal — 116.9</div>
+            <div class="alert-body">Normal starts at 197. Low B12 causes tiredness, tingling, and poor concentration. Common in vegetarians — easily treated.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watch: LDL -->
+      <div class="alert-card">
+        <div class="alert-bar" style="background:#d97706"></div>
+        <div class="alert-inner">
+          <div class="alert-ico" style="background:var(--warn-s)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+          <div>
+            <div class="alert-pill" style="background:var(--warn-s);color:var(--warn)"><span style="width:5px;height:5px;border-radius:50%;background:#d97706;display:inline-block"></span>Watch</div>
+            <div class="alert-title">LDL cholesterol slightly high — 104</div>
+            <div class="alert-body">Optimal is below 100. Small rise — diet changes like reducing fried food and adding oats can bring this back.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-lbl">How these are connected</div>
+
+      <div class="synthesis">
+        <div class="syn-label">AI synthesis</div>
+        <div class="syn-title">These are not separate problems</div>
+        <div class="syn-body">PCOD and low Vitamin D are directly linked — D deficiency makes the hormonal imbalance worse. Low B12 adds to the tiredness that PCOD already causes. Fixing D and B12 first will help you feel better quickly and also support the PCOD.</div>
+      </div>
+
+      <div class="sec-lbl">Coming soon</div>
+
+      <div class="cs-card">
+        <div class="cs-top">
+          <div style="flex:1">
+            <div class="cs-badge"><div class="cs-dot"></div>Coming soon</div>
+            <div class="cs-title">Share doctor visits with your family</div>
+            <div class="cs-desc">Add your appointments and let your family know — so everyone always knows when the next visit is.</div>
+          </div>
+          <div class="cs-ico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+        </div>
+        <div class="cs-feats">
+          <div class="cs-feat">
+            <div class="cs-f-ico" style="background:var(--blue-xs)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <div class="cs-f-txt">Add appointments easily — name, date, time, location</div>
+          </div>
+          <div class="cs-feat">
+            <div class="cs-f-ico" style="background:var(--green-s)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div>
+            <div class="cs-f-txt">Your family sees all upcoming visits in one place</div>
+          </div>
+          <div class="cs-feat">
+            <div class="cs-f-ico" style="background:var(--warn-s)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+            <div class="cs-f-txt">Automatic reminders sent to everyone in your family</div>
+          </div>
+        </div>
+        <button class="cs-btn" onclick="this.textContent='Thanks! We\'ll let you know.';this.style.background='#166534'">
+          Let me know when it's ready
+        </button>
+      </div>
+
+      <div style="height:20px"></div>
+      </div>
+    </div><!-- /home -->
+
+    <!-- ════════════ MY RESULTS ════════════ -->
+    <div class="screen" id="s-report">
+      <div style="padding:10px 0 20px">
+        <div style="font-family:'Manrope',sans-serif;font-size:12px;color:var(--t3);padding:0 20px 14px;line-height:1.6">
+          Tap any test to see what it means in plain language, which parts of your body it affects, and what you can do.
+        </div>
+        <div id="report-cats"></div>
+      </div>
+    </div>
+
+    <!-- ════════════ TRENDS ════════════ -->
+    <div class="screen" id="s-trends">
+      <div style="padding-top:8px">
+        <div style="font-family:'Manrope',sans-serif;font-size:12px;color:var(--t3);padding:10px 20px 4px;line-height:1.6">Select a marker to see how it's changed across 4 reports.</div>
+        <div class="trend-chips" id="trend-chips"></div>
+
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:var(--t1)" id="trend-name">Vitamin D</div>
+              <div style="font-family:'Manrope',sans-serif;font-size:11px;color:var(--t3);margin-top:2px" id="trend-unit">ng/mL</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:var(--error);letter-spacing:-.5px" id="trend-val">4.9</div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--error-s);color:var(--error);margin-top:3px;display:inline-block" id="trend-chg">↓ 28% in 15 months</div>
+            </div>
+          </div>
+          <div style="padding:0 16px 14px"><svg id="trend-svg" viewBox="0 0 342 150" style="width:100%;display:block"></svg></div>
+        </div>
+
+        <div class="chart-stats">
+          <div class="c-stat"><div class="c-st-l">Your result</div><div class="c-st-v" id="ts-cur" style="color:var(--error)">4.9</div></div>
+          <div class="c-stat"><div class="c-st-l">Normal range</div><div class="c-st-v" id="ts-opt" style="font-size:13px">30–70</div></div>
+          <div class="c-stat"><div class="c-st-l">Status</div><div class="c-st-v" id="ts-st" style="color:var(--error);font-size:13px">Critical</div></div>
+        </div>
+
+        <div class="chart-insight">
+          <div class="ci-title" id="ci-title">Declining for 15 months</div>
+          <div class="ci-txt" id="ci-txt">Your Vitamin D has dropped from 6.8 to 4.9 — a 28% decline despite living in Bengaluru. Supplementation is the only real solution at this level.</div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+
+    <!-- ════════════ ACTIONS ════════════ -->
+    <div class="screen" id="s-actions">
+      <div style="padding-top:4px">
+
+      <div class="sec-lbl">Priority 1 — do this week</div>
+
+      <div class="ac-card">
+        <div class="ac-ico" style="background:var(--error-s)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <div class="ac-title">See a gynaecologist</div>
+          <div class="ac-desc">Your ultrasound shows PCOD. A gynaecologist will examine you, run a few blood tests (LH, testosterone, AMH), and confirm the diagnosis. Book this week.</div>
+          <span class="ac-tag" style="background:var(--error-s);color:var(--error)">Most urgent</span>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="ac-ico" style="background:var(--blue-xs)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div>
+          <div class="ac-title">Get a Vitamin D3 prescription</div>
+          <div class="ac-desc">At 4.9, you need a high-dose D3 supplement — typically 60,000 IU weekly. This dose requires a doctor's prescription. Ask when you see the gynaecologist.</div>
+          <span class="ac-tag" style="background:var(--blue-xs);color:var(--blue)">This week</span>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="ac-ico" style="background:var(--violet-s)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round"><path d="M9 3H5v4l7 7 7-7V3h-4"/><path d="M9 21H5v-4l7-7 7 7v4h-4"/></svg>
+        </div>
+        <div>
+          <div class="ac-title">Start B12 supplement</div>
+          <div class="ac-desc">Your B12 is well below normal at 116.9. Ask your doctor whether tablets or monthly injections are better. Injections work faster at this level.</div>
+          <span class="ac-tag" style="background:var(--violet-s);color:var(--violet)">This week</span>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Priority 2 — add to daily life</div>
+
+      <div class="ac-card">
+        <div class="ac-ico" style="background:var(--warn-s)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div>
+          <div class="ac-title">15–20 min sunlight daily</div>
+          <div class="ac-desc">Between 10am–2pm, arms and legs exposed. Won't fix 4.9 alone, but essential for maintaining levels alongside supplementation.</div>
+          <span class="ac-tag" style="background:var(--warn-s);color:var(--warn)">Daily</span>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="ac-ico" style="background:var(--green-s)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/></svg>
+        </div>
+        <div>
+          <div class="ac-title">Eggs, paneer, or curd every day</div>
+          <div class="ac-desc">Your best vegetarian sources of B12. Aim for at least one of these at every meal to help maintain B12 alongside supplementation.</div>
+          <span class="ac-tag" style="background:var(--green-s);color:var(--green)">Daily</span>
+        </div>
+      </div>
+
+      <div class="ac-card">
+        <div class="ac-ico" style="background:var(--error-s)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div>
+          <div class="ac-title">Walk 30 minutes daily</div>
+          <div class="ac-desc">For PCOD — daily movement is one of the most effective ways to improve insulin sensitivity and hormone balance.</div>
+          <span class="ac-tag" style="background:var(--error-s);color:var(--error)">PCOD support</span>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Questions to ask your doctor</div>
+      <div class="dq-card">
+        <div class="dq-row"><span class="dq-tag" style="background:var(--error-s);color:var(--error)">PCOD</span><div class="dq-txt">Based on my ultrasound and results, do I have PCOS? What tests do I need to confirm?</div></div>
+        <div class="dq-row"><span class="dq-tag" style="background:var(--error-s);color:var(--error)">Vitamin D</span><div class="dq-txt">My Vitamin D is 4.9. What dose of D3 do you recommend and for how long?</div></div>
+        <div class="dq-row"><span class="dq-tag" style="background:var(--error-s);color:var(--error)">B12</span><div class="dq-txt">My B12 is 116.9 — tablets or injections? How often should I retest?</div></div>
+        <div class="dq-row"><span class="dq-tag" style="background:var(--warn-s);color:var(--warn)">Connection</span><div class="dq-txt">Are my low Vitamin D and B12 connected to the PCOD finding?</div></div>
+        <div class="dq-row"><span class="dq-tag" style="background:var(--warn-s);color:var(--warn)">Cholesterol</span><div class="dq-txt">My LDL is 104. What food changes do you recommend to bring it below 100?</div></div>
+        <div class="dq-row"><span class="dq-tag" style="background:var(--green-s);color:var(--green)">Thyroid</span><div class="dq-txt">Should I also test my thyroid (T3 and T4) given the PCOD finding?</div></div>
+      </div>
+      <div style="height:20px"></div>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- BOTTOM SHEET -->
+  <div class="sheet-bg" id="sheet-bg" onclick="closeSheet(event)">
+    <div class="sheet">
+      <div class="sh-handle"></div>
+      <div class="sh-title" id="sheet-title">Result detail</div>
+      <div class="sh-body" id="sheet-body"></div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+</div><!-- /wrap -->
+
+<script>
+const CATS=[
+  {nm:'Reproductive health',ic:'#fff0f3',is:'var(--error)',svg:'<path d="M12 2C8 2 4 5 4 9c0 4 3 7 6 9v4h4v-4c3-2 6-5 6-9C20 5 16 2 12 2z" fill="none" stroke="currentColor" stroke-width="2"/>',
+   markers:[
+    {n:'PCOD morphology',v:'Found',u:'Ultrasound',s:'c',
+     plain:'Both ovaries show multiple small follicles arranged around the edges — this is the classic PCOD pattern. It is a hormonal condition affecting your periods, metabolism, skin, hair, and fertility. Very common — around 1 in 5 women have it. Manageable with the right support.',
+     body:['Ovaries','Hormones','Metabolism','Skin & hair','Fertility'],
+     habits:['Cut down on white rice, maida, and sugar — insulin resistance makes PCOD worse','Walk 30 minutes every day — proven to help PCOD hormonal balance','Bring Vitamin D levels up — it directly helps with PCOD'],
+     dqs:['Do I have full PCOS, or just the PCOD pattern on ultrasound?','Should I test LH, testosterone, and AMH?']},
+    {n:'PAP smear (cervical test)',v:'Normal',u:'',s:'g',
+     plain:'No abnormal cells found. No sign of HPV infection. Your cervix is completely healthy. This test checks for early signs of cervical cancer — the result is reassuring. Repeat every 3 years.',
+     body:['Cervix'],habits:['Repeat this test in 3 years'],dqs:[]},
+    {n:'FSH (hormone)',v:'5.95',u:'mIU/ml',s:'g',lo:0,hi:20,ref:[3.5,12.5],
+     plain:'Your FSH hormone is in the normal range. FSH helps your ovaries produce eggs each month. Despite the PCOD finding, your ovarian function appears to be working normally at this time.',
+     body:['Ovaries','Pituitary gland'],habits:[],dqs:[]},
+   ]},
+  {nm:'Vitamins & nutrition',ic:'#eff6ff',is:'var(--blue)',svg:'<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2"/><line x1="12" y1="20" x2="12" y2="22" stroke="currentColor" stroke-width="2"/><line x1="2" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>',
+   markers:[
+    {n:'Vitamin D',v:'4.9',u:'ng/mL',s:'c',lo:0,hi:80,ref:[30,70],
+     plain:'Your Vitamin D is very low at 4.9 — normal starts at 30. You are 84% below where you should be. Vitamin D helps your bones stay strong, keeps your immune system working, affects your mood, and directly helps with PCOD. You are likely feeling tired and having bone aches because of this.',
+     body:['Bones & teeth','Muscles','Immune system','Mood','Ovaries'],
+     habits:['15–20 minutes in sunlight daily, between 10am–2pm, arms and legs exposed','Eat eggs, oily fish, or fortified milk 3–4 times a week','Doctor-prescribed D3 supplement — at this level, you must get this'],
+     dqs:['What dose of Vitamin D3 do I need at 4.9 ng/mL?','How long before I should retest?']},
+    {n:'Vitamin B12',v:'116.9',u:'pg/mL',s:'c',lo:0,hi:900,ref:[197,771],
+     plain:'Your B12 is 116.9 — normal starts at 197. B12 powers your nerves and brain. When B12 is this low, you may feel pins and needles in your hands and feet, feel mentally slow, or feel low in mood — even if you don\'t realise it\'s because of B12.',
+     body:['Nerves','Brain','Spinal cord','Blood cells'],
+     habits:['Eggs, paneer, curd, and milk every day — your best vegetarian sources','Ask your doctor about B12 injections — they work much faster than tablets at this level'],
+     dqs:['Do I need B12 injections or will tablets work?','Should we check if my body is absorbing B12 properly?']},
+    {n:'Ferritin (iron reserves)',v:'27.55',u:'ng/mL',s:'w',lo:0,hi:200,ref:[13.25,150],
+     plain:'Your ferritin is in the normal lab range at 27.55, but the ideal for a woman your age is above 50. Think of ferritin as your iron savings account — it\'s not empty, but it\'s low. Low ferritin can cause hair fall and tiredness before it becomes full anaemia.',
+     body:['Blood','Energy levels','Hair'],
+     habits:['Eat spinach, lentils, jaggery, chickpeas, and sesame seeds regularly','Squeeze lemon on iron-rich meals — Vitamin C helps absorption','Avoid tea and coffee for 1 hour after iron-rich meals'],
+     dqs:[]},
+    {n:'Serum iron',v:'113.77',u:'ug/dL',s:'g',lo:0,hi:250,ref:[33,193],
+     plain:'Your blood iron level is healthy at 113.77. The iron currently moving through your blood is fine. Ferritin (iron reserves) tells a slightly different story — worth building up through diet.',
+     body:['Blood'],habits:[],dqs:[]},
+   ]},
+  {nm:'Blood & immunity',ic:'#fff1f2',is:'var(--error)',svg:'<path d="M12 2a6 6 0 00-6 6c0 4 6 14 6 14s6-10 6-14a6 6 0 00-6-6z" fill="none" stroke="currentColor" stroke-width="2"/>',
+   markers:[
+    {n:'Haemoglobin',v:'14.1',u:'g/dL',s:'g',lo:8,hi:18,ref:[12,15],
+     plain:'Your haemoglobin is 14.1 — healthy and strong. Haemoglobin carries oxygen in your blood to every part of your body. A normal level means you are not anaemic and your blood is doing its job well.',
+     body:['Blood','Heart','Lungs','Energy'],habits:[],dqs:[]},
+    {n:'White blood cells (WBC)',v:'10.0',u:'10³/uL',s:'w',lo:0,hi:14,ref:[4,10],
+     plain:'Your WBC count is exactly at the upper limit of normal (10.0 out of 10.0). White blood cells fight infection and inflammation. PCOD can sometimes cause mild background inflammation that nudges this upward.',
+     body:['Immune system'],
+     habits:['Eat anti-inflammatory foods: turmeric, ginger in your tea, leafy greens daily','Get 7–8 hours of sleep — your immune system repairs itself during sleep'],
+     dqs:['Could my WBC being at the upper limit be related to my PCOD?']},
+    {n:'Platelet count',v:'395',u:'10³/uL',s:'g',lo:0,hi:500,ref:[150,410],
+     plain:'Platelet count of 395 is healthy and normal. Platelets help your blood clot when you are injured. No concerns here.',
+     body:['Blood'],habits:[],dqs:[]},
+    {n:'ESR (inflammation check)',v:'7',u:'mm/hr',s:'g',lo:0,hi:30,ref:[0,20],
+     plain:'ESR of 7 is low — a good sign. This checks for general inflammation in the body. A low number means there is no significant active infection or inflammation at the moment.',
+     body:['Immune system','Blood'],habits:[],dqs:[]},
+   ]},
+  {nm:'Heart & cholesterol',ic:'#fff7ed',is:'#ea580c',svg:'<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="none" stroke="currentColor" stroke-width="2"/>',
+   markers:[
+    {n:'LDL cholesterol (bad)',v:'104',u:'mg/dL',s:'w',lo:0,hi:200,ref:[0,100],
+     plain:'LDL is the cholesterol that sticks to artery walls. Optimal is below 100 — yours is 104. That\'s a small excess. At your age with PCOD (which already raises heart disease risk long-term), bringing LDL below 100 through diet is the right thing to do now.',
+     body:['Heart','Arteries','Blood vessels'],
+     habits:['Reduce fried food, packaged snacks, and butter','Add a bowl of oats, a handful of walnuts, or flaxseeds daily — all lower LDL','A 30-minute walk every day lowers LDL over 3 months'],
+     dqs:['Given my PCOD, should I check my LDL again in 3 months?']},
+    {n:'Total cholesterol',v:'157',u:'mg/dL',s:'g',lo:0,hi:300,ref:[0,200],
+     plain:'Your total cholesterol is 157 — excellent. Anything below 200 is good. Your overall cholesterol picture is healthy for your age.',
+     body:['Heart','Blood vessels'],habits:[],dqs:[]},
+    {n:'HDL cholesterol (good)',v:'46',u:'mg/dL',s:'w',lo:20,hi:80,ref:[40,60],
+     plain:'HDL is the good cholesterol — it cleans your arteries. Your 46 is in the normal range, but for women the ideal is above 55. Regular exercise is the best way to raise HDL.',
+     body:['Heart','Arteries'],
+     habits:['Aerobic exercise like walking, cycling, or swimming 5 days a week raises HDL'],
+     dqs:[]},
+    {n:'Triglycerides',v:'87',u:'mg/dL',s:'g',lo:0,hi:300,ref:[0,150],
+     plain:'Triglycerides at 87 are excellent — well below the 150 concern level. Keep sugar and refined carbs low to maintain this.',
+     body:['Heart','Liver','Pancreas'],habits:[],dqs:[]},
+   ]},
+  {nm:'Blood sugar & thyroid',ic:'#ecfdf5',is:'#16a34a',svg:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+   markers:[
+    {n:'Fasting blood sugar',v:'89',u:'mg/dL',s:'g',lo:60,hi:130,ref:[74,99],
+     plain:'Your fasting blood sugar is 89 — healthy and normal. No diabetes or pre-diabetes. However, with PCOD in the picture it\'s worth keeping an eye on this each year, as PCOD can lead to insulin resistance over time.',
+     body:['Blood','Pancreas','Kidneys'],
+     habits:['Avoid skipping meals — it causes blood sugar swings','Soak methi seeds overnight and drink the water in the morning — well studied for blood sugar'],
+     dqs:['Should I test insulin resistance (HOMA-IR) given my PCOD finding?']},
+    {n:'TSH (thyroid test)',v:'3.39',u:'mIU/mL',s:'g',lo:0,hi:6,ref:[0.27,4.2],
+     plain:'Your thyroid is working normally at 3.39. Since PCOD and thyroid problems often occur together, it\'s worth testing this every year. For now, your thyroid is fine.',
+     body:['Thyroid gland','Metabolism','Energy'],habits:[],
+     dqs:['PCOD and thyroid problems often go together — should I also test T3 and T4?']},
+   ]},
+  {nm:'Liver & kidney',ic:'#f5f3ff',is:'var(--violet)',svg:'<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+   markers:[
+    {n:'ALT (liver)',v:'20',u:'U/L',s:'g',lo:0,hi:50,ref:[0,33],plain:'ALT at 20 is healthy. This enzyme is released when liver cells are stressed. A normal level confirms your liver is in good condition.',body:['Liver'],habits:[],dqs:[]},
+    {n:'Creatinine (kidney)',v:'0.65',u:'mg/dL',s:'g',lo:0,hi:1.5,ref:[0.5,0.9],plain:'Creatinine at 0.65 is normal. Your kidneys are filtering blood efficiently and clearing muscle waste properly.',body:['Kidneys'],habits:[],dqs:[]},
+    {n:'Uric acid',v:'2.3',u:'mg/dL',s:'w',lo:0,hi:8,ref:[2.4,5.7],plain:'Uric acid is very slightly below the lower limit at 2.3 (normal starts at 2.4). This small difference is usually not clinically concerning in young women. Worth mentioning to your doctor.',body:['Kidneys','Joints'],habits:['Stay well hydrated — 2.5–3 litres of water every day'],dqs:[]},
+   ]},
+];
+
+const TDATA={
+  'Vitamin D':{unit:'ng/mL',ref:[30,70],lo:0,hi:80,s:'c',pts:[{d:'Jan 18',v:6.8},{d:'Jul 18',v:5.4},{d:'Jan 19',v:6.2},{d:'Apr 19',v:4.9}],chg:'↓ 28% in 15 months',title:'Declining for 15 months',txt:'Your Vitamin D has dropped from 6.8 to 4.9 — a 28% decline despite living in Bengaluru. Supplementation is the only real solution at this level; sunlight alone isn\'t enough.'},
+  'Vitamin B12':{unit:'pg/mL',ref:[197,771],lo:0,hi:900,s:'c',pts:[{d:'Jan 18',v:245},{d:'Jul 18',v:198},{d:'Jan 19',v:152},{d:'Apr 19',v:116.9}],chg:'↓ 52% in 15 months',title:'Steady decline — needs urgent attention',txt:'B12 has dropped from 245 to 116.9 — a 52% decline over 15 months. This is likely dietary (vegetarian) and may be worsened by the PCOD. The trend must be reversed quickly with supplements.'},
+  'Haemoglobin':{unit:'g/dL',ref:[12,15],lo:8,hi:18,s:'g',pts:[{d:'Jan 18',v:12.8},{d:'Jul 18',v:13.4},{d:'Jan 19',v:13.8},{d:'Apr 19',v:14.1}],chg:'↑ Improving — great progress',title:'Improving steadily',txt:'Your haemoglobin has improved from 12.8 to 14.1 over 15 months. Your diet changes and iron intake are clearly working. Keep doing what you\'re doing.'},
+  'LDL Cholesterol':{unit:'mg/dL',ref:[0,100],lo:0,hi:200,s:'w',pts:[{d:'Jan 18',v:96},{d:'Jul 18',v:98},{d:'Jan 19',v:101},{d:'Apr 19',v:104}],chg:'↑ Slowly rising — watch this',title:'Slowly rising over 15 months',txt:'LDL has risen from 96 (optimal) to 104 (slightly above). The rise is small but consistent. Dietary changes now — reducing fried food and adding oats and walnuts — can reverse this within 3 months.'},
+  'TSH (thyroid)':{unit:'mIU/mL',ref:[0.27,4.2],lo:0,hi:6,s:'g',pts:[{d:'Jan 18',v:2.1},{d:'Jul 18',v:2.8},{d:'Jan 19',v:3.1},{d:'Apr 19',v:3.39}],chg:'↑ Rising — still normal, watch yearly',title:'Rising but still within normal range',txt:'TSH has risen from 2.1 to 3.39 over 15 months. Still normal, but the upward trend alongside PCOD means this needs monitoring every year. Ask your doctor to also test Free T3 and T4 at your next visit.'},
+};
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ttab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.snb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+id).classList.add('active');
+  const map={home:0,report:1,trends:2,actions:3};
+  document.querySelectorAll('.ttab')[map[id]??0].classList.add('on');
+  document.querySelectorAll('.snb').forEach(b=>{if(b.getAttribute('onclick')==="goTo('"+id+"')")b.classList.add('on')});
+  if(id==='trends')drawChart(Object.keys(TDATA)[0]);
+  if(id==='report')buildReport();
+}
+
+function buildReport(){
+  const c=document.getElementById('report-cats');
+  if(c.children.length>0)return;
+  c.innerHTML=CATS.map((cat,ci)=>`
+<div style="margin:0 16px 10px" id="cat-${ci}">
+  <div class="cat-hd" id="ch-${ci}" onclick="toggleCat(${ci})">
+    <div class="c-ico" style="background:${cat.ic}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${cat.is}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${cat.svg}</svg></div>
+    <div style="flex:1"><div class="c-nm">${cat.nm}</div><div class="c-sb">${cat.markers.length} tests</div></div>
+    <div class="c-dots">${cat.markers.map(m=>`<div class="cdot" style="background:${m.s==='c'?'var(--error)':m.s==='w'?'#d97706':'#22c55e'}"></div>`).join('')}</div>
+    <svg class="c-chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="cat-body" id="cb-${ci}">
+    ${cat.markers.map((m,mi)=>{
+      const sc=m.s==='c'?'var(--error)':m.s==='w'?'#d97706':'#22c55e';
+      const pl=m.s==='c'?'pc':m.s==='w'?'pw':'pg';
+      const lbl=m.s==='c'?'Critical':m.s==='w'?'Watch':'Normal';
+      let bar='';
+      if(m.lo!==undefined&&m.ref){
+        const rng=m.hi-m.lo;
+        const vp=Math.min(Math.max(((parseFloat(m.v)-m.lo)/rng)*100,2),98);
+        const lop=((m.ref[0]-m.lo)/rng)*100;
+        const hip=((m.ref[1]-m.lo)/rng)*100;
+        const col=m.s==='c'?'var(--error-s)':m.s==='w'?'var(--warn-s)':'var(--green-s)';
+        bar=`<div class="rng-wrap"><div class="rng-zone" style="left:${lop}%;width:${hip-lop}%;background:${col}"></div><div class="rng-pip" style="left:${vp}%;background:${sc}"></div></div>`;
+      }
+      return `<div class="bm-row" onclick="openSheet(${ci},${mi})">
+        <div class="bm-sig" style="background:${sc}"></div>
+        <div class="bm-main"><div class="bm-nm">${m.n}</div>${bar}<div class="bm-snip">${m.plain.substring(0,55)}…</div></div>
+        <div class="bm-rt"><div class="bm-vl" style="color:${sc}">${m.v}</div><div class="bm-un">${m.u}</div><div class="bm-pl ${pl}">${lbl}</div></div>
+      </div>`;
+    }).join('')}
+  </div>
+</div>`).join('');
+  toggleCat(0);
+}
+
+function toggleCat(i){
+  const el=document.getElementById('cat-'+i);
+  const hd=document.getElementById('ch-'+i);
+  const bd=document.getElementById('cb-'+i);
+  if(!el||!hd||!bd)return;
+  const open=el.classList.toggle('cat-open');
+  bd.style.display=open?'block':'none';
+}
+
+function openSheet(ci,mi){
+  const m=CATS[ci].markers[mi];
+  const sc=m.s==='c'?'var(--error)':m.s==='w'?'#d97706':'#22c55e';
+  const sbg=m.s==='c'?'var(--error-s)':m.s==='w'?'var(--warn-s)':'var(--green-s)';
+  const slbl=m.s==='c'?'Critical':m.s==='w'?'Watch':'Normal';
+  document.getElementById('sheet-title').textContent=m.n;
+  let barH='';
+  if(m.lo!==undefined&&m.ref){
+    const rng=m.hi-m.lo;
+    const vp=Math.min(Math.max(((parseFloat(m.v)-m.lo)/rng)*100,2),98);
+    const lop=((m.ref[0]-m.lo)/rng)*100;
+    const hip=((m.ref[1]-m.lo)/rng)*100;
+    barH=`<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:38px;font-weight:800;color:${sc};letter-spacing:-1px">${m.v}</span>
+      <span style="font-family:'Manrope',sans-serif;font-size:14px;color:var(--t3)">${m.u}</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;background:${sbg};color:${sc};margin-left:4px">${slbl}</span>
+    </div>
+    <div class="rng-wrap" style="height:8px;margin-bottom:6px">
+      <div class="rng-zone" style="left:${lop}%;width:${hip-lop}%;height:8px;background:${sbg}"></div>
+      <div class="rng-pip" style="left:${vp}%;background:${sc};width:17px;height:17px;top:-4.5px"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-family:'Manrope',sans-serif;font-size:11px;color:var(--t3);margin-bottom:16px">
+      <span>${m.lo}</span>
+      <span style="color:var(--t2);font-weight:600">Normal: ${m.ref[0]}–${m.ref[1]}</span>
+      <span>${m.hi}</span>
+    </div>`;
+  }
+  const bpH=m.body.map(b=>`<span class="sh-chip">${b}</span>`).join('');
+  const habH=m.habits.map(h=>`<div class="sh-habit"><div class="sh-hd"></div><div class="sh-htxt">${h}</div></div>`).join('');
+  const dqH=m.dqs.map(q=>`<div class="sh-dq">${q}</div>`).join('');
+  document.getElementById('sheet-body').innerHTML=`${barH}
+  <div class="sh-sec">What this means</div>
+  <div class="sh-plain" style="margin-bottom:${bpH?14:0}px">${m.plain}</div>
+  ${bpH?`<div class="sh-sec">Parts of your body affected</div><div class="sh-chips" style="margin-bottom:${habH?14:0}px">${bpH}</div>`:''}
+  ${habH?`<div class="sh-sec">What you can do</div><div style="margin-bottom:${dqH?14:0}px">${habH}</div>`:''}
+  ${dqH?`<div class="sh-sec">Ask your doctor</div>${dqH}`:''}`;
+  document.getElementById('sheet-bg').classList.add('on');
+}
+
+function closeSheet(e){if(e.target===document.getElementById('sheet-bg'))document.getElementById('sheet-bg').classList.remove('on');}
+
+function buildChips(){
+  const c=document.getElementById('trend-chips');
+  if(c.children.length)return;
+  Object.keys(TDATA).forEach((k,i)=>{
+    const btn=document.createElement('button');
+    btn.className='t-chip'+(i===0?' on':'');
+    btn.textContent=k;
+    btn.onclick=()=>{document.querySelectorAll('.t-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');drawChart(k);};
+    c.appendChild(btn);
+  });
+}
+
+function drawChart(key){
+  buildChips();
+  const d=TDATA[key];if(!d)return;
+  const last=d.pts[d.pts.length-1];
+  const sc=d.s==='c'?'#ab2653':d.s==='w'?'#d97706':'#16a34a';
+  const scv=d.s==='c'?'var(--error)':d.s==='w'?'#d97706':'#16a34a';
+  document.getElementById('trend-name').textContent=key;
+  document.getElementById('trend-unit').textContent=d.unit;
+  document.getElementById('trend-val').textContent=last.v;
+  document.getElementById('trend-val').style.color=scv;
+  document.getElementById('trend-chg').textContent=d.chg;
+  const cc=d.s==='c'?{bg:'var(--error-s)',txt:'var(--error)'}:d.s==='w'?{bg:'var(--warn-s)',txt:'var(--warn)'}:{bg:'var(--green-s)',txt:'var(--green)'};
+  const tchg=document.getElementById('trend-chg');
+  tchg.style.background=cc.bg;tchg.style.color=cc.txt;
+  document.getElementById('ts-cur').textContent=last.v;
+  document.getElementById('ts-cur').style.color=scv;
+  document.getElementById('ts-opt').textContent=d.ref[0]+'–'+d.ref[1];
+  document.getElementById('ts-st').textContent=d.s==='c'?'Critical':d.s==='w'?'Watch':'Normal';
+  document.getElementById('ts-st').style.color=scv;
+  document.getElementById('ci-title').textContent=d.title;
+  document.getElementById('ci-txt').textContent=d.txt;
+  // draw svg
+  const svg=document.getElementById('trend-svg');
+  const W=342,H=150,PL=38,PR=16,PT=14,PB=28;
+  const vals=d.pts.map(p=>p.v);
+  const all=[...vals,d.ref[0],d.ref[1]];
+  const mn=Math.min(...all)*.88,mx=Math.max(...all)*1.08;
+  const cx=i=>PL+(i/(d.pts.length-1))*(W-PL-PR);
+  const cy=v=>PT+(H-PT-PB)*(1-(v-mn)/(mx-mn));
+  const loY=cy(d.ref[0]),hiY=cy(d.ref[1]);
+  const line=vals.map((v,i)=>`${i===0?'M':'L'}${cx(i).toFixed(1)},${cy(v).toFixed(1)}`).join(' ');
+  const rfBg=d.s==='c'?'rgba(171,38,83,.07)':d.s==='w'?'rgba(123,88,0,.07)':'rgba(22,163,74,.09)';
+  svg.innerHTML=`
+<rect x="${PL}" y="${Math.min(loY,hiY).toFixed(1)}" width="${W-PL-PR}" height="${Math.abs(loY-hiY).toFixed(1)}" fill="${rfBg}" rx="2"/>
+<text x="${PL-4}" y="${cy(d.ref[1]).toFixed(1)}" text-anchor="end" font-size="9" fill="#d1d5db" font-family="Manrope,sans-serif">${d.ref[1]}</text>
+<text x="${PL-4}" y="${cy(d.ref[0]).toFixed(1)}" text-anchor="end" font-size="9" fill="#d1d5db" font-family="Manrope,sans-serif">${d.ref[0]}</text>
+<path d="${line}" fill="none" stroke="${sc}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+${vals.map((v,i)=>{
+  const isL=i===vals.length-1;
+  return `<circle cx="${cx(i).toFixed(1)}" cy="${cy(v).toFixed(1)}" r="${isL?5.5:3.5}" fill="${isL?sc:'white'}" stroke="${sc}" stroke-width="${isL?0:2}"/>
+<text x="${cx(i).toFixed(1)}" y="${H-5}" text-anchor="middle" font-size="9" fill="#9ca3af" font-family="Manrope,sans-serif">${d.pts[i].d}</text>
+${isL?`<text x="${cx(i).toFixed(1)}" y="${(cy(v)-10).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="${sc}" font-family="'Plus Jakarta Sans',sans-serif">${v}</text>`:''}`;
+}).join('')}`;
+}
+
+buildChips();drawChart('Vitamin D');
+</script>
+</body>
+</html>
